@@ -1,0 +1,104 @@
+
+
+/* 1. Fondo animado en toda la página */
+.container {
+  display: flex;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  
+  /* Tu fondo animado ahora en el contenedor principal */
+  background: linear-gradient(270deg, #eeecff, #dfe3ff, #a1bfff);
+  background-size: 600% 600%;
+  animation: fondoMovible 15s ease infinite;
+}
+
+/* 2. Panel Imagen (Izquierdo) */
+/* 2. Panel Imagen (Izquierdo) */
+.panel-imagen {
+  flex: 1;
+  display: flex;
+  flex-direction: column-reverse; /* Esto pone el eslogan arriba y el logo abajo */
+  justify-content: center;
+  align-items: center;
+}
+.panel-imagen img {
+  width: 500px;
+  transform: perspective(600px) rotateY(15deg);
+  filter: drop-shadow(15px 15px 10px rgba(4, 3, 20, 0.3));
+  transition: transform 0.5s ease;
+}
+
+.panel-imagen img:hover {
+  transform: perspective(600px) rotateY(0deg) scale(1.1);
+  filter: drop-shadow(20px 20px 15px rgba(0,0,0,0.4));
+}
+
+/* 3. Panel Formulario con fondo blanco */
+.panel-formulario {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  
+  /* El recuadro blanco del formulario */
+  background: rgba(255, 255, 255, 0.95);
+  margin: 40px;
+  border-radius: 30px;
+  box-shadow: 0 20px 50px rgba(0,0,0,0.15);
+  padding: 40px;
+}
+
+/* Animación del fondo (ahora aplicada al .container) */
+@keyframes fondoMovible {
+  0% { background-position: 0% 50% }
+  50% { background-position: 100% 50% }
+  100% { background-position: 0% 50% }
+}
+
+/* Estilos de inputs y botón (dentro del recuadro blanco) */
+.panel-formulario input {
+  width: 100%;
+  max-width: 350px;
+  padding: 18px;
+  margin: 12px 0;
+  border: 1px solid rgba(0,0,0,0.1);
+  border-radius: 15px;
+  background: #f9f9f9;
+  font-size: 16px;
+}
+
+.panel-formulario button {
+  width: 100%;
+  max-width: 350px;
+  padding: 18px;
+  margin: 25px;
+  background: #052fe9;
+  color: white;
+  border: none;
+  border-radius: 15px;
+  font-weight: 700;
+  cursor: pointer;
+}
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@900&display=swap');
+
+/* Forzamos el diseño directamente en tu H2 */
+#eslogan {
+  color: #000000; /* Color de tu letra */
+  /* El secreto es poner una sombra del mismo color con mucho desenfoque */
+  text-shadow: 0 0 8px rgba(0, 0, 0, 0.5);
+  position: absolute; /* Esto permite moverlo libremente */
+  top: 220px;          /* Distancia desde arriba */
+  left: 350px;         /* Distancia desde la izquierda */
+  z-index: 50;
+  font-family: 'Poppins', sans-serif !important;
+  font-weight: 900 !important; /* Muy gruesa */
+  font-size: 1rem !important; /* Tamaño grande */
+  color: #413e61 !important;
+  text-align: center !important;
+  text-transform: uppercase !important;
+  line-height: 1.2 !important;
+  margin-top: 20px !important;
+  /* Efecto redondeado en las letras se logra por la fuente Poppins */
+}
