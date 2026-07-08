@@ -1,0 +1,56 @@
+.Navbar-container {
+  display: flex;
+  gap: 20px;
+  padding: 10px; 
+  margin: 5px auto;      /* "auto" centra el bloque horizontalmente */
+  width: fit-content;      /* El menú tendrá el tamaño justo de sus iconos */
+  padding: 5px 20px;
+  background-color: #333;
+  border-radius: 50px;
+  background-color: #282727;
+
+  position: fixed; 
+  top: 2px;          /* Distancia desde arriba */
+  left: 50%;          /* Punto medio de la pantalla */
+  transform: translateX(-50%);
+}
+
+.nav-item {
+  position: relative; /* ¡Fundamental para que el tooltip se posicione bien! */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 1em;
+  width: 1em;
+  padding: 1px;
+  border-radius: 50%;
+  font-size: 2em;
+  transition: all 0.5s ease;
+  color: #ffffff;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.nav-item:hover {
+  color: #052fe9;
+  background-color: rgba(183, 181, 181, 0.1);
+}
+
+/* El tooltip que aparece arriba */
+.nav-item .tooltip {
+  position: absolute;
+  top: 40x; /* Ajusta según necesites */
+  padding: 5px 15px;
+  font-size: 0.5em; /* Más pequeño que el icono */
+  border-radius: 50px;
+  background-color: #052fe9;
+  color: #ffffff;
+  opacity: 0;
+  pointer-events: none; /* No estorba al mouse */
+  transition: all 0.5s cubic-bezier(0.68, 0.55, 0.265, 1.55);
+}
+
+.nav-item:hover .tooltip {
+  opacity: 1;
+  transform: translateY(35px);
+}
