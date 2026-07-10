@@ -1,78 +1,126 @@
 import { useState, useEffect } from 'react';
-import { BrowserRouter, Routes, Route,Navigate  } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { supabase } from './services/supabaseClient';
+import HeroPrincipal from './components/HeroPrincipal';
 import ProtectedRoute from './components/ProtectedRoute';
-// Importa todos tus componentes aquí
 import Login from './pages/Login';
-// Asegúrate de escribirlo así exactamente:
 import AdminDashboard from "./components/Admin/AdminDashboard";
-import HomePage from './components/HomePage'; // Asegúrate que este archivo exista
+import HomePage from './components/HomePage'; 
 import Navbar from './components/Navbar';
 import ContactsInfo from './components/ContactsInfo';
 import Loading from './components/Loading';
 
 export default function App() {
-  // Inicializamos en false porque al cargar la app, 
-  // Supabase verificará si hay sesión activa.
+
+  // --- ESTADOS DE LA APLICACIÓN ---
+  
+  // Estado para capturar el texto ingresado en el buscador del Navbar
+  const [terminoDeBusqueda, setTerminoDeBusqueda] = useState('');
+  
+  // Estados de autenticación y carga
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-   // 1. Agregamos un estado de carga inicial
   const [isLoading, setIsLoading] = useState(true);
+  const [userRole, setUserRole] = useState(null); 
+  
+  // Lista de cursos inicial (datos locales)
   const [courses, setCourses] = useState([
     { id: 1, title: "Introducción a la Empresa", status: "completado" },
     { id: 2, title: "Productividad Call Center", status: "en-progreso" },
   ]);
    
+  // --- INICIALIZACIÓN Y SESIÓN ---
+
+  // Efecto que se dispara al cargar la aplicación para verificar la autenticación del usuario en Supabase
   useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      // Mantenemos el timeout para probar, pero ahora no destruirá el DOM
-      setTimeout(() => {
-        setIsLoggedIn(!!session);
-        setIsLoading(false);
-      }, 2000);
-    });
+    const initApp = async () => {
+      // Obtenemos la sesión actual desde Supabase
+      const { data: { session } } = await supabase.auth.getSession();
+      
+      if (session) {
+        setIsLoggedIn(true);
+        
+        // Consultamos el rol (perfil) del usuario logueado en la tabla 'Usuario'
+        const { data: userData } = await supabase
+          .from('Usuario')
+          .select('profiles')
+          .eq('id', session.user.id)
+          .single();
+        
+        if (userData) {
+          setUserRole(userData.profiles);
+        }
+      } else {
+        setIsLoggedIn(false);
+        setUserRole(null);
+      }
+      setIsLoading(false); // Finalizamos la carga una vez verificada la sesión
+    };
 
-    // 2. Escuchamos cambios (si el usuario hace login o logout)
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      setIsLoggedIn(!!session);
-    });
-
-    return () => subscription.unsubscribe();
+    initApp();
   }, []);
 
-   
-    if (isLoading) {
-    return <Loading isLoading={true} />;
-  } 
-  
+  // --- FUNCIONES AUXILIARES ---
 
+  // Función para agregar un nuevo curso a la lista existente, actualizando el estado 'courses'
   const addCourse = (newCourse) => {
     setCourses([...courses, newCourse]);
   };
 
+  // --- RENDERIZADO CONDICIONAL ---
+
+  // Mientras se verifica la sesión en el useEffect, mostramos el componente de carga para evitar parpadeos
+  if (isLoading) {
+    return <Loading isLoading={true} />;
+  } 
+  
   return (
-<BrowserRouter>
-    <Navbar isLoggedIn={isLoggedIn} />
-    
-    <Routes>
-      {/* Redirigir la raíz ('/') a una página u otra según el estado */}
-      <Route 
-        path="/" 
-        element={isLoggedIn ? <HomePage courses={courses} /> : <Navigate to="/login" />} 
+    <BrowserRouter>
+      {/* Barra de navegación global: le enviamos la función para actualizar la búsqueda */}
+      <Navbar 
+        isLoggedIn={isLoggedIn} 
+        alBuscar={setTerminoDeBusqueda} 
       />
       
-      <Route path="/login" element={<Login />} />
+      {/* Definición de rutas: estructura las diferentes vistas de la SPA */}
+      <Routes>
+
+       
+        {/* Ruta principal: Home. Si el usuario está autenticado muestra el dashboard, sino redirige al login */}
+        <Route 
+          path="/" 
+          element={isLoggedIn ? (
+            <>
+              {/* Aquí ambos componentes conviven dentro de la ruta raíz */}
+              <HeroPrincipal />
+              <HomePage 
+                courses={courses} 
+                userRole={userRole} 
+                terminoDeBusqueda={terminoDeBusqueda} 
+              />
+            </>
+          ) : <Navigate to="/login" />} 
+        />
+        
+        {/* Página de inicio de sesión: muestra el formulario de autenticación */}
+        <Route path="/login" element={<Login />} />
+        
+        {/* Ruta protegida: utiliza el componente ProtectedRoute para verificar si el usuario tiene acceso a la zona de administración */}
+        <Route 
+          path="/admin" 
+          element={
+            <ProtectedRoute isLoggedIn={isLoggedIn}>
+              <AdminDashboard 
+                addCourse={addCourse} 
+                terminoDeBusqueda={terminoDeBusqueda} 
+              />
+            </ProtectedRoute>
+          } 
+        />
+        
+      </Routes>
       
-      <Route 
-        path="/admin" 
-        element={
-          <ProtectedRoute isLoggedIn={isLoggedIn}>
-            <AdminDashboard addCourse={addCourse} />
-          </ProtectedRoute>
-        } 
-      />
-    </Routes>
-    
-    <ContactsInfo/>
-  </BrowserRouter>
+      {/* Información de contacto: componente que permanece estático al pie de página en toda la navegación */}
+      <ContactsInfo/>
+    </BrowserRouter>
   );
 }

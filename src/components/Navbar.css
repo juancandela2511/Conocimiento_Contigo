@@ -1,56 +1,104 @@
+/* Contenedor padre, fija la posición a la izquierda */
 .Navbar-container {
+  position: fixed;
+  top: 20px;
+  left: 20px;
   display: flex;
-  gap: 20px;
-  padding: 10px; 
-  margin: 5px auto;      /* "auto" centra el bloque horizontalmente */
-  width: fit-content;      /* El menú tendrá el tamaño justo de sus iconos */
-  padding: 5px 20px;
-  background-color: #333;
-  border-radius: 50px;
+  align-items: center;
   background-color: #282727;
-
-  position: fixed; 
-  top: 2px;          /* Distancia desde arriba */
-  left: 50%;          /* Punto medio de la pantalla */
-  transform: translateX(-50%);
+  padding: 10px;
+  border-radius: 50px; /* Forma de píldora */
+  transition: all 0.4s ease;
+  z-index: 1000;
+  overflow: hidden; /* Mantiene los hijos ocultos al contraerse */
 }
 
-.nav-item {
-  position: relative; /* ¡Fundamental para que el tooltip se posicione bien! */
+/* Al pasar el mouse, el contenedor se expande */
+.Navbar-container:hover {
+  border-radius: 25px; /* Se vuelve un poco más cuadrado al expandir */
+}
+
+.menu-trigger {
+  color: white;
+  cursor: pointer;
   display: flex;
-  justify-content: center;
+}
+
+/* El contenido está oculto (ancho 0) y aparece al hacer hover */
+.menu-content {
+  display: flex;
+  width: 0;
+  opacity: 0;
+  transition: all 0.4s ease;
+  white-space: nowrap; /* Evita que el texto se rompa en varias líneas */
+}
+
+.Navbar-container:hover .menu-content {
+  width: 250px; /* Ancho final al desplegar */
+  opacity: 1;
+  padding-left: 15px; /* Espacio entre el icono de menú y los otros */
+}
+
+/* Estilos de los items */
+.nav-item, .nav-item-btn {
+  display: flex;
   align-items: center;
-  height: 1em;
-  width: 1em;
-  padding: 1px;
-  border-radius: 50%;
-  font-size: 2em;
-  transition: all 0.5s ease;
-  color: #ffffff;
+  gap: 10px;
+  color: white;
   text-decoration: none;
+  margin-right: 20px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+.nav-item:hover, .nav-item-btn:hover {
+  color: #052fe9; /* Color azul al pasar mouse */
+}
+/* --- Contenedor del buscador --- */
+.search-container {
+  display: flex;
+  align-items: center;
+  padding: 5px;
+  border-radius: 50px; /* Forma de píldora para el fondo blanco */
+  transition: all 0.4s ease;
+  overflow: hidden;
   cursor: pointer;
 }
 
-.nav-item:hover {
-  color: #052fe9;
-  background-color: rgba(183, 181, 181, 0.1);
+/* --- Fondo blanco que aparece al pasar el mouse --- */
+.search-container:hover {
+  background: white;
 }
 
-/* El tooltip que aparece arriba */
-.nav-item .tooltip {
-  position: absolute;
-  top: 40x; /* Ajusta según necesites */
-  padding: 5px 15px;
-  font-size: 0.5em; /* Más pequeño que el icono */
-  border-radius: 50px;
-  background-color: #052fe9;
-  color: #ffffff;
-  opacity: 0;
-  pointer-events: none; /* No estorba al mouse */
-  transition: all 0.5s cubic-bezier(0.68, 0.55, 0.265, 1.55);
+/* --- El input dentro del contenedor --- */
+.search-container input {
+  background: transparent; /* Hereda el fondo del contenedor */
+  border: none;
+  width: 0;                /* Oculto inicialmente */
+  opacity: 0;              /* Invisible inicialmente */
+  outline: none;
+  transition: all 0.4s ease;
+  color: #575656;             /* Texto oscuro para que se vea sobre el blanco */
 }
 
-.nav-item:hover .tooltip {
+/* --- Al hacer hover sobre el padre, el input se expande y aparece --- */
+.search-container:hover input {
+  width: 150px;            /* Ancho deseado al desplegar */
   opacity: 1;
-  transform: translateY(35px);
+  padding: 5px 10px;       /* Espacio interno al mostrarse */
+}
+/* Clase para resaltar elementos */
+.resaltado-fosforescente {
+  background: linear-gradient(120deg, #84fab0 0%, #8fd3f4 100%);
+  background-repeat: no-repeat;
+  background-size: 100% 0.3em;
+  background-position: 0 85%;
+  transition: background-size 0.25s ease-in;
+}
+
+/* Si quieres un efecto más intenso tipo neón */
+.neon-glow {
+  text-shadow: 0 0 5px #fff, 0 0 10px #fff, 0 0 20px #00ff00, 0 0 30px #00ff00;
 }

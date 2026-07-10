@@ -1,0 +1,73 @@
+.hero-modern {
+  /* Fondo animado estilo 'Soft Tech' */
+  background: linear-gradient(270deg, #eeecff, #ccd1f9, #a1bfff);
+  background-size: 600% 600%;
+  animation: fondoMovible 15s ease infinite;
+  
+  padding: 30px 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  overflow: visible;
+  min-height: 250px;
+  width: 100%;
+}
+
+@keyframes fondoMovible {
+  0% { background-position: 0% 50% }
+  50% { background-position: 100% 50% }
+  100% { background-position: 0% 50% }
+}
+
+.hero-inner {
+  max-width: 700px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.logo-container {
+  margin-bottom: 10px;
+  padding-top: 15px;
+} 
+
+.floating-logo {
+  width: 100%;
+  max-width: 100px; 
+  height: auto;
+  animation: float 4s ease-in-out infinite;
+  /* Sombra más sutil para fondo claro */
+  filter: drop-shadow(0 5px 15px rgba(30, 58, 138, 0.2));
+  display: block;
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+}
+
+.hero-title {
+  /* Color azul oscuro para asegurar legibilidad en el fondo claro */
+  color: #052fe9;
+  font-size: clamp(1.6rem, 5vw, 2.8rem);
+  margin: 10px 0;
+  font-weight: 800;
+  line-height: 1.1;
+  word-break: break-word;
+}
+
+.text-accent {
+  /* Un azul más vibrante para el acento */
+  color: #2563eb; 
+}
+
+.hero-subtitle {
+  /* Color gris azulado para buen contraste */
+  color: #475569;
+  font-size: clamp(0.9rem, 2vw, 1.1rem);
+  margin: 0;
+  font-weight: 400;
+  letter-spacing: 0.5px;
+}
