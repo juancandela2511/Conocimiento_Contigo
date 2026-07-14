@@ -1,4 +1,10 @@
-.gridContainer {
+/* Contenedor principal para el formulario de administración en la página de inicio */
+.dashboardContainer {
+  padding: 40px 20px;
+  background-color: #f4f7f6;
+}
+
+ .gridContainer {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); /* Se adapta al tamaño de la pantalla */
   gap: 25px;
@@ -20,12 +26,7 @@
 .card {
   background-size: cover;
   background-position: center;
-  color: white; /* Asumiendo que las imágenes son oscuras */
-}
-
-.addCard {
-  border: 3px dashed #333; /* Estilo visual distinto para el botón */
-  cursor: pointer;
+  color: white; /* Asumiendo que las imágenes son oscuras */ 
 }
 .cardActions {
   margin-top: auto;
@@ -42,4 +43,42 @@
   padding: 5px 10px;
   cursor: pointer;
   border-radius: 5px;
+}
+.addForm {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: stretch;
+  gap: 15px;
+  background-color: #f0f7ff;
+  border: 2px dashed #007bff;
+  border-radius: 15px;
+  padding: 20px;
+}
+
+.addForm h3 {
+  margin-top: 0;
+  text-align: center;
+  color: #0056b3;
+}
+
+.addForm input,
+.addForm textarea {
+  width: 100%;
+  padding: 10px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  font-size: 1rem;
+  box-sizing: border-box;
+}
+
+.addForm button {
+  padding: 10px 15px;
+  border: none;
+  background-color: #007bff;
+  color: white;
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: background-color 0.2s;
 }

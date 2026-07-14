@@ -30,12 +30,12 @@ export default function Registro() {
 
       if (data.user) {
         const { error: insertError } = await supabase
-          .from('public.Usuario')
+          .from('Usuario')
           .insert([
             { 
               id: data.user.id, 
               "Usuario": username, 
-              profiles: 'usuario' 
+              "profile": "usuario" 
             }
           ]);
         

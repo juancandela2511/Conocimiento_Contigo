@@ -1,4 +1,9 @@
-/* Contenedor padre, fija la posición a la izquierda */
+/*
+  Archivo: Navbar.css
+  Función: Estilos para la barra de navegación principal (izquierda) y los elementos de la esquina superior derecha.
+  Tipo: Frontend.
+*/
+
 .Navbar-container {
   position: fixed;
   top: 20px;
@@ -13,33 +18,40 @@
   overflow: hidden; /* Mantiene los hijos ocultos al contraerse */
 }
 
-/* Al pasar el mouse, el contenedor se expande */
+/* Al pasar el ratón, la barra se expande para mostrar el contenido. */
 .Navbar-container:hover {
   border-radius: 25px; /* Se vuelve un poco más cuadrado al expandir */
 }
 
+/* Estilo para la segunda barra de navegación (la de edición). */
+.editor-nav {
+  top: 90px; /* La posicionamos debajo de la barra principal (20px + altura + margen) */
+  background-color: #005f5e; /* Un color verde para diferenciarla */
+}
+
+/* Icono que dispara la animación del menú. */
 .menu-trigger {
-  color: white;
+  color: rgb(255, 255, 255);
   cursor: pointer;
   display: flex;
 }
 
-/* El contenido está oculto (ancho 0) y aparece al hacer hover */
+/* Por defecto, el contenido del menú está oculto. */
 .menu-content {
   display: flex;
-  width: 0;
+  max-width: 0;
   opacity: 0;
   transition: all 0.4s ease;
   white-space: nowrap; /* Evita que el texto se rompa en varias líneas */
 }
 
 .Navbar-container:hover .menu-content {
-  width: 250px; /* Ancho final al desplegar */
+  max-width: 800px; /* Aumentamos el espacio para que quepa todo cómodamente */
   opacity: 1;
   padding-left: 15px; /* Espacio entre el icono de menú y los otros */
 }
 
-/* Estilos de los items */
+/* Estilo base para los íconos y botones dentro del menú. */
 .nav-item, .nav-item-btn {
   display: flex;
   align-items: center;
@@ -56,7 +68,81 @@
 .nav-item:hover, .nav-item-btn:hover {
   color: #052fe9; /* Color azul al pasar mouse */
 }
-/* --- Contenedor del buscador --- */
+
+/* Estilo para el texto del rol de usuario (antes de estar en la esquina). */
+.user-role {
+  color: #a9a9a9;
+  text-transform: capitalize;
+}
+
+/* Contenedor que agrupa el rol y el botón de logout en la esquina. */
+.top-right-container {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  display: flex;
+  align-items: center;
+  gap: 15px; /* Espacio entre el rol y el botón de salir */
+  z-index: 1000;
+}
+
+/* Estilo para la "píldora" que muestra el rol del usuario. */
+.user-role-indicator {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background-color: #282727;
+  color: #a9a9a9;
+  padding: 10px 20px;
+  border-radius: 50px;
+  z-index: 1000;
+  text-transform: capitalize;
+  font-size: 16px;
+  transition: background-color 0.3s ease, color 0.3s ease; /* Añadimos una transición suave */
+}
+
+/* Estilo especial que se aplica si el usuario es admin o aprendiz. */
+.user-role-indicator.admin-role-indicator {
+  background-color: #030303; /* Fondo oscuro */
+  color: white; /* Texto blanco por defecto */
+}
+
+/* Efecto de hover para el indicador de rol. */
+.user-role-indicator.admin-role-indicator:hover {
+  color: #3308f1; /* Mismo azul que tenías (rgb(51, 8, 241)) */
+}
+
+/* Estilo para el botón circular de cerrar sesión. */
+.logout-button-circle {
+  background-color: #282727;
+  color: white;
+  border: none;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%; /* Círculo perfecto */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.logout-button-circle:hover {
+  background-color: #e40404; /* Rojo al pasar el mouse */
+  transform: scale(1.1);
+}
+
+/* Estilo para el enlace de administrador (actualmente no se usa). */
+.admin-link {
+  color: #ffd700; /* Color dorado para destacar */
+}
+
+.admin-link:hover {
+  color: #ffec8b;
+}
+
+
+/* Estilos para el campo de búsqueda dentro del menú. */
 .search-container {
   display: flex;
   align-items: center;
@@ -67,12 +153,12 @@
   cursor: pointer;
 }
 
-/* --- Fondo blanco que aparece al pasar el mouse --- */
+/* Al pasar el ratón, el fondo del buscador se vuelve blanco. */
 .search-container:hover {
   background: white;
 }
 
-/* --- El input dentro del contenedor --- */
+/* El campo de texto del buscador está oculto por defecto. */
 .search-container input {
   background: transparent; /* Hereda el fondo del contenedor */
   border: none;
@@ -83,13 +169,14 @@
   color: #575656;             /* Texto oscuro para que se vea sobre el blanco */
 }
 
-/* --- Al hacer hover sobre el padre, el input se expande y aparece --- */
+/* Al pasar el ratón, el campo de texto se expande. */
 .search-container:hover input {
   width: 150px;            /* Ancho deseado al desplegar */
   opacity: 1;
   padding: 5px 10px;       /* Espacio interno al mostrarse */
 }
-/* Clase para resaltar elementos */
+
+/* Clases de efectos visuales (actualmente no se usan). */
 .resaltado-fosforescente {
   background: linear-gradient(120deg, #84fab0 0%, #8fd3f4 100%);
   background-repeat: no-repeat;
@@ -98,7 +185,27 @@
   transition: background-size 0.25s ease-in;
 }
 
-/* Si quieres un efecto más intenso tipo neón */
 .neon-glow {
-  text-shadow: 0 0 5px #fff, 0 0 10px #fff, 0 0 20px #00ff00, 0 0 30px #00ff00;
+  text-shadow: 0 0 5px #fff, 0 0 10px #fff, 0 0 20px #00ff00, 0 0 30px #00ff11;
+}
+
+/* Animación de "palpitación" para resaltar los resultados de búsqueda. */
+@keyframes palpitate {
+  0% {
+    transform: scale(1);
+    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+  }
+  50% {
+    transform: scale(1.03);
+    box-shadow: 0 8px 30px rgba(5, 47, 233, 0.4); /* Resplandor azul */
+  }
+  100% {
+    transform: scale(1);
+    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+  }
+}
+
+/* Clase que activa la animación de palpitación. */
+.search-highlight {
+  animation: palpitate 1.5s ease-in-out infinite;
 }

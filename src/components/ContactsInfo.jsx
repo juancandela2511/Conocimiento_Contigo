@@ -1,7 +1,7 @@
 export default function ContactsInfo() {
   return (
     // Quitamos marginTop: '40px' porque eso crea el salto de página y el espacio extra
-    <div style={{marginTop: '8000px'}} id="ContactInfo"  
+    <div style={{marginTop: '300px'}} id="ContactInfo"  
     >
       <h3>Información de Soporte y Empresa</h3>
       <ul style={{ listStyle: 'none', padding: 0 }}>

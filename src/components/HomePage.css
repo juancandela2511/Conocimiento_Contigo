@@ -1,0 +1,136 @@
+/*
+  Archivo: HomePage.css
+  Función: Estilos para la página principal, incluyendo la cuadrícula de cursos y el panel de anuncios.
+  Tipo: Frontend.
+*/
+
+/* Define la estructura principal de la página con dos columnas. */
+.homepage-layout {
+  display: flex;
+  gap: 40px;
+  padding: 40px 20px;
+  font-family: 'Segoe UI', sans-serif;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* Área principal que contiene la cuadrícula de cursos. Crecerá para ocupar el espacio disponible. */
+.main-content-area {
+  flex-grow: 1; /* Ocupa todo el espacio disponible */
+}
+
+/* Cuadrícula que organiza las tarjetas de los cursos de forma responsiva. */
+.courses-grid {
+  display: grid;
+  /* Esta es la línea clave: crea columnas que se ajustan automáticamente.
+     Cada columna tendrá un mínimo de 280px y se expandirá para llenar el espacio. */
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 25px;
+}
+
+/* Estilo base para cada tarjeta de curso. */
+.course-card {
+  border: none;
+  padding: 25px;
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  color: white;
+  background-size: cover;
+  background-position: center;
+  min-height: 250px; /* Asegura una altura mínima para todas las tarjetas */
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* Efecto visual al pasar el ratón sobre una tarjeta. */
+.course-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.12);
+}
+
+/* Estilo para el título dentro de la tarjeta. */
+.card-content h3 {
+  margin: 0 0 10px 0;
+  font-size: 1.4rem;
+  text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.6);
+}
+
+/* Contenedor para los botones de acción ('Editar', 'Acceder'). */
+.card-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+/* Estilo base para los botones de acción. */
+.action-button {
+  width: 100%;
+  padding: 12px 20px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: bold;
+  font-size: 1rem;
+  transition: background-color 0.2s ease;
+}
+
+/* Estilo específico para el botón de editar. */
+.edit-button {
+  background-color: #ff9800;
+  color: white;
+}
+
+.edit-button:hover {
+  background-color: #e68900;
+}
+
+/* Estilo específico para el botón de acceder. */
+.access-button {
+  background-color: #052fe9;
+  color: #f6efef;
+}
+
+.access-button:hover {
+  background-color: #0428c9;
+}
+
+/* Panel lateral de anuncios. */
+.announcements-panel {
+  width: 300px; /* Ancho fijo */
+  position: fixed; /* Se queda fijo en la ventana del navegador. */
+  top: 90px;
+  right: 40px;
+  height: fit-content; /* Se ajusta a la altura de su contenido */
+  background-color: #fff3cd; /* Color naranja claro tipo nota */
+  border-radius: 16px;
+  padding: 25px;
+  border: 1px solid #ffeeba;
+}
+
+/* Título del panel de anuncios. */
+.announcements-panel h2 {
+  margin-top: 0;
+  color: #856404; /* Color de texto más oscuro para el título */
+  border-bottom: 2px solid #ffeeba;
+  padding-bottom: 10px;
+}
+
+/* Contenedor para cada anuncio individual. */
+.announcement-item {
+  margin-bottom: 20px;
+}
+
+.announcement-item h4 {
+  margin: 0 0 5px 0;
+  color: #c27803; /* Un tono naranja más intenso */
+}
+
+.announcement-item p {
+  margin: 0;
+  color: #57534e; /* Un gris oscuro que combina bien */
+  font-size: 0.9rem;
+  line-height: 1.5;
+}

@@ -1,0 +1,152 @@
+/* Botón tipo logo para abrir el chat */
+.chat-ia-logo-button {
+  position: fixed;
+  bottom: 40px;
+  right: 40px;
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background-color: #052fe9;
+  color: white;
+  border: none;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  z-index: 1500;
+  transition: transform 0.2s ease;
+}
+
+.chat-ia-logo-button:hover {
+  transform: scale(1.1);
+}
+
+/* Ventana principal del chat */
+.chat-ia-window {
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+  width: 370px;
+  height: 500px;
+  background-color: white;
+  border-radius: 15px;
+  border: 1px solid #e0e0e0; /* Añadimos un borde sutil */
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1); /* Sombra más suave */
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  z-index: 1500;
+  animation: slide-up 0.3s ease-out;
+}
+
+@keyframes slide-up {
+  from {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+/* Cabecera del chat */
+.chat-ia-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 20px; /* Más espacio vertical */
+  background-color: #f5f7fa; /* Un gris azulado muy claro */
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.chat-ia-header h3 {
+  margin: 0;
+  font-size: 1.1rem;
+  color: #333;
+}
+
+.chat-ia-header button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 5px;
+  color: #888;
+}
+
+/* Área de mensajes */
+.chat-ia-messages {
+  flex-grow: 1;
+  padding: 20px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.chat-message {
+  display: flex;
+  gap: 10px;
+  max-width: 85%;
+}
+
+.chat-message p {
+  margin: 0;
+  padding: 10px 15px;
+  border-radius: 18px;
+  line-height: 1.4;
+}
+
+.chat-message.user {
+  align-self: flex-end;
+}
+
+.chat-message.user p {
+  background-color: #052fe9;
+  color: white;
+  border-bottom-right-radius: 4px;
+}
+
+.chat-message.ai {
+  align-self: flex-start;
+}
+
+.chat-message.ai p {
+  background-color: #f1f1f1;
+  color: #333;
+  border-bottom-left-radius: 4px;
+}
+
+.ai-icon {
+  flex-shrink: 0;
+  color: #888;
+}
+
+/* Formulario de entrada */
+.chat-ia-input-form {
+  display: flex;
+  padding: 15px;
+  border-top: 1px solid #e0e0e0;
+}
+
+.chat-ia-input-form input {
+  flex-grow: 1;
+  border: 1px solid #ccc;
+  border-radius: 20px;
+  padding: 10px 15px;
+  margin-right: 10px;
+}
+
+.chat-ia-input-form button {
+  background-color: #052fe9;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+}
