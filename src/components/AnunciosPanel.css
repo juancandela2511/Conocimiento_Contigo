@@ -1,0 +1,75 @@
+/*
+  Archivo: AnunciosPanel.css
+  Función: Estilos para el panel de anuncios con efecto de nota adhesiva.
+  Tipo: Frontend.
+*/
+
+.announcements-panel {
+  width: 300px; /* Ancho fijo */
+  position: fixed; /* Se queda fijo en la ventana del navegador. */
+  top: 90px;
+  right: 40px;
+  padding: 25px;
+  /* Estilo de nota adhesiva */
+  background-color: #ffc; /* Amarillo clásico de nota */
+  font-family: 'Comic Sans MS', 'Chalkduster', cursive; /* Fuente tipo manuscrita */
+  transform: rotate(2deg); /* Ligera rotación */
+  box-shadow: 5px 5px 15px rgba(0,0,0,0.2); /* Sombra para dar profundidad */
+  transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+  border-bottom-right-radius: 60px 5px; /* Efecto de esquina doblada */
+  border-bottom-left-radius: 5px;
+}
+
+/* Efecto al pasar el ratón sobre la nota */
+.announcements-panel:hover {
+  transform: rotate(0deg) scale(1.05); /* Se endereza y agranda un poco */
+  box-shadow: 10px 10px 20px rgba(0,0,0,0.3);
+  z-index: 10; /* Se pone al frente */
+}
+
+/* --- Dark Mode --- */
+.dark-mode .announcements-panel {
+  background-color: #2c2c2a; /* Un amarillo muy oscuro y desaturado */
+  box-shadow: 5px 5px 15px rgba(0,0,0,0.5);
+}
+
+
+/* Título del panel de anuncios. */
+.announcements-panel h2 {
+  margin-top: 0;
+  color: #555;
+  border-bottom: 1px solid rgba(0,0,0,0.1);
+  padding-bottom: 10px;
+  font-size: 1.5rem;
+}
+
+/* --- Dark Mode --- */
+.dark-mode .announcements-panel h2 {
+  color: #ffc; /* Amarillo claro para el título en modo oscuro */
+  border-bottom: 1px solid rgba(255,255,255,0.2);
+}
+
+/* Contenedor para cada anuncio individual. */
+.announcement-item {
+  margin-bottom: 20px;
+}
+
+.announcement-item h4 {
+  margin: 0 0 5px 0;
+  color: #333;
+}
+
+.dark-mode .announcement-item h4 {
+  color: #eee;
+}
+
+.announcement-item p {
+  margin: 0;
+  color: #444;
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+
+.dark-mode .announcement-item p {
+  color: #ccc;
+}

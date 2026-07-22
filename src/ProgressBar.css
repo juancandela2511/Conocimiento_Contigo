@@ -1,0 +1,28 @@
+/*
+  Archivo: ProgressBar.css
+  Función: Estilos para el componente de barra de progreso.
+  Tipo: Frontend.
+*/
+
+.progress-bar-container {
+  width: 100%;
+  background-color: #e9ecef;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.dark-mode .progress-bar-container {
+  background-color: #4a5568;
+}
+
+.progress-bar {
+  height: 24px;
+  line-height: 24px;
+  text-align: center;
+  color: white;
+  background-color: #052fe9;
+  transition: width 0.4s ease;
+  font-size: 0.8rem;
+  font-weight: bold;
+  border-radius: 8px;
+}

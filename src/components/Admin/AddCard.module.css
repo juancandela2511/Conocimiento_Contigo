@@ -23,6 +23,11 @@
   animation: slide-down 0.3s ease-out;
 }
 
+.dark-mode .modalContent {
+  background-color: #1e293b; /* slate-800 */
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+}
+
 .addForm {
   display: flex;
   flex-direction: column;
@@ -43,6 +48,10 @@
   color: #333;
 }
 
+.dark-mode .modalHeader h3 {
+  color: #e2e8f0; /* slate-200 */
+}
+
 .closeButton {
   background: none;
   border: none;
@@ -53,6 +62,10 @@
   line-height: 1;
 }
 
+.dark-mode .closeButton {
+  color: #94a3b8; /* slate-400 */
+}
+
 .addForm input,
 .addForm textarea {
   width: 100%;
@@ -61,6 +74,13 @@
   border: 1px solid #ccc;
   font-size: 1rem;
   box-sizing: border-box;
+}
+
+.dark-mode .addForm input,
+.dark-mode .addForm textarea {
+  background-color: #334155; /* slate-700 */
+  border-color: #475569; /* slate-600 */
+  color: #f1f5f9; /* slate-100 */
 }
 
 .saveButton {

@@ -35,7 +35,6 @@
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1); /* Sombra más suave */
   display: flex;
   flex-direction: column;
-  overflow: hidden;
   z-index: 1500;
   animation: slide-up 0.3s ease-out;
 }
@@ -54,11 +53,12 @@
 /* Cabecera del chat */
 .chat-ia-header {
   display: flex;
-  justify-content: space-between;
+  justify-content: center; /* Centra el título */
   align-items: center;
   padding: 15px 20px; /* Más espacio vertical */
   background-color: #f5f7fa; /* Un gris azulado muy claro */
   border-bottom: 1px solid #e0e0e0;
+  position: relative; /* Necesario para el botón de cerrar */
 }
 
 .chat-ia-header h3 {
@@ -73,6 +73,21 @@
   cursor: pointer;
   padding: 5px;
   color: #888;
+  position: absolute; /* Lo sacamos del flujo para centrar el título */
+  right: 15px;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+/* Avatar de la IA que se superpone en la esquina */
+.chat-ia-avatar {
+  position: absolute;
+  top: -40px;
+  left: -25px;
+  width: 90px;
+  height: 90px;
+  z-index: 1501; /* Por encima de la ventana del chat */
+  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.25)); /* Sombra suave para efecto sticker */
 }
 
 /* Área de mensajes */
@@ -149,4 +164,44 @@
   justify-content: center;
   align-items: center;
   cursor: pointer;
+}
+
+/* --- Dark Mode --- */
+
+.dark-mode .chat-ia-window {
+  background-color: #1e293b; /* slate-800 */
+  border-color: #334155; /* slate-700 */
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+}
+
+.dark-mode .chat-ia-header {
+  background-color: #111827; /* slate-900 */
+  border-bottom-color: #334155; /* slate-700 */
+}
+
+.dark-mode .chat-ia-header h3 {
+  color: #e2e8f0; /* slate-200 */
+}
+
+.dark-mode .chat-ia-header button {
+  color: #94a3b8; /* slate-400 */
+}
+
+.dark-mode .chat-message.ai p {
+  background-color: #334155; /* slate-700 */
+  color: #f1f5f9; /* slate-100 */
+}
+
+.dark-mode .ai-icon {
+  color: #94a3b8; /* slate-400 */
+}
+
+.dark-mode .chat-ia-input-form {
+  border-top-color: #334155; /* slate-700 */
+}
+
+.dark-mode .chat-ia-input-form input {
+  background-color: #111827; /* slate-900 */
+  border-color: #334155; /* slate-700 */
+  color: #f1f5f9; /* slate-100 */
 }

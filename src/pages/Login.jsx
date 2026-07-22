@@ -1,7 +1,7 @@
 /* Archivo: Login.jsx - Gestiona la interfaz y lógica de autenticación (Login/Registro) del usuario. */
 
 // Importa el hook para manejar el ciclo de vida del componente y el estado local de React.
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 // "Trae las herramientas básicas de React para controlar datos y efectos secundarios."
 
 // Importa la instancia configurada de Supabase para realizar consultas a los servicios de Backend.
@@ -17,62 +17,48 @@ import './Login.css';
 // "Define cómo se ve la página, colores, tamaños y posiciones."
 
 // Importa el componente de pantalla de carga para mejorar la experiencia de usuario (UX).
-import Loading from '../components/Loading';
+import Cargando from '../components/Loading';
 // "Un aviso visual que muestra que algo está cargando."
 
 // Define la función principal del componente Login.
-function Login() {
+function InicioSesion() {
   // "Aquí empieza el código que crea la pantalla de inicio de sesión."
 
   // Define un estado booleano para alternar entre el formulario de inicio de sesión y registro.
-  const [esRegistro, setEsRegistro] = useState(false);
+  const [esRegistro, definirEsRegistro] = useState(false);
   // "Si es verdadero, mostramos el registro; si no, el inicio de sesión."
 
   // Define el estado para almacenar el correo electrónico ingresado en el input.
-  const [email, setEmail] = useState('');
+  const [correo, definirCorreo] = useState('');
   // "Guarda lo que el usuario escribe en la casilla del correo."
 
   // Define el estado para almacenar la contraseña ingresada en el input.
-  const [password, setPassword] = useState('');
+  const [contrasena, definirContrasena] = useState('');
   // "Guarda la clave secreta que el usuario escribe."
 
   // Define el estado para almacenar el nombre de usuario (solo usado en registro).
-  const [username, setUsername] = useState('');
+  const [nombreUsuario, definirNombreUsuario] = useState('');
   // "Guarda el apodo que el usuario quiere ponerse."
 
-  // Define el estado para manejar el modo de carga (spinner).
-  const [isLoading, setIsLoading] = useState(true);
+  // Define el estado para manejar el modo de carga (spinner) durante el envío del formulario.
+  const [estaCargando, definirEstaCargando] = useState(false);
   // "Indica si la aplicación está 'trabajando' en el fondo para mostrar el cargador."
     
-  // Define un efecto que se ejecuta una vez al montar el componente.
-  useEffect(() => {
-    // "Configura una acción automática que sucede apenas abre la pantalla."
-    
-    // Configura un temporizador para desactivar el estado de carga después de 1.5 segundos.
-    const timer = setTimeout(() => setIsLoading(false), 1500);
-    // "Espera segundo y medio y quita la pantalla de 'cargando'."
-    
-    // Define la función de limpieza para eliminar el temporizador si el componente se desmonta.
-    return () => clearTimeout(timer);
-    // "Si el usuario cambia de página muy rápido, cancela el contador para no gastar recursos."
-  }, []);
-
   // Inicializa el hook de navegación.
-  const navigate = useNavigate();
+  const navegar = useNavigate();
   // "Prepara la herramienta que nos permite redirigir al usuario."
 
   // Define la función asíncrona para manejar el envío del formulario.
-  const handleAuth = async (e) => {
+  const manejarAutenticacion = async (e) => {
     // "Esta función se dispara cuando presionan el botón de enviar."
     
     // Previene el comportamiento por defecto del formulario (recarga de página).
     e.preventDefault();
     // "Evita que la página se reinicie sola al dar clic."
     
-    // Activa el estado de carga antes de iniciar la solicitud a Supabase.
-    setIsLoading(true);
-    // "Muestra el indicador de carga porque vamos a enviar datos a la red."
-    
+    definirEstaCargando(true);
+    const tiempoInicio = Date.now();
+    // "Muestra el indicador de carga y guarda el tiempo de inicio."
     try {
       // Inicia el bloque para capturar posibles errores de red o base de datos.
       // "Intenta hacer lo siguiente, y si sale mal, ve al bloque 'catch'."
@@ -82,10 +68,10 @@ function Login() {
         // "Si estamos en el modo de crear cuenta nueva..."
         
         // Llama a Supabase Auth para crear el usuario en el sistema de autenticación.
-        const { data, error } = await supabase.auth.signUp({
-          email,
-          password,
-          options: { data: { Usuario: username } },
+        const { data: datos, error } = await supabase.auth.signUp({
+          email: correo,
+          password: contrasena,
+          options: { data: { Usuario: nombreUsuario } },
         });
         // "Le pide a Supabase que cree un usuario nuevo con ese correo y clave."
 
@@ -99,29 +85,29 @@ function Login() {
           const { error: insertError } = await supabase
             .from('Usuario')
             .insert([{
-              id: data.user.id,
-              Usuario: username,
+              id: datos.user.id,
+              Usuario: nombreUsuario,
               profile: 'usuario',
             }]);
           
           if (insertError) {
             // Si la inserción falla, muestra el error y detiene el flujo
-            console.error("Error al insertar en la tabla Usuario:", insertError);
+            console.error("Error al insertar en la tabla Usuario:", insertError.message);
             alert("Error al crear el perfil de usuario: " + insertError.message);
           } else {
             // Si todo fue exitoso.
             alert("¡Registro exitoso!");
             // "Le felicita por crear su cuenta."
-            setEsRegistro(false);
+            definirEsRegistro(false);
             // "Lo regresa al modo de inicio de sesión."
           }
         }
       } else {
         // Si no es registro, procede con el inicio de sesión.
         // "Si ya tiene cuenta, vamos a entrar."
-        const { data: authData, error } = await supabase.auth.signInWithPassword({
-          email,
-          password,
+        const { data: datosAutenticacion, error } = await supabase.auth.signInWithPassword({
+          email: correo,
+          password: contrasena,
         });
         // "Le pide a Supabase que valide si el correo y la clave son correctos."
         
@@ -132,28 +118,28 @@ function Login() {
           // "Muestra el aviso del error."
         } else {
           // Consulta la tabla 'Usuario' para obtener detalles adicionales del usuario autenticado.
-          const { data: userData, error: userError } = await supabase
+          const { data: datosUsuario, error: errorUsuario } = await supabase
             .from('Usuario')
             .select('Usuario')
-            .eq('id', authData.user.id)
+            .eq('id', datosAutenticacion.user.id)
             .single();
           // "Busca el nombre del usuario en nuestra tabla para saludarlo por su nombre."
           
           // Verifica si hubo un error al consultar la base de datos.
-          if (userError) {
+          if (errorUsuario) {
             // "Si no encontramos el nombre en nuestra tabla..."
-            console.error("Error al obtener nombre:", userError);
+            console.error("Error al obtener nombre:", errorUsuario);
             // "Registra el error en consola."
             alert('¡Bienvenido!');
             // "Aun así, le damos la bienvenida."
           } else {
             // Si la consulta fue exitosa.
-            alert('¡Bienvenido, ' + userData.Usuario + '!');
+            alert('¡Bienvenido, ' + datosUsuario.Usuario + '!');
             // "Lo saludamos personalmente por su nombre."
           }
           
           // Redirige al usuario a la página principal.
-          navigate('/');
+          navegar('/');
           // "Lo enviamos a la pantalla principal después de entrar."
         }
       }
@@ -162,16 +148,22 @@ function Login() {
       console.error(err);
       // "Si algo muy grave pasó, lo guardamos en la consola para analizarlo."
     } finally {
-      // Asegura que el estado de carga se desactive independientemente del resultado.
-      setIsLoading(false);
-      // "Apaga la pantalla de cargando pase lo que pase."
+      // Asegura que el estado de carga se desactive, pero esperando un mínimo de 2 segundos para mejorar la UX.
+      const tiempoTranscurrido = Date.now() - tiempoInicio;
+      const tiempoRestante = 2000 - tiempoTranscurrido;
+
+      if (tiempoRestante > 0) {
+        setTimeout(() => definirEstaCargando(false), tiempoRestante);
+      } else {
+        definirEstaCargando(false);
+      }
     }
   };
 
   // Condicional de renderizado: si está cargando, muestra el componente Loading.
-  if (isLoading) {
+  if (estaCargando) {
     // "Mientras la aplicación se prepara..."
-    return <Loading />;
+    return <Cargando />;
     // "...mostramos la pantalla de carga."
   }
 
@@ -184,7 +176,7 @@ function Login() {
         {/* "Caja que muestra el logo de la marca." */}
       </div>
       <div className="panel-formulario">
-        <form onSubmit={handleAuth}>
+        <form onSubmit={manejarAutenticacion}>
           <h1>{esRegistro ? "Registrarse" : "Iniciar Sesión"}</h1>
           {/* "Título que cambia según si va a registrarse o entrar." */}
           
@@ -192,7 +184,7 @@ function Login() {
             <input
               type="text"
               placeholder="Nombre de usuario"
-              onChange={(e) => setUsername(e.target.value)}
+              onChange={(e) => definirNombreUsuario(e.target.value)}
             />
           )}
           {/* "Casilla de nombre, solo aparece cuando el usuario se está registrando." */}
@@ -200,14 +192,14 @@ function Login() {
           <input
             type="email"
             placeholder="Correo"
-            onChange={(e) => setEmail(e.target.value)}
+            onChange={(e) => definirCorreo(e.target.value)}
           />
           {/* "Casilla para escribir el correo electrónico." */}
           
           <input
             type="password"
             placeholder="Contraseña"
-            onChange={(e) => setPassword(e.target.value)}
+            onChange={(e) => definirContrasena(e.target.value)}
           />
           {/* "Casilla para escribir la clave privada." */}
           
@@ -215,7 +207,7 @@ function Login() {
           {/* "Botón para ejecutar el registro o el inicio de sesión." */}
         </form>
 
-        <p onClick={() => setEsRegistro(!esRegistro)}>
+        <p onClick={() => definirEsRegistro(!esRegistro)}>
           {esRegistro ? "¿Ya tienes cuenta? Inicia sesión" : "¿No tienes cuenta? Regístrate"}
         </p>
         {/* "Texto clicable para saltar entre el formulario de registro y el de login." */}
@@ -225,5 +217,5 @@ function Login() {
 }
 
 // Exporta el componente para poder usarlo en otras partes de la aplicación.
-export default Login;
+export default InicioSesion;
 // "Hace que este componente esté disponible para el resto del sitio."

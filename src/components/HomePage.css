@@ -12,6 +12,13 @@
   font-family: 'Segoe UI', sans-serif;
   width: 100%;
   box-sizing: border-box;
+  background-color: #f4f7f9; /* Nuevo color de fondo para el modo claro */
+}
+
+/* --- Dark Mode --- */
+.dark-mode .homepage-layout {
+  background-color: #1a202c; /* Cambiado a un azul noche oscuro */
+  color: #e2e8f0; /* Un gris más claro para mejor lectura */
 }
 
 /* Área principal que contiene la cuadrícula de cursos. Crecerá para ocupar el espacio disponible. */
@@ -44,10 +51,23 @@
   transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
+/* --- Dark Mode --- */
+.dark-mode .course-card {
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+  /* El fondo es una imagen, pero podemos oscurecer el texto para mejor contraste */
+  text-shadow: 1px 1px 5px rgba(0, 0, 0, 0.8);
+}
+
 /* Efecto visual al pasar el ratón sobre una tarjeta. */
 .course-card:hover {
   transform: translateY(-5px);
   box-shadow: 0 12px 24px rgba(0, 0, 0, 0.12);
+}
+
+/* --- Dark Mode --- */
+.dark-mode .course-card:hover {
+  transform: translateY(-8px) scale(1.02); /* Un poco más de elevación y zoom */
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6), 0 0 20px rgba(88, 113, 255, 0.2); /* Sombra más profunda y un resplandor azulado */
 }
 
 /* Estilo para el título dentro de la tarjeta. */
@@ -55,6 +75,11 @@
   margin: 0 0 10px 0;
   font-size: 1.4rem;
   text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.6);
+}
+
+/* --- Dark Mode --- */
+.dark-mode .card-content h3 {
+  color: #ffffff;
 }
 
 /* Contenedor para los botones de acción ('Editar', 'Acceder'). */
@@ -74,6 +99,10 @@
   cursor: pointer;
   font-weight: bold;
   font-size: 1rem;
+  text-align: center; /* Asegura que el texto esté centrado */
+  display: block; /* Hace que el enlace ocupe todo el ancho */
+  text-decoration: none; /* Quita el subrayado de los enlaces */
+  box-sizing: border-box; /* Asegura que el padding no desborde el contenedor */
   transition: background-color 0.2s ease;
 }
 
@@ -87,6 +116,16 @@
   background-color: #e68900;
 }
 
+/* --- Dark Mode --- */
+.dark-mode .edit-button {
+  background-color: #d97706; /* amber-600 */
+  color: white;
+}
+
+.dark-mode .edit-button:hover {
+  background-color: #b45309; /* amber-700 */
+}
+
 /* Estilo específico para el botón de acceder. */
 .access-button {
   background-color: #052fe9;
@@ -97,40 +136,12 @@
   background-color: #0428c9;
 }
 
-/* Panel lateral de anuncios. */
-.announcements-panel {
-  width: 300px; /* Ancho fijo */
-  position: fixed; /* Se queda fijo en la ventana del navegador. */
-  top: 90px;
-  right: 40px;
-  height: fit-content; /* Se ajusta a la altura de su contenido */
-  background-color: #fff3cd; /* Color naranja claro tipo nota */
-  border-radius: 16px;
-  padding: 25px;
-  border: 1px solid #ffeeba;
+/* --- Dark Mode --- */
+.dark-mode .access-button {
+  background-color: #4f46e5; /* indigo-600 */
+  color: white;
 }
 
-/* Título del panel de anuncios. */
-.announcements-panel h2 {
-  margin-top: 0;
-  color: #856404; /* Color de texto más oscuro para el título */
-  border-bottom: 2px solid #ffeeba;
-  padding-bottom: 10px;
-}
-
-/* Contenedor para cada anuncio individual. */
-.announcement-item {
-  margin-bottom: 20px;
-}
-
-.announcement-item h4 {
-  margin: 0 0 5px 0;
-  color: #c27803; /* Un tono naranja más intenso */
-}
-
-.announcement-item p {
-  margin: 0;
-  color: #57534e; /* Un gris oscuro que combina bien */
-  font-size: 0.9rem;
-  line-height: 1.5;
+.dark-mode .access-button:hover {
+  background-color: #4338ca; /* indigo-700 */
 }

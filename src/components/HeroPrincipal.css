@@ -3,8 +3,8 @@
   background-color: #008cff; /* Color base por si la animación no carga */
   background-image: 
     radial-gradient(white 0.5px, transparent 0.5px), /* Capa de puntos blancos */
-    linear-gradient(270deg, #008cff, #2b52ff, #0004ff); /* Capa de degradado animado */
-  background-size: 600% 600%;
+    linear-gradient(270deg, #61b2f4, #2b52ff, #0004ff); /* Capa de degradado animado */
+  background-size: 10px 10px, 600% 600%; /* El primer tamaño es para los puntos, el segundo para el degradado */
   animation: fondoMovible 15s ease infinite; 
   padding: 60px 20px;
   display: flex;
@@ -13,6 +13,15 @@
   min-height: 250px; /* Reduje un poco la altura mínima al eliminar el título */
 }
 
+/* --- Dark Mode --- */
+.dark-mode .hero-modern {
+  background-color: #f6eaea; /* Color de respaldo para el modo oscuro */
+  background-image: 
+    radial-gradient(rgba(250, 246, 246, 0.1) 0.5px, transparent 0.5px), /* Estrellas más sutiles */
+    linear-gradient(270deg, #150f27, #1d25b1, #050e6c); /* Degradado noche */
+  background-size: 15px 15px, 400% 400%; /* Tamaño para estrellas y degradado */
+  animation: fondoMovible 20s ease infinite; /* Reutilizamos la animación, pero más lenta */
+}
 .hero-inner {
   max-width: 500px; /* Reduje un poco el ancho para centrar mejor el logo */
   text-align: center;
@@ -21,11 +30,18 @@
   padding: 40px;
   border-radius: 24px;
   border: 1px solid rgba(255, 255, 255, 0.5);
-  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 10px 25px -5px rgba(247, 0, 0, 0.1);
 }
 
 .logo-container {
   margin-bottom: 20px;
+}
+
+/* --- Dark Mode --- */
+.dark-mode .hero-inner {
+  background: rgba(205, 211, 211, 0.8);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
 }
 
 .floating-logo {
@@ -35,10 +51,15 @@
 }
 
 .hero-subtitle {
-  color: #64748b;
+  color: #066af7;
   font-size: 1.1rem;
   margin: 0;
   line-height: 1.6;
+}
+
+/* --- Dark Mode --- */
+.dark-mode .hero-subtitle {
+  color: #191d21;
 }
 
 @keyframes float {

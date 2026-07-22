@@ -1,0 +1,73 @@
+/*
+  Archivo: LogroItem.css
+  Función: Estilos para la tarjeta de un logro individual.
+  Tipo: Frontend.
+*/
+.logro-card {
+  background-color: white;
+  border-radius: 16px;
+  padding: 25px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  border: 1px solid #eee;
+}
+
+/* --- Dark Mode --- */
+.dark-mode .logro-card {
+  background-color: #1e293b; /* slate-800 */
+  border: 1px solid #334155; /* slate-700 */
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+
+
+.logro-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 12px 24px rgba(5, 47, 233, 0.15);
+}
+
+.logro-icon-container {
+  width: 90px;
+  height: 90px;
+  margin-bottom: 20px;
+}
+
+.logro-icon {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  filter: drop-shadow(0 4px 6px rgba(0,0,0,0.1)); /* El filtro puede funcionar bien en ambos modos */
+}
+
+/* --- Dark Mode --- */
+.dark-mode .logro-icon {
+  filter: drop-shadow(0 4px 6px rgba(0,0,0,0.4)) brightness(0.9);
+}
+
+.logro-title {
+  font-size: 1.3rem;
+  font-weight: bold;
+  margin: 0 0 8px 0;
+  color: #333;
+}
+
+/* --- Dark Mode --- */
+.dark-mode .logro-title {
+  color: #e2e8f0; /* slate-200 */
+}
+
+
+.logro-description {
+  font-size: 0.95rem;
+  color: #666;
+  line-height: 1.5;
+  margin: 0;
+}
+
+/* --- Dark Mode --- */
+.dark-mode .logro-description {
+  color: #94a3b8; /* slate-400 */
+}

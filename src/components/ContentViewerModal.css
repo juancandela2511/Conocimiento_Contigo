@@ -1,0 +1,160 @@
+/*
+  Archivo: ContentViewerModal.css
+  Función: Estilos para el modal que muestra el contenido de un curso.
+  Tipo: Frontend.
+*/
+.content-viewer-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.8);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 3000;
+  padding: 20px;
+  backdrop-filter: blur(5px);
+  animation: fadeIn 0.3s ease-out;
+}
+
+.content-viewer-modal {
+  background: #fff;
+  border-radius: 16px;
+  width: 90%;
+  max-width: 900px;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+  overflow: hidden; /* Importante para el scroll interno */
+}
+
+/* --- Dark Mode --- */
+.dark-mode .content-viewer-modal {
+  background: #1e293b; /* slate-800 */
+  box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+}
+
+
+.content-viewer-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 30px;
+  border-bottom: 1px solid #eee;
+}
+
+/* --- Dark Mode --- */
+.dark-mode .content-viewer-header {
+  border-bottom: 1px solid #334155; /* slate-700 */
+}
+
+
+.content-viewer-header h2 {
+  margin: 0;
+  font-size: 1.6rem;
+  color: #333;
+}
+
+/* --- Dark Mode --- */
+.dark-mode .content-viewer-header h2 {
+  color: #e2e8f0; /* slate-200 */
+}
+
+.content-viewer-header .close-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #888;
+  padding: 5px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.2s, color 0.2s;
+}
+
+/* --- Dark Mode --- */
+.dark-mode .content-viewer-header .close-btn {
+  color: #94a3b8; /* slate-400 */
+}
+
+.content-viewer-header .close-btn:hover {
+  background-color: #f0f0f0;
+  color: #333;
+}
+
+/* --- Dark Mode --- */
+.dark-mode .content-viewer-header .close-btn:hover {
+  background-color: #334155; /* slate-700 */
+  color: #f1f5f9; /* slate-100 */
+}
+
+.content-viewer-body {
+  padding: 30px;
+  overflow-y: auto; /* Permite el scroll si el contenido es muy largo */
+  flex-grow: 1;
+}
+
+/* --- Dark Mode --- */
+.dark-mode.content-viewer-body {
+  /* El color de fondo se hereda del modal, no es necesario cambiarlo aquí */
+    color: #191d21;
+}
+
+
+/* Estilo "Cuaderno" para las lecturas */
+.lectura-viewer {
+  background-color: #fdfdf6;
+  border-left: 3px solid #ffaaab;
+  padding: 25px 30px;
+  font-family: 'Georgia', serif;
+  font-size: 1.1rem;
+  line-height: 1.8;
+  color: #444;
+  border-radius: 0 8px 8px 0;
+}
+
+/* --- Dark Mode --- */
+.dark-mode .lectura-viewer {
+  background-color: #111827; /* slate-900 */
+  border-left: 3px solid #f87171; /* red-400 */
+  color: #cbd5e1; /* slate-300 */
+}
+
+
+/* Animaciones para la aparición del modal */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* --- Estilos para el cuestionario superpuesto en el video --- */
+
+.quiz-in-video-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.85);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 3001; /* Por encima del video pero dentro del modal principal */
+  animation: fadeIn 0.2s ease-out;
+}
+
+.quiz-in-video-modal {
+  background: #fff;
+  padding: 30px;
+  border-radius: 12px;
+  width: 90%;
+  max-width: 500px;
+}
+
+.dark-mode .quiz-in-video-modal {
+  background: #1e293b; /* slate-800 */
+}

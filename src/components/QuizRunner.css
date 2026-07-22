@@ -1,0 +1,220 @@
+/*
+  Archivo: QuizRunner.css
+  Función: Estilos para la interfaz de toma de cuestionarios.
+  Tipo: Frontend.
+*/
+
+.quiz-runner {
+  display: flex;
+  flex-direction: column;
+  gap: 25px;
+}
+
+/* --- Dark Mode --- */
+.dark-mode .quiz-runner{
+  /* El fondo lo hereda del modal, no es necesario cambiarlo */ 
+   color: #191d21;
+}
+
+
+.quiz-progress {
+  text-align: center;
+  font-size: 0.9rem;
+  color: #666;
+  font-weight: bold;
+}
+
+/* --- Dark Mode --- */
+.dark-mode .quiz-progress {
+  color: #94a3b8; /* slate-400 */
+}
+
+.quiz-question {
+  font-size: 1.4rem;
+  text-align: center;
+  color: #333;
+  margin: 0;
+}
+
+/* --- Dark Mode --- */
+.dark-mode .quiz-question {
+  color: #e2e8f0; /* slate-200 */
+}
+
+.quiz-options {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.quiz-option-btn {
+  width: 100%;
+  padding: 15px;
+  background-color: #f8f9fa;
+  border: 2px solid #dee2e6;
+  border-radius: 8px;
+  text-align: left;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+/* --- Dark Mode --- */
+.dark-mode .quiz-option-btn {
+  background-color: #334155; /* slate-700 */
+  border-color: #475569; /* slate-600 */
+  color: #cbd5e1; /* slate-300 */
+}
+
+.quiz-option-btn:hover {
+  background-color: #e9ecef;
+  border-color: #adb5bd;
+}
+
+/* --- Dark Mode --- */
+.dark-mode .quiz-option-btn:hover {
+  background-color: #475569; /* slate-600 */
+  border-color: #64748b; /* slate-500 */
+}
+
+.quiz-option-btn.selected {
+  background-color: #eef2ff;
+  border-color: #4338ca;
+  color: #4338ca;
+  font-weight: bold;
+}
+
+/* --- Dark Mode --- */
+.dark-mode .quiz-option-btn.selected {
+  background-color: #3a3897;
+  border-color: #6c63ff;
+  color: #fff;
+}
+
+.quiz-next-btn {
+  align-self: center;
+  margin-top: 20px;
+}
+
+.quiz-next-btn:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+/* --- Estilos para los resultados --- */
+
+.quiz-results {
+  text-align: center;
+}
+
+/* --- Dark Mode --- */
+.dark-mode .quiz-results {
+  color: #cbd5e1; /* slate-300 */
+}
+
+.results-approved {
+  color: #198754;
+}
+
+/* --- Dark Mode --- */
+.dark-mode .results-approved {
+  color: #28a745; /* Un verde más brillante */
+}
+
+.results-failed {
+  color: #dc3545;
+}
+
+.results-score {
+  font-size: 1.2rem;
+  margin: 10px 0;
+}
+
+/* --- Dark Mode --- */
+.dark-mode .results-score {
+  color: #e2e8f0; /* slate-200 */
+}
+
+.results-feedback {
+  font-size: 0.9rem;
+  color: #666;
+  margin-bottom: 30px;
+}
+
+/* --- Dark Mode --- */
+.dark-mode .results-feedback {
+  color: #94a3b8; /* slate-400 */
+}
+
+
+.results-summary {
+  text-align: left;
+  margin-bottom: 30px;
+  border-top: 1px solid #eee;
+  padding-top: 20px;
+}
+
+/* --- Dark Mode --- */
+.dark-mode .results-summary {
+  border-top: 1px solid #334155; /* slate-700 */
+}
+
+.results-summary h4 {
+  margin-bottom: 15px;
+}
+
+/* --- Dark Mode --- */
+.dark-mode .results-summary h4 {
+  color: #e2e8f0; /* slate-200 */
+}
+
+
+.result-item {
+  margin-bottom: 15px;
+  padding-bottom: 15px;
+  border-bottom: 1px solid #f1f1f1;
+}
+
+/* --- Dark Mode --- */
+.dark-mode .result-item {
+  border-bottom: 1px solid #334155; /* slate-700 */
+}
+
+.result-question {
+  font-weight: bold;
+  margin: 0 0 8px 0;
+}
+
+/* --- Dark Mode --- */
+.dark-mode .result-question {
+  color: #cbd5e1; /* slate-300 */
+}
+
+
+.result-answer {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px;
+  border-radius: 6px;
+}
+
+.result-answer.correct {
+  background-color: #e6f9f0;
+  color: #198754;
+}
+/* --- Dark Mode --- */
+.dark-mode .result-answer.correct {
+  background-color: #064e3b; /* green-900 */
+  color: #6ee7b7; /* emerald-300 */
+}
+
+.result-answer.incorrect {
+  background-color: #fdeeee;
+  color: #dc3545;
+}
+/* --- Dark Mode --- */
+.dark-mode .result-answer.incorrect {
+  background-color: #7f1d1d; /* red-900 */
+  color: #fca5a5; /* red-300 */
+}

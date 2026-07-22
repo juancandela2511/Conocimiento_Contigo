@@ -74,8 +74,9 @@ export default function ChatIA() {
   // Renderizado del componente de chat completo (Frontend).
   return (
     <div className="chat-ia-window">
+      <img src="/cerebrito.png" alt="Avatar de Cerebrito" className="chat-ia-avatar" />
       <div className="chat-ia-header">
-        <h3>Asistente IA</h3>
+        <h3>CEREBRITO</h3>
         <button onClick={() => setIsOpen(false)}><X size={20} /></button>
       </div>
       <div className="chat-ia-messages">

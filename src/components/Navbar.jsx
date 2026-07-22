@@ -6,17 +6,18 @@
 
 // Importaciones de React y librerías externas.
 import { Link } from 'react-router-dom';
-import { Home, LogIn, Info, Menu, Search, Shield, UserCircle } from 'lucide-react';
+import { Home, LogIn, Info, Menu, Search, UserCircle, Trophy, Users } from 'lucide-react';
 
 // Importaciones de archivos locales.
 import './Navbar.css';
 import { supabase } from '../services/supabaseClient';
+import ThemeSwitcher from './ThemeSwitcher'; // Importación sin extensión para consistencia
 
 // Definición del componente Navbar. Recibe props para funcionar.
-export default function Navbar({ isLoggedIn, alBuscar, alPresionarEnter, userRole }) {
+export default function BarraNavegacion({ sesionIniciada, alBuscar, alPresionarEnter, rolUsuario }) {
   
   // Lógica de Frontend: Si el usuario no ha iniciado sesión, no se muestra nada.
-  if (!isLoggedIn) return null;
+  if (!sesionIniciada) return null;
 
   // Lógica de Frontend que interactúa con el Backend.
   const handleLogout = async () => {
@@ -30,34 +31,49 @@ export default function Navbar({ isLoggedIn, alBuscar, alPresionarEnter, userRol
   return (
     <>
       {/* Barra de navegación principal, a la izquierda. */}
-      <nav className="Navbar-container">
+      <nav className="contenedor-barra-navegacion">
         
         {/* Icono que activa el menú al pasar el ratón. */}
-        <div className="menu-trigger">
+        <div className="activador-menu">
           <Menu size={28} />
         </div>
 
         {/* Contenido del menú que se expande. */}
-        <div className="menu-content">
+        <div className="contenido-menu">
           
           {/* Enlace a la página de inicio. */}
-          <Link to="/" className="nav-item">
+          <Link to="/" className="elemento-nav">
             <Home size={20} />
+            <span></span>
           </Link>
           
           {/* Enlace a la sección de soporte. */}
-          <Link to="/#soporte" className="nav-item">
+          <Link to="/#soporte" className="elemento-nav">
             <Info size={20} />
+            <span></span>
           </Link>
 
+          {/* Enlace condicional: 'Progreso' para admin, 'Logros' para usuario. */}
+          {rolUsuario === 'administrador' ? (
+            <Link to="/admin/progreso" className="elemento-nav">
+              <Users size={20} />
+              <span></span>
+            </Link>
+          ) : (
+            <Link to="/logros" className="elemento-nav">
+              <Trophy size={20} />
+              <span></span>
+            </Link>
+          )}
+
           {/* Componente de búsqueda. */}
-          <div className="search-container" onClick={(e) => e.stopPropagation()}>
+          <div className="contenedor-busqueda" onClick={(e) => e.stopPropagation()}>
             <Search size={20} />
             
             <input 
                type="text" 
                placeholder="Buscar..."
-               className="search-input"
+               className="input-busqueda"
                // Lógica de Frontend: Al escribir, se llama a la función 'alBuscar' del componente padre (App.jsx).
                onChange={(e) => alBuscar(e.target.value)}
                // Lógica de Frontend: Al presionar Enter, se llama a la función 'alPresionarEnter'.
@@ -73,21 +89,24 @@ export default function Navbar({ isLoggedIn, alBuscar, alPresionarEnter, userRol
       </nav>
 
       {/* Contenedor para los elementos fijos en la esquina superior derecha. */}
-      <div className="top-right-container">
+      <div className="contenedor-superior-derecho">
+        {/* Aquí colocamos el interruptor de tema, a la izquierda del rol de usuario. */}
+        <ThemeSwitcher />
+
         {/* Indicador de rol del usuario. */}
-        {userRole && (
+        {rolUsuario && (
           <div 
             // Lógica de Frontend: Aplica un estilo diferente si el rol es 'administrador' o 'usuario'.
-            className={`user-role-indicator ${
-              userRole === 'administrador' || userRole === 'usuario' ? 'admin-role-indicator' : ''
+            className={`indicador-rol-usuario ${
+              rolUsuario === 'administrador' || rolUsuario === 'usuario' ? 'indicador-rol-admin' : ''
             }`}
           >
             {/* Lógica de Frontend: Muestra 'aprendiz' si el rol es 'usuario', si no, muestra el rol tal cual. */}
-            <UserCircle size={20} /> <span>{userRole === 'usuario' ? 'aprendiz' : userRole}</span>
+            <UserCircle size={20} /> <span>{rolUsuario === 'usuario' ? 'aprendiz' : rolUsuario}</span>
           </div>
         )}
         {/* Botón para cerrar sesión. */}
-        <button onClick={handleLogout} className="logout-button-circle">
+        <button onClick={handleLogout} className="boton-cierre-sesion-circular">
           <LogIn size={20} />
         </button>
       </div>

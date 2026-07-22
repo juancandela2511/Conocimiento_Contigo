@@ -1,0 +1,83 @@
+/*
+  Archivo: ContactsInfo.css
+  Función: Estilos para el pie de página con información de contacto y soporte.
+  Tipo: Frontend.
+*/
+
+.info-contactos-container {
+  background-color: #f8f9fa;
+  padding: 60px 40px;
+  border-top: 1px solid #e9ecef;
+  font-family: 'Segoe UI', sans-serif;
+}
+
+.info-contactos-content {
+  max-width: 1200px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.info-contactos-content h2 {
+  font-size: 2.5rem;
+  color: #333;
+  margin-bottom: 20px;
+}
+
+.info-contactos-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 40px;
+  margin-top: 40px;
+}
+
+.info-contactos-item {
+  text-align: center;
+}
+
+.info-contactos-item .icon {
+  color: #052fe9;
+  margin-bottom: 15px;
+}
+
+.info-contactos-item h3 {
+  font-size: 1.3rem;
+  color: #444;
+  margin-bottom: 10px;
+}
+
+.info-contactos-item p,
+.info-contactos-item a {
+  font-size: 1rem;
+  color: #666;
+  line-height: 1.6;
+  text-decoration: none;
+}
+
+.info-contactos-item a:hover {
+  text-decoration: underline;
+}
+
+/* --- Dark Mode --- */
+
+.dark-mode .info-contactos-container {
+  background-color: #111827; /* slate-900 */
+  border-top-color: #334155; /* slate-700 */
+}
+
+.dark-mode .info-contactos-content h2,
+.dark-mode .info-contactos-item h3 {
+  color: #e2e8f0; /* slate-200 */
+}
+
+.dark-mode .info-contactos-item .icon {
+  color: #818cf8; /* indigo-400 */
+}
+
+.dark-mode .info-contactos-item p,
+.dark-mode .info-contactos-item a {
+  color: #94a3b8; /* slate-400 */
+}
+
+.dark-mode .info-contactos-item a:hover {
+  color: #a5b4fc; /* indigo-300 */
+}

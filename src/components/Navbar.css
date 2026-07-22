@@ -4,7 +4,7 @@
   Tipo: Frontend.
 */
 
-.Navbar-container {
+.contenedor-barra-navegacion {
   position: fixed;
   top: 20px;
   left: 20px;
@@ -15,44 +15,51 @@
   border-radius: 50px; /* Forma de píldora */
   transition: all 0.4s ease;
   z-index: 1000;
-  overflow: hidden; /* Mantiene los hijos ocultos al contraerse */
+}
+
+/* --- Dark Mode --- */
+.dark-mode .contenedor-barra-navegacion {
+  background-color: #2d3748; /* Azul pizarra para consistencia con el tema oscuro */
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
 }
 
 /* Al pasar el ratón, la barra se expande para mostrar el contenido. */
-.Navbar-container:hover {
+.contenedor-barra-navegacion:hover {
   border-radius: 25px; /* Se vuelve un poco más cuadrado al expandir */
 }
 
 /* Estilo para la segunda barra de navegación (la de edición). */
 .editor-nav {
-  top: 90px; /* La posicionamos debajo de la barra principal (20px + altura + margen) */
+  top: 85px; /* La posicionamos debajo de la barra principal */
   background-color: #005f5e; /* Un color verde para diferenciarla */
 }
 
 /* Icono que dispara la animación del menú. */
-.menu-trigger {
+.activador-menu {
   color: rgb(255, 255, 255);
   cursor: pointer;
   display: flex;
 }
 
 /* Por defecto, el contenido del menú está oculto. */
-.menu-content {
+.contenido-menu {
   display: flex;
   max-width: 0;
   opacity: 0;
   transition: all 0.4s ease;
   white-space: nowrap; /* Evita que el texto se rompa en varias líneas */
+  overflow: hidden; /* Asegura que el contenido no se desborde cuando está colapsado */
 }
 
-.Navbar-container:hover .menu-content {
+.contenedor-barra-navegacion:hover .contenido-menu {
   max-width: 800px; /* Aumentamos el espacio para que quepa todo cómodamente */
   opacity: 1;
   padding-left: 15px; /* Espacio entre el icono de menú y los otros */
+  overflow: visible; /* Permite que los submenús se muestren al expandir */
 }
 
 /* Estilo base para los íconos y botones dentro del menú. */
-.nav-item, .nav-item-btn {
+.elemento-nav, .nav-item-btn {
   display: flex;
   align-items: center;
   gap: 10px;
@@ -65,7 +72,7 @@
   font-size: 16px;
 }
 
-.nav-item:hover, .nav-item-btn:hover {
+.elemento-nav:hover, .nav-item-btn:hover {
   color: #052fe9; /* Color azul al pasar mouse */
 }
 
@@ -75,8 +82,14 @@
   text-transform: capitalize;
 }
 
+/* --- Dark Mode --- */
+.dark-mode .elemento-nav:hover, .dark-mode .nav-item-btn:hover {
+  color: #5871ff; /* Un azul más brillante para el modo oscuro */
+}
+
+
 /* Contenedor que agrupa el rol y el botón de logout en la esquina. */
-.top-right-container {
+.contenedor-superior-derecho {
   position: fixed;
   top: 20px;
   right: 20px;
@@ -87,7 +100,7 @@
 }
 
 /* Estilo para la "píldora" que muestra el rol del usuario. */
-.user-role-indicator {
+.indicador-rol-usuario {
   display: flex;
   align-items: center;
   gap: 10px;
@@ -101,19 +114,30 @@
   transition: background-color 0.3s ease, color 0.3s ease; /* Añadimos una transición suave */
 }
 
+/* --- Dark Mode --- */
+.dark-mode .indicador-rol-usuario {
+  background-color: #2d3748; /* Azul pizarra para consistencia */
+  color: #e2e8f0;
+}
+
 /* Estilo especial que se aplica si el usuario es admin o aprendiz. */
-.user-role-indicator.admin-role-indicator {
+.indicador-rol-usuario.indicador-rol-admin {
   background-color: #030303; /* Fondo oscuro */
   color: white; /* Texto blanco por defecto */
 }
 
 /* Efecto de hover para el indicador de rol. */
-.user-role-indicator.admin-role-indicator:hover {
+.indicador-rol-usuario:hover {
   color: #3308f1; /* Mismo azul que tenías (rgb(51, 8, 241)) */
 }
 
+/* --- Dark Mode --- */
+.dark-mode .user-role-indicator:hover {
+  color: #5871ff;
+}
+
 /* Estilo para el botón circular de cerrar sesión. */
-.logout-button-circle {
+.boton-cierre-sesion-circular {
   background-color: #282727;
   color: white;
   border: none;
@@ -127,8 +151,14 @@
   transition: background-color 0.3s ease, transform 0.2s ease;
 }
 
-.logout-button-circle:hover {
-  background-color: #e40404; /* Rojo al pasar el mouse */
+/* --- Dark Mode --- */
+.dark-mode .boton-cierre-sesion-circular {
+  background-color: #2d3748; /* Azul pizarra para consistencia */
+  color: #e2e8f0;
+}
+
+.boton-cierre-sesion-circular:hover {
+  background-color: #ff8c00; /* Cambiado a un tono naranja oscuro */
   transform: scale(1.1);
 }
 
@@ -143,7 +173,7 @@
 
 
 /* Estilos para el campo de búsqueda dentro del menú. */
-.search-container {
+.contenedor-busqueda {
   display: flex;
   align-items: center;
   padding: 5px;
@@ -154,12 +184,18 @@
 }
 
 /* Al pasar el ratón, el fondo del buscador se vuelve blanco. */
-.search-container:hover {
+.contenedor-busqueda:hover {
   background: white;
 }
 
+/* --- Dark Mode --- */
+.dark-mode .contenedor-busqueda:hover {
+  background: #1e293b; /* slate-800 */
+}
+
+
 /* El campo de texto del buscador está oculto por defecto. */
-.search-container input {
+.input-busqueda {
   background: transparent; /* Hereda el fondo del contenedor */
   border: none;
   width: 0;                /* Oculto inicialmente */
@@ -169,8 +205,13 @@
   color: #575656;             /* Texto oscuro para que se vea sobre el blanco */
 }
 
+/* --- Dark Mode --- */
+.dark-mode .contenedor-busqueda:hover .input-busqueda {
+  color: #eee;
+}
+
 /* Al pasar el ratón, el campo de texto se expande. */
-.search-container:hover input {
+.contenedor-busqueda:hover .input-busqueda {
   width: 150px;            /* Ancho deseado al desplegar */
   opacity: 1;
   padding: 5px 10px;       /* Espacio interno al mostrarse */
@@ -208,4 +249,60 @@
 /* Clase que activa la animación de palpitación. */
 .search-highlight {
   animation: palpitate 1.5s ease-in-out infinite;
+}
+
+/* --- Estilos para el submenú de "Agregar Contenido" --- */
+
+/* Contenedor para el botón "Agregar Contenido" y su menú desplegable.
+   Esto es crucial para que el menú se posicione correctamente. */
+.content-menu-container {
+  position: relative;
+}
+
+/* El menú desplegable que contiene las opciones (Video, Lectura, etc.). */
+.content-submenu {
+  position: absolute;
+  top: 100%; /* Lo posiciona justo debajo del botón, eliminando el espacio. */
+  left: 0;
+  background-color: #004c4b; /* Un tono verde más oscuro que la barra de edición. */
+  border-radius: 10px;
+  padding: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  z-index: 1010; /* Debe estar por encima de otros elementos. */
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.25);
+  width: 180px; /* Ancho fijo para que se vea ordenado. */
+}
+
+/* --- Dark Mode --- */
+.dark-mode .content-submenu {
+  background-color: #1e293b; /* slate-800 */
+}
+
+/* Estilo para cada botón dentro del submenú (Video, Lectura...). */
+.submenu-item-btn {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: none;
+  border: none;
+  color: white;
+  padding: 10px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 15px;
+  text-align: left;
+  width: 100%;
+  transition: background-color 0.2s ease;
+}
+
+.submenu-item-btn:hover {
+  background-color: #007977; /* Un color de realce al pasar el ratón. */
+  color: white; /* Mantenemos el texto blanco. */
+}
+
+/* --- Dark Mode --- */
+.dark-mode .submenu-item-btn:hover {
+  background-color: #334155; /* slate-700 */
 }

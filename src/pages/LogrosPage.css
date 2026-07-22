@@ -1,0 +1,63 @@
+/*
+  Archivo: LogrosPage.css
+  Función: Estilos para la página de colección de logros.
+  Tipo: Frontend.
+*/
+.logros-page-container {
+  padding: 40px;
+  padding-top: 120px; /* Espacio para la navbar */
+  max-width: 1200px;
+  margin: 0 auto;
+  font-family: 'Segoe UI', sans-serif;
+}
+
+.logros-header {
+  text-align: center;
+  margin-bottom: 50px;
+  color: #333;
+}
+
+.dark-mode .logros-header {
+  color: #e2e8f0; /* slate-200 */
+}
+
+.logros-header h1 {
+  font-size: 3rem;
+  font-weight: bold;
+  color: #052fe9;
+}
+
+.dark-mode .logros-header h1 {
+  color: #818cf8; /* indigo-400 */
+}
+
+.logros-header p {
+  font-size: 1.2rem;
+  color: #666;
+  max-width: 700px;
+  margin: 10px auto 0;
+}
+
+.dark-mode .logros-header p {
+  color: #94a3b8; /* slate-400 */
+}
+
+.logros-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 30px;
+}
+
+.no-logros {
+  text-align: center;
+  padding: 50px;
+  background-color: #f9f9f9;
+  border-radius: 16px;
+  border: 2px dashed #ddd;
+  margin-top: 40px;
+}
+
+.dark-mode .no-logros {
+  background-color: #1e293b; /* slate-800 */
+  border-color: #334155; /* slate-700 */
+}
