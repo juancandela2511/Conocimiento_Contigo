@@ -6,7 +6,7 @@
 
 // Importaciones de React y librerías externas.
 import { Link } from 'react-router-dom';
-import { Home, LogIn, Info, Menu, Search, UserCircle, Trophy, Users, BarChart } from 'lucide-react';
+import { Home, LogIn, Info, Menu, Search, UserCircle, Trophy, Users, BarChart, Settings } from 'lucide-react';
 
 // Importaciones de archivos locales.
 import './Navbar.css';
@@ -14,7 +14,7 @@ import { supabase } from '../services/supabaseClient';
 import ThemeSwitcher from './ThemeSwitcher'; // Importación sin extensión para consistencia
 
 // Definición del componente Navbar. Recibe props para funcionar.
-export default function BarraNavegacion({ sesionIniciada, alBuscar, alPresionarEnter, rolUsuario }) {
+export default function BarraNavegacion({ sesionIniciada, alBuscar, alPresionarEnter, rolUsuario, onSettingsClick }) {
   
   // Lógica de Frontend: Si el usuario no ha iniciado sesión, no se muestra nada.
   if (!sesionIniciada) return null;
@@ -100,6 +100,11 @@ export default function BarraNavegacion({ sesionIniciada, alBuscar, alPresionarE
       <div className="contenedor-superior-derecho">
         {/* Aquí colocamos el interruptor de tema, a la izquierda del rol de usuario. */}
         <ThemeSwitcher />
+
+        {/* Botón para abrir el modal de configuración */}
+        <button onClick={onSettingsClick} className="boton-cierre-sesion-circular" title="Configuración">
+          <Settings size={20} />
+        </button>
 
         {/* Indicador de rol del usuario. */}
         {rolUsuario && (

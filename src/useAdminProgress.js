@@ -1,7 +1,7 @@
 /*
   Archivo: useAdminProgress.js
   Función: Hook personalizado para obtener y procesar los datos de progreso de todos los usuarios.
-           Obtiene los datos directamente de las tablas para mayor robustez.
+           Utiliza una función RPC de Supabase para máxima eficiencia y para evitar problemas de RLS.
   Tipo: Hook de React (Lógica de Frontend).
 */
 import { useState, useEffect } from 'react';
@@ -20,69 +20,19 @@ export const useAdminProgress = () => {
       definirEstaCargando(true);
       definirError(null);
       try {
-        // Paso 1: Obtener todos los usuarios con el rol 'usuario'.
-        const { data: usuarios, error: errorUsuarios } = await supabase
-          .from('Usuario')
-          .select('id, Usuario')
-          .eq('profile', 'usuario');
-        if (errorUsuarios) throw errorUsuarios;
+        // Se llama a una única función RPC que realiza todo el trabajo pesado en la base de datos.
+        // Esto es más eficiente y soluciona problemas de permisos (RLS) al leer datos de otros usuarios.
+        const { data, error: rpcError } = await supabase.rpc('get_all_users_progress_matrix');
 
-        // Paso 2: Obtener todos los cursos y su conteo total de contenidos.
-        const { data: cursos, error: errorCursos } = await supabase
-          .from('cursos')
-          .select('id, curso, contenidos(count)');
-        if (errorCursos) throw errorCursos;
-
-        // Paso 3: Obtener todos los registros de 'contenido_completado'.
-        const { data: completados, error: errorCompletados } = await supabase
-          .from('contenido_completado')
-          .select('user_id, curso_id');
-        if (errorCompletados) throw errorCompletados;
-
-        // Paso 4: Procesar los datos en el cliente para construir la tabla de progreso.
-        // Creamos un mapa para contar los contenidos completados por usuario y por curso.
-        const progresoPorUsuario = {};
-        for (const item of completados) {
-          const claveUsuario = item.user_id;
-          const claveCurso = item.curso_id;
-          if (!progresoPorUsuario[claveUsuario]) {
-            progresoPorUsuario[claveUsuario] = {};
-          }
-          progresoPorUsuario[claveUsuario][claveCurso] = (progresoPorUsuario[claveUsuario][claveCurso] || 0) + 1;
+        if (rpcError) {
+          throw rpcError;
         }
 
-        const resultadoFinal = [];
-        // Iteramos sobre cada usuario para generar sus filas de progreso.
-        for (const usuario of usuarios) {
-          const progresosDelUsuario = progresoPorUsuario[usuario.id];
+        definirDatosProgreso(data);
 
-          // Si el usuario tiene progreso en al menos un curso, lo procesamos.
-          if (progresosDelUsuario) {
-            for (const idCurso in progresosDelUsuario) {
-              const curso = cursos.find(c => c.id.toString() === idCurso);
-              if (curso) {
-                const contenidosTotales = curso.contenidos[0]?.count || 0;
-                const contenidosCompletados = progresosDelUsuario[idCurso];
-
-                if (contenidosTotales > 0) {
-                  const porcentaje = (contenidosCompletados / contenidosTotales) * 100;
-                  resultadoFinal.push({
-                    id: `${usuario.id}-${curso.id}`,
-                    userName: usuario.Usuario,
-                    courseName: curso.curso,
-                    progress: Math.round(porcentaje),
-                    remaining: 100 - Math.round(porcentaje),
-                    status: porcentaje === 100 ? 'Completado' : 'En Progreso'
-                  });
-                }
-              }
-            }
-          }
-        }
-        definirDatosProgreso(resultadoFinal);
       } catch (err) {
         console.error("Error al cargar los datos de progreso:", err);
-        definirError(err);
+        definirError(err.message);
       } finally {
         definirEstaCargando(false);
       }

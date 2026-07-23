@@ -38,6 +38,7 @@ import UserProgressPage from './pages/UserProgressPage'; // Nueva página
 // --- Componentes de Modales para Administradores ---
 import ModalAgregarModulo from './components/Admin/AddCard'; // Renombrado a AddCourseModal
 import ModalEditarModulo from './components/Admin/EditCard'; // Renombrado a EditCourseModal
+import SettingsModal from './components/SettingsModal'; // Nuevo modal de configuración
 import AddContentModal from './components/Admin/AddContentModal'; // El nuevo modal genérico
 
 // --- Contexto para la Carga de Rutas ---
@@ -78,6 +79,7 @@ function AppContent() {
   const [esVisibleModalAgregarModulo, definirEsVisibleModalAgregarModulo] = useState(false);
   const [esVisibleModalEditarModulo, definirEsVisibleModalEditarModulo] = useState(false);
   const [esVisibleModalAgregarContenido, definirEsVisibleModalAgregarContenido] = useState(false);
+  const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false);
   const [tipoContenidoParaAgregar, definirTipoContenidoParaAgregar] = useState(null); // 'lectura', 'video', 'cuestionario'
    
   // =================================================================
@@ -233,6 +235,7 @@ function AppContent() {
             sesionIniciada={sesionIniciada} 
             alBuscar={definirTerminoDeBusqueda} 
             rolUsuario={rolUsuario}
+            onSettingsClick={() => setIsSettingsModalOpen(true)}
           />
 
           {/* 
@@ -283,6 +286,14 @@ function AppContent() {
               onContentAdded={manejarContenidoAgregado}
               curso_id={idCursoActual} // ID del curso al que se agregará el contenido
               contentType={tipoContenidoParaAgregar} // Tipo de contenido a agregar
+            />
+          )}
+
+          {isSettingsModalOpen && (
+            <SettingsModal
+              isOpen={isSettingsModalOpen}
+              onClose={() => setIsSettingsModalOpen(false)}
+              userRole={rolUsuario}
             />
           )}
 
