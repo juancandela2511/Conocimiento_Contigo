@@ -4,15 +4,16 @@
   Tipo: Frontend.
 */
 .logros-page-container {
-  padding: 40px;
+  padding: 60px 40px; /* Aumentamos el padding general */
   padding-top: 120px; /* Espacio para la navbar */
   max-width: 1200px;
   margin: 0 auto;
   font-family: 'Segoe UI', sans-serif;
+  background-color: var(--bg);
 }
 
 .logros-header {
-  text-align: center;
+  text-align: center; /* Centramos el texto */
   margin-bottom: 50px;
   color: #333;
 }
@@ -23,7 +24,7 @@
 
 .logros-header h1 {
   font-size: 3rem;
-  font-weight: bold;
+  font-weight: 700; /* Usamos un valor numérico para el font-weight */
   color: #052fe9;
 }
 
@@ -33,7 +34,7 @@
 
 .logros-header p {
   font-size: 1.2rem;
-  color: #666;
+  color: #555; /* Un color un poco más oscuro para mejor contraste */
   max-width: 700px;
   margin: 10px auto 0;
 }
@@ -42,15 +43,98 @@
   color: #94a3b8; /* slate-400 */
 }
 
-.logros-grid {
+/* Estilos para el contenedor de progreso general */
+.progreso-general-container {
+  display: flex;
+  align-items: center;
+  gap: 25px;
+  background-color: #fff;
+  padding: 25px;
+  border-radius: 16px;
+  margin-bottom: 40px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+}
+
+.dark-mode .progreso-general-container {
+  background-color: #2d3748;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+
+.progreso-general-icon {
+  color: #f59e0b; /* Color ámbar/dorado para el trofeo */
+}
+
+.progreso-general-text h2 {
+  margin: 0 0 5px 0;
+  font-size: 1.5rem;
+  color: #333;
+}
+
+.dark-mode .progreso-general-text h2 {
+  color: #e2e8f0;
+}
+
+.progreso-general-text p {
+  margin: 0;
+  font-size: 1.1rem;
+  color: #666;
+}
+
+.dark-mode .progreso-general-text p {
+  color: #9ca3af;
+}
+
+/* Estilos para la nueva sección de cursos culminados */
+.cursos-culminados-container {
+  background-color: #f9fafb;
+  padding: 25px;
+  border-radius: 16px;
+  margin-bottom: 40px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+}
+
+.dark-mode .cursos-culminados-container {
+  background-color: #1f2937; /* gray-800 */
+}
+
+.cursos-culminados-container h3 {
+  margin: 0 0 20px 0;
+  font-size: 1.3rem;
+  color: #374151;
+  border-bottom: 2px solid #e5e7eb;
+  padding-bottom: 10px;
+}
+
+.dark-mode .cursos-culminados-container h3 {
+  color: #d1d5db; /* gray-300 */
+  border-bottom-color: #374151; /* gray-700 */
+}
+
+.cursos-culminados-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: 30px;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 20px;
+}
+
+.no-cursos-culminados {
+  color: #6b7280;
+  text-align: center;
+  padding: 20px 0;
+}
+
+.dark-mode .no-cursos-culminados {
+  color: #9ca3af; /* gray-400 */
+}
+
+.logros-grid {
+  display: grid; /* Usamos grid para organizar los logros */
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); /* Columnas responsivas */
+  gap: 30px; /* Espacio entre los logros */
 }
 
 .no-logros {
   text-align: center;
-  padding: 50px;
+  padding: 60px 30px; /* Aumentamos el padding para que no se vea tan vacío */
   background-color: #f9f9f9;
   border-radius: 16px;
   border: 2px dashed #ddd;
@@ -60,4 +144,13 @@
 .dark-mode .no-logros {
   background-color: #1e293b; /* slate-800 */
   border-color: #334155; /* slate-700 */
+}
+
+.no-logros-icon {
+  color: #94a3b8; /* Un color suave para el ícono */
+  margin-bottom: 20px;
+}
+
+.dark-mode .no-logros-icon {
+  color: #64748b; /* Un color más oscuro en modo oscuro */
 }

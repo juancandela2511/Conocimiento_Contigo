@@ -13,13 +13,42 @@ import styles from './AddCard.module.css'; // Asegúrate de que esta línea est�
 export default function AddCard({ onCourseAdded, onClose }) {
   // Lógica de Frontend: Estados para manejar los datos del formulario.
   const [title, setTitle] = useState('');
-  const [imageFile, setImageFile] = useState(null); // Estado para el archivo de imagen
+  const [imageFile, setImageFile] = useState(null);
+  const [previewUrl, setPreviewUrl] = useState(null); // Estado para la vista previa de la imagen
   const [isSaving, setIsSaving] = useState(false);
+  const [isDragging, setIsDragging] = useState(false); // Estado para la UI de arrastrar y soltar
 
-  // Lógica de Frontend: Se activa cuando el usuario selecciona un archivo.
+  // Función centralizada para manejar la selección de un archivo (ya sea por clic o por arrastre).
+  const handleFileSelect = (file) => {
+    if (file && file.type.startsWith('image/')) {
+      setImageFile(file);
+      setPreviewUrl(URL.createObjectURL(file));
+    }
+  };
+
+  // Se activa cuando el usuario selecciona un archivo a través del input.
   const handleFileChange = (e) => {
     if (e.target.files?.[0]) {
-      setImageFile(e.target.files[0]);
+      handleFileSelect(e.target.files[0]);
+    }
+  };
+
+  // --- Handlers para la zona de arrastrar y soltar ---
+  const handleDragOver = (e) => {
+    e.preventDefault();
+    setIsDragging(true);
+  };
+
+  const handleDragLeave = (e) => {
+    e.preventDefault();
+    setIsDragging(false);
+  };
+
+  const handleDrop = (e) => {
+    e.preventDefault();
+    setIsDragging(false);
+    if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+      handleFileSelect(e.dataTransfer.files[0]);
     }
   };
 
@@ -69,6 +98,7 @@ export default function AddCard({ onCourseAdded, onClose }) {
       onCourseAdded(data);
       setTitle('');
       setImageFile(null);
+      setPreviewUrl(null);
       if (document.getElementById('file-input')) {
         document.getElementById('file-input').value = ''; // Resetea el input de archivo
       }
@@ -94,8 +124,23 @@ export default function AddCard({ onCourseAdded, onClose }) {
             <button type="button" onClick={onClose} className={styles.closeButton}>&times;</button>
           </div>
           <input type="text" placeholder="Título del módulo" value={title} onChange={(e) => setTitle(e.target.value)} disabled={isSaving} required />
-          <label htmlFor="file-input" style={{ fontWeight: 'bold', marginTop: '10px' }}>Imagen del Módulo:</label>
-          <input id="file-input" type="file" accept="image/*" onChange={handleFileChange} disabled={isSaving} required />
+          
+          {/* Nueva zona para arrastrar y soltar la imagen */}
+          <div
+            className={`${styles.dropZone} ${isSaving ? styles.disabled : ''} ${isDragging ? styles.isDragging : ''}`}
+            onDragOver={handleDragOver}
+            onDragLeave={handleDragLeave}
+            onDrop={handleDrop}
+            onClick={() => !isSaving && document.getElementById('file-input').click()}
+          >
+            <input id="file-input" type="file" accept="image/*" onChange={handleFileChange} style={{ display: 'none' }} disabled={isSaving} />
+            {previewUrl ? (
+              <img src={previewUrl} alt="Vista previa" className={styles.imagePreview} />
+            ) : (
+              <p>Arrastra y suelta una imagen aquí, o haz clic para seleccionarla.</p>
+            )}
+          </div>
+
           <button type="submit" className={styles.saveButton} disabled={isSaving}>{isSaving ? 'Guardando...' : 'Guardar Módulo'}</button>
         </form>
       </div>

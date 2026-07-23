@@ -3,6 +3,11 @@
   Función: Estilos para la sección de contenidos de un curso.
   Tipo: Frontend.
 */
+.curso-detalle-page {
+  background-color: var(--bg);
+  min-height: calc(100vh - 120px); /* Calcula la altura menos la navbar aprox. */
+}
+
 .contenido-curso-container {
   padding: 40px;
   max-width: 1100px;

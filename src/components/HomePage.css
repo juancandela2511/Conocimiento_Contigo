@@ -8,16 +8,15 @@
 .homepage-layout {
   display: flex;
   gap: 40px;
-  padding: 40px 20px;
+  padding: 200px 100px;
   font-family: 'Segoe UI', sans-serif;
   width: 100%;
   box-sizing: border-box;
-  background-color: #f4f7f9; /* Nuevo color de fondo para el modo claro */
+  background-color: var(--bg);
 }
 
 /* --- Dark Mode --- */
 .dark-mode .homepage-layout {
-  background-color: #1a202c; /* Cambiado a un azul noche oscuro */
   color: #e2e8f0; /* Un gris más claro para mejor lectura */
 }
 
@@ -33,6 +32,7 @@
      Cada columna tendrá un mínimo de 280px y se expandirá para llenar el espacio. */
   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
   gap: 25px;
+  gap: 35px; /* Aumentamos el espacio entre las tarjetas de los cursos */
 }
 
 /* Estilo base para cada tarjeta de curso. */
@@ -49,6 +49,10 @@
   background-position: center;
   min-height: 250px; /* Asegura una altura mínima para todas las tarjetas */
   transition: transform 0.3s ease, box-shadow 0.3s ease;
+  position: relative; /* Necesario para posicionar la insignia de "Culminado" */
+  /* Animación de entrada */
+  opacity: 0;
+  animation: fadeInUp 0.6s ease-out forwards;
 }
 
 /* --- Dark Mode --- */
@@ -56,6 +60,21 @@
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
   /* El fondo es una imagen, pero podemos oscurecer el texto para mejor contraste */
   text-shadow: 1px 1px 5px rgba(0, 0, 0, 0.8);
+}
+
+/* Insignia para cursos completados */
+.completed-badge {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  background-color: #4caf50; /* Verde éxito */
+  color: white;
+  padding: 6px 12px;
+  border-radius: 15px;
+  font-size: 0.8rem;
+  font-weight: bold;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+  z-index: 2;
 }
 
 /* Efecto visual al pasar el ratón sobre una tarjeta. */
@@ -144,4 +163,16 @@
 
 .dark-mode .access-button:hover {
   background-color: #4338ca; /* indigo-700 */
+}
+
+/* Keyframes para la animación de entrada de las tarjetas */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }

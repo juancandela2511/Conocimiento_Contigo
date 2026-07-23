@@ -7,11 +7,17 @@ import AnunciosPanel from './AnunciosPanel'; // Importamos el nuevo componente
 import './HomePage.css';
 
 // Componente para una tarjeta de curso individual (para mantener el código limpio)
-const TarjetaCurso = ({ curso, onEditCourseClick, userRole }) => (
+const TarjetaCurso = ({ curso, onEditCourseClick, userRole, style }) => (
   <div
-    className="course-card"
-    style={{ backgroundImage: `linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.7)), url(${curso.imagen_url})` }}
+    // Añadimos una clase 'completed' si el curso está terminado.
+    className={`course-card ${curso.estaCompleto ? 'completed' : ''}`}
+    style={{ 
+      backgroundImage: `linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.7)), url(${curso.imagen_url})`,
+      ...style 
+    }}
   >
+    {/* Mostramos una insignia si el curso está completado. */}
+    {curso.estaCompleto && <div className="completed-badge">Culminado</div>}
     <div className="card-content">
       <h3>{curso.curso}</h3>
     </div>
@@ -37,12 +43,13 @@ export default function PaginaPrincipal({ courses, userRole, terminoDeBusqueda, 
     <div className="homepage-layout">
       <main className="main-content-area">
         <div className="courses-grid">
-          {cursosFiltrados.map(curso => (
+          {cursosFiltrados.map((curso, index) => (
             <TarjetaCurso
               key={curso.id}
               curso={curso}
               onEditCourseClick={onEditCourseClick}
               userRole={userRole}
+              style={{ animationDelay: `${index * 100}ms` }}
             />
           ))}
         </div>

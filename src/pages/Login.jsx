@@ -1,184 +1,98 @@
-/* Archivo: Login.jsx - Gestiona la interfaz y lógica de autenticación (Login/Registro) del usuario. */
+/*
+  Archivo: Login.jsx
+  Función: Gestiona la interfaz y lógica de autenticación (inicio de sesión y registro) del usuario.
+  Tipo: Página (Componente de Frontend).
+*/
 
-// Importa el hook para manejar el ciclo de vida del componente y el estado local de React.
+// Hooks de React para manejar el estado y la navegación.
 import { useState } from 'react';
-// "Trae las herramientas básicas de React para controlar datos y efectos secundarios."
-
-// Importa la instancia configurada de Supabase para realizar consultas a los servicios de Backend.
-import { supabase } from '../services/supabaseClient';
-// "Conecta con nuestra base de datos en la nube para validar o guardar usuarios."
-
-// Importa el hook para la navegación programática entre rutas dentro de la aplicación.
 import { useNavigate } from 'react-router-dom';
-// "Nos permite mover al usuario de una página a otra automáticamente."
 
-// Importa los estilos CSS específicos para este componente.
-import './Login.css';
-// "Define cómo se ve la página, colores, tamaños y posiciones."
+// Cliente de Supabase para interactuar con el backend.
+import { supabase } from '../services/supabaseClient';
 
-// Importa el componente de pantalla de carga para mejorar la experiencia de usuario (UX).
+// Componentes y estilos.
 import Cargando from '../components/Loading';
-// "Un aviso visual que muestra que algo está cargando."
+import './Login.css';
 
 // Define la función principal del componente Login.
 function InicioSesion() {
-  // "Aquí empieza el código que crea la pantalla de inicio de sesión."
-
-  // Define un estado booleano para alternar entre el formulario de inicio de sesión y registro.
+  // --- ESTADOS DEL COMPONENTE ---
   const [esRegistro, definirEsRegistro] = useState(false);
-  // "Si es verdadero, mostramos el registro; si no, el inicio de sesión."
-
-  // Define el estado para almacenar el correo electrónico ingresado en el input.
   const [correo, definirCorreo] = useState('');
-  // "Guarda lo que el usuario escribe en la casilla del correo."
-
-  // Define el estado para almacenar la contraseña ingresada en el input.
   const [contrasena, definirContrasena] = useState('');
-  // "Guarda la clave secreta que el usuario escribe."
-
-  // Define el estado para almacenar el nombre de usuario (solo usado en registro).
   const [nombreUsuario, definirNombreUsuario] = useState('');
-  // "Guarda el apodo que el usuario quiere ponerse."
-
-  // Define el estado para manejar el modo de carga (spinner) durante el envío del formulario.
   const [estaCargando, definirEstaCargando] = useState(false);
-  // "Indica si la aplicación está 'trabajando' en el fondo para mostrar el cargador."
     
-  // Inicializa el hook de navegación.
+  // Hook para la navegación programática.
   const navegar = useNavigate();
-  // "Prepara la herramienta que nos permite redirigir al usuario."
 
-  // Define la función asíncrona para manejar el envío del formulario.
+  // Función que se ejecuta al enviar el formulario.
   const manejarAutenticacion = async (e) => {
-    // "Esta función se dispara cuando presionan el botón de enviar."
-    
-    // Previene el comportamiento por defecto del formulario (recarga de página).
-    e.preventDefault();
-    // "Evita que la página se reinicie sola al dar clic."
+    e.preventDefault(); // Previene la recarga de la página.
     
     definirEstaCargando(true);
-    const tiempoInicio = Date.now();
-    // "Muestra el indicador de carga y guarda el tiempo de inicio."
-    try {
-      // Inicia el bloque para capturar posibles errores de red o base de datos.
-      // "Intenta hacer lo siguiente, y si sale mal, ve al bloque 'catch'."
 
-      // Verifica si el formulario está en modo de registro.
+    try {
+      // Lógica para el registro de un nuevo usuario.
       if (esRegistro) {
-        // "Si estamos en el modo de crear cuenta nueva..."
-        
-        // Llama a Supabase Auth para crear el usuario en el sistema de autenticación.
+        // 1. Crea el usuario en el sistema de autenticación de Supabase.
         const { data: datos, error } = await supabase.auth.signUp({
           email: correo,
           password: contrasena,
           options: { data: { Usuario: nombreUsuario } },
         });
-        // "Le pide a Supabase que cree un usuario nuevo con ese correo y clave."
 
-        // Verifica si hubo un error en el registro de autenticación.
-        if (error) {
-          // "Si algo salió mal al crear el usuario..."
-          alert("Error en Auth: " + error.message);
-          // "Muestra una alerta con el motivo del fallo."
-        } else {
-          // Si el registro de Auth tuvo éxito, procede a insertar datos en la tabla 'Usuario'
-          const { error: insertError } = await supabase
-            .from('Usuario')
-            .insert([{
-              id: datos.user.id,
-              Usuario: nombreUsuario,
-              profile: 'usuario',
-            }]);
-          
-          if (insertError) {
-            // Si la inserción falla, muestra el error y detiene el flujo
-            console.error("Error al insertar en la tabla Usuario:", insertError.message);
-            alert("Error al crear el perfil de usuario: " + insertError.message);
-          } else {
-            // Si todo fue exitoso.
-            alert("¡Registro exitoso!");
-            // "Le felicita por crear su cuenta."
-            definirEsRegistro(false);
-            // "Lo regresa al modo de inicio de sesión."
-          }
-        }
+        if (error) throw error;
+
+        // 2. Inserta el perfil del usuario en la tabla 'Usuario' pública.
+        const { error: errorInsercion } = await supabase
+          .from('Usuario')
+          .insert([{
+            id: datos.user.id,
+            Usuario: nombreUsuario,
+            profile: 'usuario',
+          }]);
+        
+        if (errorInsercion) throw errorInsercion;
+
+        alert("¡Registro exitoso! Por favor, inicia sesión.");
+        definirEsRegistro(false); // Cambia al modo de inicio de sesión.
+
       } else {
-        // Si no es registro, procede con el inicio de sesión.
-        // "Si ya tiene cuenta, vamos a entrar."
+        // Lógica para el inicio de sesión de un usuario existente.
         const { data: datosAutenticacion, error } = await supabase.auth.signInWithPassword({
           email: correo,
           password: contrasena,
         });
-        // "Le pide a Supabase que valide si el correo y la clave son correctos."
-        
-        // Verifica si hubo un error al iniciar sesión.
-        if (error) {
-          // "Si los datos son incorrectos..."
-          alert("Error: " + error.message);
-          // "Muestra el aviso del error."
-        } else {
-          // Consulta la tabla 'Usuario' para obtener detalles adicionales del usuario autenticado.
-          const { data: datosUsuario, error: errorUsuario } = await supabase
-            .from('Usuario')
-            .select('Usuario')
-            .eq('id', datosAutenticacion.user.id)
-            .single();
-          // "Busca el nombre del usuario en nuestra tabla para saludarlo por su nombre."
-          
-          // Verifica si hubo un error al consultar la base de datos.
-          if (errorUsuario) {
-            // "Si no encontramos el nombre en nuestra tabla..."
-            console.error("Error al obtener nombre:", errorUsuario);
-            // "Registra el error en consola."
-            alert('¡Bienvenido!');
-            // "Aun así, le damos la bienvenida."
-          } else {
-            // Si la consulta fue exitosa.
-            alert('¡Bienvenido, ' + datosUsuario.Usuario + '!');
-            // "Lo saludamos personalmente por su nombre."
-          }
-          
-          // Redirige al usuario a la página principal.
-          navegar('/');
-          // "Lo enviamos a la pantalla principal después de entrar."
-        }
+        if (error) throw error;
+
+        // Redirige al usuario a la página principal tras un inicio de sesión exitoso.
+        navegar('/');
       }
     } catch (err) {
-      // Captura cualquier error inesperado en la ejecución.
-      console.error(err);
-      // "Si algo muy grave pasó, lo guardamos en la consola para analizarlo."
+      // Captura y muestra cualquier error de Supabase.
+      console.error("Error de autenticación:", err.message);
+      alert("Error: " + err.message);
     } finally {
-      // Asegura que el estado de carga se desactive, pero esperando un mínimo de 2 segundos para mejorar la UX.
-      const tiempoTranscurrido = Date.now() - tiempoInicio;
-      const tiempoRestante = 2000 - tiempoTranscurrido;
-
-      if (tiempoRestante > 0) {
-        setTimeout(() => definirEstaCargando(false), tiempoRestante);
-      } else {
-        definirEstaCargando(false);
-      }
+      // Se ejecuta siempre, haya o no error.
+      definirEstaCargando(false);
     }
   };
 
-  // Condicional de renderizado: si está cargando, muestra el componente Loading.
+  // Muestra la pantalla de carga mientras se procesa la solicitud.
   if (estaCargando) {
-    // "Mientras la aplicación se prepara..."
     return <Cargando />;
-    // "...mostramos la pantalla de carga."
   }
 
-  // Estructura visual del componente (JSX).
   return (
     <div className="container">
-      {/* "Caja principal que contiene todo el diseño." */}
       <div className="panel-imagen">
         <img src="/logo.png" alt="Logo" />
-        {/* "Caja que muestra el logo de la marca." */}
       </div>
       <div className="panel-formulario">
         <form onSubmit={manejarAutenticacion}>
           <h1>{esRegistro ? "Registrarse" : "Iniciar Sesión"}</h1>
-          {/* "Título que cambia según si va a registrarse o entrar." */}
           
           {esRegistro && (
             <input
@@ -187,35 +101,28 @@ function InicioSesion() {
               onChange={(e) => definirNombreUsuario(e.target.value)}
             />
           )}
-          {/* "Casilla de nombre, solo aparece cuando el usuario se está registrando." */}
 
           <input
             type="email"
             placeholder="Correo"
             onChange={(e) => definirCorreo(e.target.value)}
           />
-          {/* "Casilla para escribir el correo electrónico." */}
           
           <input
             type="password"
             placeholder="Contraseña"
             onChange={(e) => definirContrasena(e.target.value)}
           />
-          {/* "Casilla para escribir la clave privada." */}
           
           <button type="submit">{esRegistro ? "Crear cuenta" : "Entrar"}</button>
-          {/* "Botón para ejecutar el registro o el inicio de sesión." */}
         </form>
 
         <p onClick={() => definirEsRegistro(!esRegistro)}>
           {esRegistro ? "¿Ya tienes cuenta? Inicia sesión" : "¿No tienes cuenta? Regístrate"}
         </p>
-        {/* "Texto clicable para saltar entre el formulario de registro y el de login." */}
       </div>
     </div>
   );
 }
 
-// Exporta el componente para poder usarlo en otras partes de la aplicación.
 export default InicioSesion;
-// "Hace que este componente esté disponible para el resto del sitio."

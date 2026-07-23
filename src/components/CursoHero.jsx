@@ -13,8 +13,8 @@ const CursoHero = ({ course }) => {
 
   return (
     <div className="curso-hero-container" style={{ backgroundImage: `url(${course.imagen_url})` }}>
-      <div className="curso-hero-overlay"></div>
-      <div className="curso-hero-content">
+      {/* La capa de filtro de color se aplica con CSS puro usando un pseudo-elemento ::before */}
+      <div className="curso-hero-content"> 
         <div className="curso-hero-box">
           <img src="/logo.png" alt="Logo Aprende Contigo" className="curso-hero-logo" />
           <h1 className="curso-hero-title">{course.curso}</h1>

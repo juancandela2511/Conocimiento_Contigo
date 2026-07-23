@@ -1,78 +1,78 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '../../services/supabaseClient';
-import '../Admin/AddModals.css'; // Reutilizamos estilos compartidos para los modales
+import './AddModals.css'; // Reutilizamos estilos compartidos para los modales
 
 export default function EditCard({ isOpen, onClose, course, onCourseUpdated }) {
-  const [title, setTitle] = useState('');
-  const [imageFile, setImageFile] = useState(null);
-  const [currentImageUrl, setCurrentImageUrl] = useState(''); // Para mostrar la imagen actual o la nueva
-  const [isSaving, setIsSaving] = useState(false);
-  const [error, setError] = useState('');
+  const [titulo, definirTitulo] = useState('');
+  const [archivoImagen, definirArchivoImagen] = useState(null);
+  const [urlImagenActual, definirUrlImagenActual] = useState(''); // Para mostrar la imagen actual o la nueva
+  const [estaGuardando, definirEstaGuardando] = useState(false);
+  const [error, definirError] = useState('');
 
   // Este efecto se ejecuta cuando el componente se monta o cuando la prop 'course' cambia.
   // Asegura que el formulario se inicialice con los datos del curso correcto.
   useEffect(() => {
     if (course) {
-      setTitle(course.curso);
-      setCurrentImageUrl(course.imagen_url);
-      setImageFile(null); // Resetea el input de archivo cuando se selecciona un nuevo curso
-      setError('');
+      definirTitulo(course.curso);
+      definirUrlImagenActual(course.imagen_url);
+      definirArchivoImagen(null); // Resetea el input de archivo cuando se selecciona un nuevo curso
+      definirError('');
     }
   }, [course]);
 
   // Si el modal no está abierto o no hay un curso para editar, no renderizamos nada.
   if (!isOpen || !course) return null;
 
-  // Maneja la selección de un nuevo archivo de imagen.
-  const handleFileChange = (e) => {
+  // Se ejecuta cuando el usuario selecciona un nuevo archivo de imagen.
+  const manejarCambioArchivo = (e) => {
     if (e.target.files?.[0]) {
-      setImageFile(e.target.files[0]);
+      definirArchivoImagen(e.target.files[0]);
       // Muestra una vista previa de la nueva imagen seleccionada.
-      setCurrentImageUrl(URL.createObjectURL(e.target.files[0]));
+      definirUrlImagenActual(URL.createObjectURL(e.target.files[0]));
     } else {
-      setImageFile(null);
-      setCurrentImageUrl(course.imagen_url); // Si no se selecciona archivo, vuelve a la imagen original
+      definirArchivoImagen(null);
+      definirUrlImagenActual(course.imagen_url); // Si no se selecciona archivo, vuelve a la imagen original
     }
   };
 
-  // Maneja el envío del formulario para guardar los cambios.
-  const handleSave = async (e) => {
+  // Se ejecuta al enviar el formulario para guardar los cambios.
+  const manejarGuardado = async (e) => {
     e.preventDefault();
-    setError('');
+    definirError('');
 
-    if (!title.trim()) {
-      setError('El título del módulo es obligatorio.');
+    if (!titulo.trim()) {
+      definirError('El título del módulo es obligatorio.');
       return;
     }
 
-    setIsSaving(true);
-    let newImageUrl = currentImageUrl; // Inicialmente, la URL de la imagen es la actual
+    definirEstaGuardando(true);
+    let nuevaUrlImagen = urlImagenActual; // Inicialmente, la URL de la imagen es la actual
 
     try {
       // 1. Si se ha seleccionado un nuevo archivo de imagen, lo subimos a Supabase Storage.
-      if (imageFile) {
-        const fileExt = imageFile.name.split('.').pop();
+      if (archivoImagen) {
+        const extensionArchivo = archivoImagen.name.split('.').pop();
         // Generamos un nombre de archivo único para evitar colisiones.
-        const fileName = `${Date.now()}-${Math.random().toString(36).substring(2, 15)}.${fileExt}`;
-        const filePath = `${fileName}`;
+        const nombreArchivo = `${Date.now()}-${Math.random().toString(36).substring(2, 15)}.${extensionArchivo}`;
+        const rutaArchivo = `${nombreArchivo}`;
 
-        const { error: uploadError } = await supabase.storage
+        const { error: errorSubida } = await supabase.storage
           .from('Imagenes') // Nombre de tu bucket de almacenamiento
-          .upload(filePath, imageFile);
+          .upload(rutaArchivo, archivoImagen);
 
-        if (uploadError) throw uploadError;
+        if (errorSubida) throw errorSubida;
 
-        const { data: urlData } = supabase.storage
+        const { data: datosUrl } = supabase.storage
           .from('Imagenes')
-          .getPublicUrl(filePath);
+          .getPublicUrl(rutaArchivo);
 
-        newImageUrl = urlData.publicUrl; // Actualizamos la URL de la imagen con la nueva.
+        nuevaUrlImagen = datosUrl.publicUrl; // Actualizamos la URL de la imagen con la nueva.
       }
 
       // 2. Actualizamos el curso en la base de datos con el nuevo título y la URL de la imagen.
       const { data, error: updateError } = await supabase
         .from('cursos')
-        .update({ curso: title, imagen_url: newImageUrl })
+        .update({ curso: titulo, imagen_url: nuevaUrlImagen })
         .eq('id', course.id) // Aseguramos que se actualice el curso correcto
         .select() // Solicitamos los datos actualizados del curso
         .single(); // Esperamos un solo registro
@@ -84,13 +84,13 @@ export default function EditCard({ isOpen, onClose, course, onCourseUpdated }) {
 
     } catch (err) {
       console.error('Error al actualizar el módulo:', err);
-      setError('No se pudo actualizar el módulo. Inténtalo de nuevo.');
+      definirError('No se pudo actualizar el módulo. Inténtalo de nuevo.');
       // Si la subida falló, revertimos la vista previa de la imagen a la original del curso.
-      if (imageFile) {
-        setCurrentImageUrl(course.imagen_url);
+      if (archivoImagen) {
+        definirUrlImagenActual(course.imagen_url);
       }
     } finally {
-      setIsSaving(false); // Desactivamos el estado de carga.
+      definirEstaGuardando(false); // Desactivamos el estado de carga.
     }
   };
 
@@ -98,39 +98,39 @@ export default function EditCard({ isOpen, onClose, course, onCourseUpdated }) {
     <div className="modal-overlay">
       <div className="modal-content">
         <h2>Editar Módulo</h2>
-        <form onSubmit={handleSave}>
+        <form onSubmit={manejarGuardado}>
           <div className="form-group">
             <label htmlFor="edit-title">Título del Módulo</label>
             <input
               id="edit-title"
               type="text"
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              disabled={isSaving}
+              value={titulo}
+              onChange={(e) => definirTitulo(e.target.value)}
+              disabled={estaGuardando}
               required
             />
           </div>
           <div className="form-group">
             <label htmlFor="edit-image">Imagen del Módulo</label>
-            {currentImageUrl && (
-              <img src={currentImageUrl} alt="Current Course" style={{ maxWidth: '100px', maxHeight: '100px', marginBottom: '10px', borderRadius: '8px' }} />
+            {urlImagenActual && (
+              <img src={urlImagenActual} alt="Curso actual" style={{ maxWidth: '100px', maxHeight: '100px', marginBottom: '10px', borderRadius: '8px' }} />
             )}
             <input
               id="edit-image"
               type="file"
               accept="image/*"
-              onChange={handleFileChange}
-              disabled={isSaving}
+              onChange={manejarCambioArchivo}
+              disabled={estaGuardando}
             />
             <small>Selecciona una nueva imagen para reemplazar la actual.</small>
           </div>
           {error && <p className="error-message">{error}</p>}
           <div className="modal-actions">
-            <button type="button" onClick={onClose} className="btn-secondary" disabled={isSaving}>
+            <button type="button" onClick={onClose} className="btn-secondary" disabled={estaGuardando}>
               Cancelar
             </button>
-            <button type="submit" className="btn-primary" disabled={isSaving}>
-              {isSaving ? 'Guardando...' : 'Guardar Cambios'}
+            <button type="submit" className="btn-primary" disabled={estaGuardando}>
+              {estaGuardando ? 'Guardando...' : 'Guardar Cambios'}
             </button>
           </div>
         </form>

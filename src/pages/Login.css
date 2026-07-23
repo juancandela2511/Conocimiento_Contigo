@@ -97,3 +97,27 @@
 }
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@900&display=swap');
 
+/* ================================================================= */
+/* 4. RESPONSIVIDAD (MEDIA QUERIES)                                  */
+/* ================================================================= */
+
+/* Estilos para pantallas de tablets y móviles (ancho menor a 768px) */
+@media (max-width: 768px) {
+  .container {
+    /* Hacemos que el contenedor principal pueda centrar el formulario */
+    justify-content: center;
+  }
+
+  .panel-imagen {
+    /* Ocultamos la imagen decorativa en móviles para dar espacio al contenido principal */
+    display: none;
+  }
+
+  .panel-formulario {
+    /* El formulario ocupa la mayor parte de la pantalla */
+    width: 90%;
+    margin: 0; /* Quitamos el margen automático */
+    padding: 40px 25px; /* Reducimos el padding para pantallas pequeñas */
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1); /* Sombra más sutil */
+  }
+}

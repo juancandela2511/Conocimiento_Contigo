@@ -1,0 +1,138 @@
+/*
+  Archivo: AdminUsuariosPage.css
+  Función: Estilos para la tabla de administración de usuarios.
+*/
+.admin-usuarios-container {
+  padding: 40px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.admin-usuarios-container h1 {
+  text-align: left;
+  margin-bottom: 30px;
+}
+
+.admin-usuarios-table-wrapper {
+  overflow-x: auto;
+  background-color: var(--bg);
+  border-radius: 12px;
+  box-shadow: var(--shadow);
+  border: 1px solid var(--border);
+}
+
+.admin-usuarios-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+}
+
+.admin-usuarios-table th,
+.admin-usuarios-table td {
+  padding: 15px 20px;
+  border-bottom: 1px solid var(--border);
+  vertical-align: middle;
+}
+
+.admin-usuarios-table th {
+  font-weight: 600;
+  color: var(--text-h);
+  background-color: #f9fafb;
+}
+
+.dark-mode .admin-usuarios-table th {
+  background-color: #2d3748; /* gray-800 */
+}
+
+.admin-usuarios-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.admin-usuarios-table tbody tr:hover {
+  background-color: #f5f5f5;
+}
+
+.dark-mode .admin-usuarios-table tbody tr:hover {
+  background-color: #2c3344;
+}
+
+.user-cell {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.role-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  text-transform: capitalize;
+}
+
+.role-administrador {
+  background-color: #fee2e2; /* red-100 */
+  color: #b91c1c; /* red-700 */
+}
+
+.dark-mode .role-administrador {
+  background-color: #5f2727;
+  color: #fca5a5; /* red-300 */
+}
+
+.role-usuario {
+  background-color: #dbeafe; /* blue-100 */
+  color: #1d4ed8; /* blue-700 */
+}
+
+.dark-mode .role-usuario {
+  background-color: #2a3a61;
+  color: #93c5fd; /* blue-300 */
+}
+
+.action-buttons {
+  display: flex;
+  gap: 10px;
+}
+
+.action-btn {
+  background: none;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  padding: 6px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.2s, color 0.2s;
+  color: #6b7280; /* gray-500 */
+}
+
+.action-btn:hover {
+  background-color: #e5e7eb; /* gray-200 */
+  color: #111827; /* gray-900 */
+}
+
+.dark-mode .action-btn {
+  color: #9ca3af; /* gray-400 */
+}
+
+.dark-mode .action-btn:hover {
+  background-color: #374151; /* gray-700 */
+  color: #f9fafb; /* gray-50 */
+}
+
+.action-btn.delete-btn {
+  color: #ef4444; /* red-500 */
+}
+
+.action-btn.delete-btn:hover {
+  background-color: #fee2e2; /* red-100 */
+}
+
+.dark-mode .action-btn.delete-btn:hover {
+  background-color: #3f2121;
+}

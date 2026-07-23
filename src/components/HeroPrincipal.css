@@ -1,28 +1,67 @@
 .hero-modern {
-  /* Fondo animado, igual que en el login */
-  background-color: #008cff; /* Color base por si la animación no carga */
-  background-image: 
-    radial-gradient(white 0.5px, transparent 0.5px), /* Capa de puntos blancos */
-    linear-gradient(270deg, #61b2f4, #2b52ff, #0004ff); /* Capa de degradado animado */
-  background-size: 10px 10px, 600% 600%; /* El primer tamaño es para los puntos, el segundo para el degradado */
-  animation: fondoMovible 15s ease infinite; 
+  position: relative; /* Necesario para posicionar el pseudo-elemento ::before */
+  background-image: url('/imagenFondo.png');
+  background-size: cover;
+  background-position: center;
   padding: 60px 20px;
   display: flex;
   justify-content: center;
   align-items: center;
   min-height: 250px; /* Reduje un poco la altura mínima al eliminar el título */
+  /* Esta propiedad es clave: crea un nuevo contexto de apilamiento y "aísla"
+     el efecto de 'mix-blend-mode' para que no afecte a otros elementos
+     de la página, como el panel de anuncios. */
+  isolation: isolate;
+}
+
+/* Capa de filtro de color animado que se superpone a la imagen de fondo */
+.hero-modern::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(270deg, #a8c0ff, #c2e9fb); /* Gradiente más suave para modo claro */
+  background-size: 600% 600%;
+  animation: fondoMovible 15s ease infinite;
+  mix-blend-mode: overlay;
+  opacity: 0.6; /* Filtro visible pero sutil en modo claro */
+  transition: opacity 0.5s ease, background 0.5s ease; /* Transición suave al cambiar de tema */
+  z-index: 1; /* Se asegura de que esté sobre la imagen pero debajo del resto */
+}
+
+/* Capa de desvanecimiento en la parte inferior para una transición suave */
+.hero-modern::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 150px; /* Aumentamos la altura para un desvanecimiento más suave */
+  /* El degradado va de transparente al color de fondo de la siguiente sección (#f4f7f9) */
+  background: linear-gradient(to bottom, rgba(244, 247, 249, 0), #f4f7f9);
+  pointer-events: none; /* Evita que la capa intercepte clics */
+  z-index: 2;
 }
 
 /* --- Dark Mode --- */
-.dark-mode .hero-modern {
-  background-color: #f6eaea; /* Color de respaldo para el modo oscuro */
-  background-image: 
-    radial-gradient(rgba(250, 246, 246, 0.1) 0.5px, transparent 0.5px), /* Estrellas más sutiles */
-    linear-gradient(270deg, #150f27, #1d25b1, #050e6c); /* Degradado noche */
-  background-size: 15px 15px, 400% 400%; /* Tamaño para estrellas y degradado */
-  animation: fondoMovible 20s ease infinite; /* Reutilizamos la animación, pero más lenta */
+.dark-mode .hero-modern::before {
+  background: linear-gradient(270deg, #150f27, #1d25b1, #050e6c);
+  background-size: 400% 400%;
+  animation: fondoMovible 20s ease infinite;
+  mix-blend-mode: color-dodge; /* 'color-dodge' crea un efecto de neón interesante sobre la imagen en modo oscuro */
+  opacity: 0.9; /* Aumentamos la opacidad para un efecto más intenso */
 }
+
+.dark-mode .hero-modern::after {
+  /* El degradado para el modo oscuro usa el color de fondo correspondiente (#1a202c) */
+  background: linear-gradient(to bottom, rgba(26, 32, 44, 0), #1a202c);
+}
+
 .hero-inner {
+  position: relative; /* Para asegurar que esté por encima de los pseudo-elementos */
+  z-index: 3;
   max-width: 500px; /* Reduje un poco el ancho para centrar mejor el logo */
   text-align: center;
   background: rgba(255, 255, 255, 0.8);
@@ -30,7 +69,8 @@
   padding: 40px;
   border-radius: 24px;
   border: 1px solid rgba(255, 255, 255, 0.5);
-  box-shadow: 0 10px 25px -5px rgba(247, 0, 0, 0.1);
+  /* CORREGIDO: Sombra negra en lugar de roja */
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
 }
 
 .logo-container {
@@ -39,7 +79,7 @@
 
 /* --- Dark Mode --- */
 .dark-mode .hero-inner {
-  background: rgba(205, 211, 211, 0.8);
+  background: rgba(205, 211, 211, 0.8); /* Restaurado a fondo claro como se solicitó */
   border: 1px solid rgba(255, 255, 255, 0.1);
   box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
 }
@@ -59,7 +99,7 @@
 
 /* --- Dark Mode --- */
 .dark-mode .hero-subtitle {
-  color: #191d21;
+  color: #191d21; /* Restaurado a color oscuro para el texto */
 }
 
 @keyframes float {

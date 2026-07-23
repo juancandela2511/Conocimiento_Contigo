@@ -1,0 +1,83 @@
+/*
+  Archivo: AddContentModal.css
+  Función: Estilos específicos para el modal de agregar contenido,
+           incluyendo el selector de método y la zona de arrastrar y soltar.
+*/
+
+/* Switcher para método de subida */
+.upload-method-switcher {
+  display: flex;
+  margin-bottom: 20px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.dark-mode .upload-method-switcher {
+  border-color: #475569;
+}
+
+.upload-method-switcher button {
+  flex: 1;
+  padding: 10px;
+  border: none;
+  background-color: transparent;
+  cursor: pointer;
+  font-weight: 600;
+  color: #555;
+  transition: background-color 0.2s, color 0.2s;
+}
+
+.dark-mode .upload-method-switcher button {
+  color: #94a3b8;
+}
+
+.upload-method-switcher button.active {
+  background-color: #052fe9;
+  color: white;
+}
+
+.dark-mode .upload-method-switcher button.active {
+  background-color: #4f46e5; /* indigo-600 */
+}
+
+/* Zona de arrastrar y soltar */
+.drop-zone {
+  border: 2px dashed #ccc;
+  border-radius: 8px;
+  padding: 40px 20px;
+  text-align: center;
+  cursor: pointer;
+  transition: border-color 0.2s, background-color 0.2s;
+  color: #888;
+}
+
+.dark-mode .drop-zone {
+  border-color: #475569;
+  color: #94a3b8;
+}
+
+.drop-zone:hover {
+  border-color: #052fe9;
+  background-color: #f4f7f9;
+}
+
+.dark-mode .drop-zone:hover {
+  border-color: #818cf8;
+  background-color: #1e293b;
+}
+
+.drop-zone.is-dragging {
+  border-color: #052fe9;
+  background-color: rgba(5, 47, 233, 0.1);
+}
+
+.dark-mode .drop-zone.is-dragging {
+  border-color: #818cf8;
+  background-color: rgba(129, 140, 248, 0.1);
+}
+
+.drop-zone p {
+  margin: 0;
+  font-weight: 500;
+}

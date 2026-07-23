@@ -1,34 +1,25 @@
 /* 
-   FUNCIÓN: Este componente actúa como un "filtro de seguridad".
-   Su labor es proteger rutas privadas, asegurando que solo los usuarios 
-   que han iniciado sesión puedan ver el contenido (children) y redirigiendo 
-   automáticamente a quienes no lo han hecho hacia la página de login.
+  Archivo: ProtectedRoute.jsx
+  Función: Componente de orden superior (HOC) que protege rutas.
+           Verifica si el usuario ha iniciado sesión y si tiene el rol adecuado.
+           Si no cumple las condiciones, redirige a otra página.
 */
 import { Navigate } from 'react-router-dom';
 
-export default function ProtectedRoute({ sesionIniciada, rolUsuario, authorizedRoles, children }) {
+export default function ProtectedRoute({ sesionIniciada, rolUsuario, rolesAutorizados, children }) {
   
-  // Verificamos si el usuario no tiene una sesión activa
+  // 1. Verifica si el usuario tiene una sesión activa.
   if (!sesionIniciada) {
-    // Si no está logueado, lo enviamos al login.
-    // "replace" evita que el usuario pueda volver atrás al sitio protegido.
+    // Si no, lo redirige al login. `replace` evita que esta ruta quede en el historial del navegador.
     return <Navigate to="/login" replace />;
   }
 
-  // Si la ruta requiere roles específicos, verificamos si el usuario tiene uno de ellos.
-  if (authorizedRoles && authorizedRoles.length > 0 && !authorizedRoles.includes(rolUsuario)) {
-    // Si el usuario no tiene el rol adecuado, lo redirigimos a la página principal.
-    // Esto evita que un usuario normal acceda a rutas de administrador.
+  // 2. Si la ruta requiere roles específicos, verifica si el rol del usuario está en la lista de roles autorizados.
+  if (rolesAutorizados && rolesAutorizados.length > 0 && !rolesAutorizados.includes(rolUsuario)) {
+    // Si no tiene el rol adecuado, lo redirige a la página principal.
     return <Navigate to="/" replace />;
   }
 
-  // Si la validación pasa (está logueado), permitimos que renderice el contenido solicitado
+  // 3. Si todas las validaciones pasan, renderiza el componente hijo (la página protegida).
   return children;
 }
-
-/* 
-   CONEXIÓN: Este componente debe estar conectado en App.jsx 
-   que gestione la sesión de usuario de Supabase. Debes alimentar la prop 'isLoggedIn' con una 
-   variable de estado (ej: const [session, setSession] = useState(null)) que se actualice 
-   mediante un 'useEffect' escuchando 'supabase.auth.onAuthStateChange'.
-*/

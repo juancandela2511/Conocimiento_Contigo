@@ -1,86 +1,96 @@
 /*
   Archivo: useAdminProgress.js
-  Función: Hook personalizado que encapsula toda la lógica para obtener y procesar
-           los datos de progreso de los usuarios desde Supabase.
-  Tipo: Lógica de Frontend (Hook).
+  Función: Hook personalizado para obtener y procesar los datos de progreso de todos los usuarios.
+           Obtiene los datos directamente de las tablas para mayor robustez.
+  Tipo: Hook de React (Lógica de Frontend).
 */
 import { useState, useEffect } from 'react';
 import { supabase } from './services/supabaseClient';
 
 export const useAdminProgress = () => {
-  const [progressData, setProgressData] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState(null);
+  // Estado para almacenar los datos de progreso ya formateados.
+  const [datosProgreso, definirDatosProgreso] = useState([]);
+  // Estado para controlar la visualización del indicador de carga.
+  const [estaCargando, definirEstaCargando] = useState(true);
+  // Estado para almacenar cualquier error que ocurra durante la carga.
+  const [error, definirError] = useState(null);
 
   useEffect(() => {
-    const fetchData = async () => {
-      setIsLoading(true);
-      setError(null);
+    const cargarDatos = async () => {
+      definirEstaCargando(true);
+      definirError(null);
       try {
-        // 1. Obtener todos los usuarios con el rol 'usuario'
-        const { data: students, error: studentsError } = await supabase
+        // Paso 1: Obtener todos los usuarios con el rol 'usuario'.
+        const { data: usuarios, error: errorUsuarios } = await supabase
           .from('Usuario')
           .select('id, Usuario')
           .eq('profile', 'usuario');
-        if (studentsError) throw studentsError;
+        if (errorUsuarios) throw errorUsuarios;
 
-        // 2. Obtener todos los cursos y su conteo de contenidos
-        const { data: coursesWithContent, error: coursesError } = await supabase
+        // Paso 2: Obtener todos los cursos y su conteo total de contenidos.
+        const { data: cursos, error: errorCursos } = await supabase
           .from('cursos')
           .select('id, curso, contenidos(count)');
-        if (coursesError) throw coursesError;
+        if (errorCursos) throw errorCursos;
 
-        // 3. Obtener todos los registros de 'contenido_completado'
-        const { data: completions, error: completionsError } = await supabase
+        // Paso 3: Obtener todos los registros de 'contenido_completado'.
+        const { data: completados, error: errorCompletados } = await supabase
           .from('contenido_completado')
           .select('user_id, curso_id');
-        if (completionsError) throw completionsError;
+        if (errorCompletados) throw errorCompletados;
 
-        // 4. Procesar los datos para construir la tabla de progreso
-        const studentProgress = {};
-        for (const completion of completions) {
-          if (!studentProgress[completion.user_id]) {
-            studentProgress[completion.user_id] = {};
+        // Paso 4: Procesar los datos en el cliente para construir la tabla de progreso.
+        // Creamos un mapa para contar los contenidos completados por usuario y por curso.
+        const progresoPorUsuario = {};
+        for (const item of completados) {
+          const claveUsuario = item.user_id;
+          const claveCurso = item.curso_id;
+          if (!progresoPorUsuario[claveUsuario]) {
+            progresoPorUsuario[claveUsuario] = {};
           }
-          studentProgress[completion.user_id][completion.curso_id] = (studentProgress[completion.user_id][completion.curso_id] || 0) + 1;
+          progresoPorUsuario[claveUsuario][claveCurso] = (progresoPorUsuario[claveUsuario][claveCurso] || 0) + 1;
         }
 
-        const result = [];
-        for (const student of students) {
-          const progressEntries = studentProgress[student.id];
-          if (progressEntries) {
-            for (const courseId in progressEntries) {
-              const course = coursesWithContent.find(c => c.id.toString() === courseId);
-              if (course) {
-                const totalContents = course.contenidos[0]?.count || 0;
-                const completedContents = progressEntries[courseId];
+        const resultadoFinal = [];
+        // Iteramos sobre cada usuario para generar sus filas de progreso.
+        for (const usuario of usuarios) {
+          const progresosDelUsuario = progresoPorUsuario[usuario.id];
 
-                if (totalContents > 0) {
-                  const percentage = (completedContents / totalContents) * 100;
-                  result.push({
-                    id: `${student.id}-${course.id}`, // Genera una clave única para el mapeo en React
-                    userName: student.Usuario,
-                    courseName: course.curso,
-                    progress: Math.round(percentage),
-                    remaining: 100 - Math.round(percentage),
-                    status: percentage === 100 ? 'Completado' : 'En Progreso'
+          // Si el usuario tiene progreso en al menos un curso, lo procesamos.
+          if (progresosDelUsuario) {
+            for (const idCurso in progresosDelUsuario) {
+              const curso = cursos.find(c => c.id.toString() === idCurso);
+              if (curso) {
+                const contenidosTotales = curso.contenidos[0]?.count || 0;
+                const contenidosCompletados = progresosDelUsuario[idCurso];
+
+                if (contenidosTotales > 0) {
+                  const porcentaje = (contenidosCompletados / contenidosTotales) * 100;
+                  resultadoFinal.push({
+                    id: `${usuario.id}-${curso.id}`,
+                    userName: usuario.Usuario,
+                    courseName: curso.curso,
+                    progress: Math.round(porcentaje),
+                    remaining: 100 - Math.round(porcentaje),
+                    status: porcentaje === 100 ? 'Completado' : 'En Progreso'
                   });
                 }
               }
             }
           }
         }
-        setProgressData(result);
+        definirDatosProgreso(resultadoFinal);
       } catch (err) {
         console.error("Error al cargar los datos de progreso:", err);
-        setError(err);
+        definirError(err);
       } finally {
-        setIsLoading(false);
+        definirEstaCargando(false);
       }
     };
 
-    fetchData();
+    cargarDatos();
   }, []);
 
-  return { progressData, isLoading, error };
+  // 3. Devuelve los datos y los estados para que el componente que use el hook pueda utilizarlos.
+  return { progressData: datosProgreso, isLoading: estaCargando, error };
 };

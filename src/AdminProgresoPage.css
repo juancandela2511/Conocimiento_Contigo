@@ -9,6 +9,7 @@
   max-width: 1200px;
   margin: 120px auto 40px auto; /* Margen superior para no solapar con la navbar */
   font-family: 'Segoe UI', sans-serif;
+  background-color: var(--bg);
 }
 
 .admin-progreso-container h1 {
@@ -75,4 +76,19 @@
 
 .dark-mode .progreso-table tbody tr:hover {
   background-color: #4a5568;
+}
+
+/* Nueva cuadrícula para las tarjetas de progreso del usuario */
+.user-progress-grid {
+  display: grid;
+  grid-template-columns: 1fr; /* Una columna por defecto */
+  gap: 20px;
+}
+
+/* Para pantallas más grandes, podemos usar dos columnas */
+@media (min-width: 768px) {
+  .user-progress-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 25px;
+  }
 }

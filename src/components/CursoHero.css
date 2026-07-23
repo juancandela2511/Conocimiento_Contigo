@@ -6,7 +6,8 @@
 
 .curso-hero-container {
   position: relative;
-  height: 350px; /* Altura del hero, reducida para un efecto de "menos zoom" */
+  height: 400px; /* Aumentamos la altura para dar más espacio visual */
+  background-color: #222; /* Color de fondo de respaldo si la imagen no carga */
   background-size: cover;
   background-position: center;
   display: flex;
@@ -16,20 +17,17 @@
   text-align: center;
 }
 
-.curso-hero-overlay {
+/* Usamos un pseudo-elemento ::before para crear una capa de superposición oscura.
+   Esto mejora la legibilidad del contenido sobre la imagen de fondo. */
+.curso-hero-container::before {
+  content: ""; /* Los pseudo-elementos necesitan la propiedad 'content' */
   position: absolute;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: rgba(5, 47, 233, 0.6); /* Filtro azul, como el de los botones de acceso */
+  background-color: rgba(0, 0, 0, 0.4); /* Capa negra semi-transparente */
   z-index: 1;
-}
-
-/* --- Dark Mode --- */
-.dark-mode .curso-hero-overlay {
-  /* Un filtro más oscuro y menos saturado para el modo noche */
-  background-color: rgba(15, 23, 42, 0.7);
 }
 
 .curso-hero-content {
@@ -43,7 +41,8 @@
 }
 
 .curso-hero-box {
-  background-color: rgba(255, 255, 255, 0.95); /* Caja blanca semi-transparente */
+  /* Caja semi-transparente simple para asegurar la legibilidad del título */
+  background-color: rgba(255, 255, 255, 0.9); /* Blanco con alta opacidad */
   padding: 40px;
   border-radius: 20px;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
@@ -57,7 +56,7 @@
 
 /* --- Dark Mode --- */
 .dark-mode .curso-hero-box {
-  background-color: rgba(176, 187, 213, 0.9); /* slate-800 con transparencia */
+  background-color: rgba(205, 211, 211, 0.8); /* Fondo de vidrio claro */
   box-shadow: 0 10px 30px rgba(27, 78, 150, 0.4);
 }
 
@@ -76,5 +75,5 @@
 
 /* --- Dark Mode --- */
 .dark-mode .curso-hero-title {
-  color: #1a2530; /* slate-100 */
+  color: #37383a; /* Texto oscuro */
 }

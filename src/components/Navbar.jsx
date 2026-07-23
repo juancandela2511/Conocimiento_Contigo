@@ -6,7 +6,7 @@
 
 // Importaciones de React y librerías externas.
 import { Link } from 'react-router-dom';
-import { Home, LogIn, Info, Menu, Search, UserCircle, Trophy, Users } from 'lucide-react';
+import { Home, LogIn, Info, Menu, Search, UserCircle, Trophy, Users, BarChart } from 'lucide-react';
 
 // Importaciones de archivos locales.
 import './Navbar.css';
@@ -53,15 +53,23 @@ export default function BarraNavegacion({ sesionIniciada, alBuscar, alPresionarE
             <span></span>
           </Link>
 
-          {/* Enlace condicional: 'Progreso' para admin, 'Logros' para usuario. */}
+          {/* Enlace a la página de logros (visible para todos). */}
+          <Link to="/logros" className="elemento-nav">
+            <Trophy size={20} />
+            <span></span>
+          </Link>
+
+          {/* Enlace condicional a la página de progreso. */}
           {rolUsuario === 'administrador' ? (
+            // Los administradores ven el progreso de todos los usuarios.
             <Link to="/admin/progreso" className="elemento-nav">
               <Users size={20} />
               <span></span>
             </Link>
           ) : (
-            <Link to="/logros" className="elemento-nav">
-              <Trophy size={20} />
+            // Los usuarios ven su propio progreso.
+            <Link to="/progreso" className="elemento-nav">
+              <BarChart size={20} />
               <span></span>
             </Link>
           )}

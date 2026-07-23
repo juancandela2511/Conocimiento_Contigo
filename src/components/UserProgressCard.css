@@ -1,0 +1,94 @@
+.user-progress-card {
+  background-color: #fff;
+  border-radius: 12px;
+  padding: 25px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.07);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.dark-mode .user-progress-card {
+  background-color: #2d3748;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+
+.user-progress-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+}
+
+.dark-mode .user-progress-card:hover {
+  box-shadow: 0 8px 25px rgba(88, 113, 255, 0.15);
+}
+
+.user-progress-course-name {
+  margin: 0;
+  font-size: 1.3rem;
+  color: #333;
+  font-weight: 600;
+}
+
+.dark-mode .user-progress-course-name {
+  color: #e2e8f0;
+}
+
+.user-progress-details {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.user-progress-bar-container {
+  flex-grow: 1;
+  height: 28px;
+  background-color: #e9ecef;
+  border-radius: 14px;
+  overflow: hidden;
+}
+
+.dark-mode .user-progress-bar-container {
+  background-color: #1a202c;
+}
+
+.user-progress-bar {
+  height: 100%;
+  background: linear-gradient(90deg, #4f46e5, #818cf8);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.8rem;
+  font-weight: bold;
+  border-radius: 14px;
+  transition: width 0.5s ease-in-out;
+}
+
+.user-progress-status {
+  font-weight: bold;
+  font-size: 0.9rem;
+  padding: 5px 12px;
+  border-radius: 20px;
+  white-space: nowrap;
+}
+
+.status-en-progreso {
+  background-color: #eef2ff;
+  color: #4f46e5;
+}
+
+.dark-mode .status-en-progreso {
+  background-color: #3730a3;
+  color: #c7d2fe;
+}
+
+.status-completado {
+  background-color: #dcfce7;
+  color: #16a34a;
+}
+
+.dark-mode .status-completado {
+  background-color: #14532d;
+  color: #86efac;
+}

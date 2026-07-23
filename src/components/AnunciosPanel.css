@@ -1,75 +1,244 @@
 /*
   Archivo: AnunciosPanel.css
-  Función: Estilos para el panel de anuncios con efecto de nota adhesiva.
+  Función: Estilos para el panel de anuncios, que puede estar colapsado como un botón o expandido.
   Tipo: Frontend.
 */
 
+/* Botón flotante para abrir el panel de anuncios (cuando está cerrado) */
+.announcement-fab {
+  position: fixed;
+  top: 90px;
+  right: 40px;
+  background-color: #ffc107; /* Amarillo de nota */
+  color: #333;
+  border: none;
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+  transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+  z-index: 999;
+}
+
+.announcement-fab:hover {
+  transform: scale(1.1);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.3);
+}
+
+/* Punto rojo de notificación */
+.announcement-notification-dot {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  width: 12px;
+  height: 12px;
+  background-color: #ff3b30;
+  border-radius: 50%;
+  border: 2px solid white;
+}
+
+/* Panel de anuncios expandido */
 .announcements-panel {
   width: 300px; /* Ancho fijo */
+  max-height: 80vh;
   position: fixed; /* Se queda fijo en la ventana del navegador. */
   top: 90px;
   right: 40px;
-  padding: 25px;
-  /* Estilo de nota adhesiva */
-  background-color: #ffc; /* Amarillo clásico de nota */
-  font-family: 'Comic Sans MS', 'Chalkduster', cursive; /* Fuente tipo manuscrita */
-  transform: rotate(2deg); /* Ligera rotación */
-  box-shadow: 5px 5px 15px rgba(0,0,0,0.2); /* Sombra para dar profundidad */
-  transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
-  border-bottom-right-radius: 60px 5px; /* Efecto de esquina doblada */
-  border-bottom-left-radius: 5px;
+  background-color: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(10px);
+  border-radius: 15px;
+  box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+  display: flex;
+  flex-direction: column;
+  animation: announcement-fade-in 0.3s ease-out;
+  z-index: 1000;
 }
 
-/* Efecto al pasar el ratón sobre la nota */
-.announcements-panel:hover {
-  transform: rotate(0deg) scale(1.05); /* Se endereza y agranda un poco */
-  box-shadow: 10px 10px 20px rgba(0,0,0,0.3);
-  z-index: 10; /* Se pone al frente */
+@keyframes announcement-fade-in {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 /* --- Dark Mode --- */
 .dark-mode .announcements-panel {
-  background-color: #2c2c2a; /* Un amarillo muy oscuro y desaturado */
-  box-shadow: 5px 5px 15px rgba(0,0,0,0.5);
+  background-color: rgba(45, 55, 72, 0.8); /* Azul pizarra con transparencia */
+  box-shadow: 0 8px 25px rgba(0,0,0,0.3);
 }
 
-
-/* Título del panel de anuncios. */
-.announcements-panel h2 {
-  margin-top: 0;
-  color: #555;
-  border-bottom: 1px solid rgba(0,0,0,0.1);
-  padding-bottom: 10px;
-  font-size: 1.5rem;
+/* Cabecera del panel */
+.announcements-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 20px;
+  border-bottom: 1px solid #e0e0e0;
+  flex-shrink: 0;
 }
 
-/* --- Dark Mode --- */
-.dark-mode .announcements-panel h2 {
-  color: #ffc; /* Amarillo claro para el título en modo oscuro */
-  border-bottom: 1px solid rgba(255,255,255,0.2);
-}
-
-/* Contenedor para cada anuncio individual. */
-.announcement-item {
-  margin-bottom: 20px;
-}
-
-.announcement-item h4 {
-  margin: 0 0 5px 0;
+.announcements-header h2 {
+  margin: 0;
+  font-size: 1.2rem;
   color: #333;
 }
 
-.dark-mode .announcement-item h4 {
-  color: #eee;
+.dark-mode .announcements-header {
+  border-bottom-color: #334155;
 }
 
-.announcement-item p {
+.dark-mode .announcements-header h2 {
+  color: #e2e8f0;
+}
+
+.announcements-close-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 5px;
+  color: #888;
+}
+
+.dark-mode .announcements-close-btn {
+  color: #94a3b8;
+}
+
+/* Área de contenido con las notas */
+.announcements-content {
+  padding: 20px;
+  overflow-y: auto;
+}
+
+/* Estilos para cada nota individual (post-it) */
+.announcement-item.note {
+  position: relative;
+  background-color: #ffec99;
+  padding: 15px;
+  padding-top: 35px;
+  border-radius: 4px;
+  box-shadow: 5px 5px 15px rgba(0, 0, 0, 0.15);
+  margin-bottom: 25px;
+  transform: rotate(var(--rotation, 1deg));
+  transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+  font-family: 'Kalam', cursive; /* Asegúrate de importar esta fuente en index.css */
+}
+
+/* Al pasar el ratón sobre la nota, se endereza y agranda */
+.announcement-item.note:hover {
+  transform: rotate(0deg) scale(1.05);
+  box-shadow: 8px 8px 20px rgba(0, 0, 0, 0.2);
+  z-index: 10;
+}
+
+/* Estilos para el texto dentro de la nota, se mantienen en ambos modos */
+.announcement-item.note h4,
+.announcement-item.note p {
+  color: #333;
   margin: 0;
-  color: #444;
-  font-size: 0.9rem;
+}
+
+.announcement-item.note h4 {
+  font-size: 1.1rem;
+  font-weight: bold;
+  margin-bottom: 8px;
+  border-bottom: 1px dashed rgba(0, 0, 0, 0.2);
+  padding-bottom: 5px;
+}
+
+.announcement-item.note p {
+  font-size: 0.95rem;
   line-height: 1.5;
 }
 
-.dark-mode .announcement-item p {
-  color: #ccc;
+/* En modo oscuro, solo cambiamos el fondo de la nota, no el texto */
+.dark-mode .announcement-item.note {
+  background-color: #5c5c3d; /* Un amarillo oscuro para el modo noche */
+  box-shadow: 5px 5px 15px rgba(0, 0, 0, 0.3);
+}
+
+.note-pin {
+  position: absolute;
+  top: 5px;
+  left: 50%;
+  transform: translateX(-50%);
+  color: #e74c3c;
+  filter: drop-shadow(0 2px 2px rgba(0,0,0,0.3));
+}
+
+/* --- Sección de Apuntes Temporales --- */
+
+.apuntes-section {
+  border-top: 1px solid #e0e0e0;
+  margin-top: auto; /* Empuja esta sección al fondo del panel */
+  flex-shrink: 0;
+}
+
+.dark-mode .apuntes-section {
+  border-top-color: #334155;
+}
+
+.apuntes-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  background: none;
+  border: none;
+  padding: 15px 20px;
+  cursor: pointer;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #555;
+  transition: background-color 0.2s ease;
+}
+
+.dark-mode .apuntes-header {
+  color: #cbd5e1;
+}
+
+.apuntes-header:hover {
+  background-color: #f5f5f5;
+}
+
+.dark-mode .apuntes-header:hover {
+  background-color: #334155;
+}
+
+.apuntes-header span {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.apuntes-chevron {
+  transition: transform 0.3s ease;
+}
+
+.apuntes-chevron.open {
+  transform: rotate(180deg);
+}
+
+.apuntes-body {
+  padding: 0 20px 20px 20px;
+}
+
+.apuntes-textarea {
+  width: 100%;
+  height: 120px;
+  resize: vertical;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  padding: 10px;
+  font-family: 'Segoe UI', sans-serif;
+  font-size: 0.9rem;
+  background-color: #fff;
+  color: #333;
+}
+
+.dark-mode .apuntes-textarea {
+  background-color: #1e293b;
+  border-color: #475569;
+  color: #e2e8f0;
 }

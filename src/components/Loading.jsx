@@ -1,10 +1,10 @@
 // Loading.jsx
 import styles from './Loading.module.css';
 
-const Loading = ({ isLoading }) => {
-    // Si no está cargando, retornamos un div con una clase que lo oculte
+// Este componente es puramente presentacional. El componente padre decide si se muestra o no.
+const Loading = () => {
     return (
-        <div className={`${styles.overlay} ${!isLoading ? styles.hidden : ''}`}>
+        <div className={styles.overlay}>
             <div className={styles.ventanaCarga}>
                 <div className={styles.spinner}></div>
                 <p className={styles.textoCargando}>Cargando...</p>

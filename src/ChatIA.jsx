@@ -52,9 +52,28 @@ export default function ChatIA() {
       setMessages((prev) => [...prev, aiMessage]);
 
     } catch (error) {
-      // Lógica de Frontend: Manejo de errores si la comunicación con la IA falla.
+      // Lógica de Frontend: Manejo de errores mejorado.
       console.error('Error al contactar la IA:', error);
-      const errorMessage = { role: 'ai', text: 'Lo siento, no pude procesar tu solicitud.' };
+
+      let displayErrorMessage = 'Lo siento, no pude procesar tu solicitud en este momento.';
+
+      // El error de Supabase Functions (`FunctionsHttpError`) contiene el `context`
+      // que es la respuesta original del fetch. Intentamos leer el cuerpo del error.
+      if (error.context && typeof error.context.json === 'function') {
+        try {
+          const errorData = await error.context.json();
+          console.log("Cuerpo del error de la Edge Function:", errorData);
+          // Si la función devuelve un JSON con 'details' o 'error', lo mostramos.
+          if (errorData.details) {
+            displayErrorMessage = `Error desde la IA: ${errorData.details}`;
+          } else if (errorData.error) {
+            displayErrorMessage = `Error desde la IA: ${errorData.error}`;
+          }
+        } catch (e) {
+          console.error('No se pudo parsear el cuerpo del error como JSON:', e);
+        }
+      }
+      const errorMessage = { role: 'ai', text: displayErrorMessage };
       setMessages((prev) => [...prev, errorMessage]);
     } finally {
       // Lógica de Frontend: Desactiva el estado de carga.
@@ -65,8 +84,11 @@ export default function ChatIA() {
   // Lógica de Frontend: Si el chat está cerrado, solo muestra el botón para abrirlo.
   if (!isOpen) {
     return (
+      // Este botón se muestra como un círculo flotante en la esquina de la pantalla.
       <button className="chat-ia-logo-button" onClick={() => setIsOpen(true)}>
         <GraduationCap size={32} />
+        {/* El punto rojo de notificación para atraer la atención del usuario. */}
+        <span className="chat-ia-notification-dot"></span>
       </button>
     );
   }
