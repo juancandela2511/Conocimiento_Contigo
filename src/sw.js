@@ -4,8 +4,6 @@
   Tipo: Service Worker.
 */
 import { cleanupOutdatedCaches, precacheAndRoute } from 'workbox-precaching';
-import { registerRoute } from 'workbox-routing';
-import { StaleWhileRevalidate } from 'workbox-strategies';
 import Dexie from 'dexie';
 
 // Workbox se encargará de cachear el App Shell.
@@ -25,9 +23,11 @@ db.version(1).stores({
 const processSyncQueue = async () => {
   // Importamos Supabase aquí porque no está disponible globalmente en el worker.
   const { createClient } = await import('@supabase/supabase-js');
+  
+  // ¡IMPORTANTE! Usa las variables de entorno de tu proyecto.
   const supabase = createClient(
-    'https://jioxqgprhcnbibopwquz.supabase.co', // Reemplaza con tu URL de Supabase
-    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imppb3hxZ3ByaGNuYmlib3B3cXV6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MTc0NzEwODgsImV4cCI6MjAzMzA0NzA4OH0.z-e-k2kYQ5AIw3iR5o7s5aA4r2tL5hrdyI2a2b0i3aY' // Reemplaza con tu Anon Key de Supabase
+    'https://nozxiujeohrhyhefsedw.supabase.co', // URL correcta de tu proyecto
+    'TU_SUPABASE_ANON_KEY' // REEMPLAZA ESTO con tu Anon Key de Supabase
   );
 
   const pendingActions = await db.syncQueue.toArray();
