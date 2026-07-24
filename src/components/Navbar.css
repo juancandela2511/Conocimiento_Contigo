@@ -1,6 +1,7 @@
 /*
   Archivo: Navbar.css
   Función: Estilos para la barra de navegación principal (izquierda) y los elementos de la esquina superior derecha.
+  Nota: Incluye media queries para responsividad en dispositivos móviles.
   Tipo: Frontend.
 */
 
@@ -13,7 +14,7 @@
   background-color: #282727;
   padding: 10px;
   border-radius: 50px; /* Forma de píldora */
-  transition: all 0.4s ease;
+  transition: all 0.4s ease, width 0s, max-width 0s; /* Evita transiciones de ancho raras */
   z-index: 1000;
 }
 
@@ -23,15 +24,11 @@
   box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
 }
 
-/* Al pasar el ratón, la barra se expande para mostrar el contenido. */
-.contenedor-barra-navegacion:hover {
-  border-radius: 25px; /* Se vuelve un poco más cuadrado al expandir */
-}
-
 /* Estilo para la segunda barra de navegación (la de edición). */
 .editor-nav {
   top: 85px; /* La posicionamos debajo de la barra principal */
   background-color: #005f5e; /* Un color verde para diferenciarla */
+  width: auto; /* Para que se ajuste al contenido */
 }
 
 /* Icono que dispara la animación del menú. */
@@ -39,6 +36,9 @@
   color: rgb(255, 255, 255);
   cursor: pointer;
   display: flex;
+  background: none;
+  border: none;
+  padding: 0;
 }
 
 /* Por defecto, el contenido del menú está oculto. */
@@ -51,11 +51,16 @@
   overflow: hidden; /* Asegura que el contenido no se desborde cuando está colapsado */
 }
 
-.contenedor-barra-navegacion:hover .contenido-menu {
+/* Cuando la barra de navegación tiene la clase 'is-open', se expande. */
+.contenedor-barra-navegacion.is-open {
+  border-radius: 25px;
+}
+
+.contenedor-barra-navegacion.is-open .contenido-menu {
   max-width: 800px; /* Aumentamos el espacio para que quepa todo cómodamente */
   opacity: 1;
   padding-left: 15px; /* Espacio entre el icono de menú y los otros */
-  overflow: visible; /* Permite que los submenús se muestren al expandir */
+  overflow: initial; /* Permite que los submenús se muestren al expandir */
 }
 
 /* Estilo base para los íconos y botones dentro del menú. */
@@ -70,6 +75,7 @@
   border: none;
   cursor: pointer;
   font-size: 16px;
+  white-space: nowrap;
 }
 
 .elemento-nav:hover, .nav-item-btn:hover {
@@ -85,6 +91,10 @@
 /* --- Dark Mode --- */
 .dark-mode .elemento-nav:hover, .dark-mode .nav-item-btn:hover {
   color: #5871ff; /* Un azul más brillante para el modo oscuro */
+}
+
+.elemento-nav span {
+  margin-left: 8px;
 }
 
 
@@ -162,6 +172,11 @@
   transform: scale(1.1);
 }
 
+/* Botón de logout para móvil, oculto por defecto en escritorio */
+.logout-mobile {
+  display: none;
+}
+
 /* Estilo para el enlace de administrador (actualmente no se usa). */
 .admin-link {
   color: #ffd700; /* Color dorado para destacar */
@@ -184,7 +199,7 @@
 }
 
 /* Al pasar el ratón, el fondo del buscador se vuelve blanco. */
-.contenedor-busqueda:hover {
+.contenedor-barra-navegacion.is-open .contenedor-busqueda:hover {
   background: white;
 }
 
@@ -206,7 +221,7 @@
 }
 
 /* --- Dark Mode --- */
-.dark-mode .contenedor-busqueda:hover .input-busqueda {
+.dark-mode .contenedor-barra-navegacion.is-open .contenedor-busqueda:hover .input-busqueda {
   color: #eee;
 }
 
@@ -305,4 +320,45 @@
 /* --- Dark Mode --- */
 .dark-mode .submenu-item-btn:hover {
   background-color: #334155; /* slate-700 */
+}
+
+/* ================================================================= */
+/* ESTILOS RESPONSIVE PARA MÓVILES */
+/* ================================================================= */
+@media (max-width: 768px) {
+  /* En móvil, la barra de navegación se pega a la parte superior */
+  .contenedor-barra-navegacion {
+    top: 10px;
+    left: 10px;
+    right: 10px;
+    width: calc(100% - 20px);
+    box-sizing: border-box;
+    justify-content: space-between; /* Alinea el activador a la izquierda y el contenido a la derecha */
+  }
+
+  /* El menú se expande hacia abajo en lugar de a lo largo */
+  .contenedor-barra-navegacion.is-open {
+    height: auto;
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 10px 15px;
+  }
+
+  .contenedor-barra-navegacion.is-open .contenido-menu {
+    flex-direction: column;
+    align-items: flex-start;
+    width: 100%;
+    max-width: 100%;
+    padding-top: 15px;
+  }
+
+  /* Ocultamos los elementos de la esquina superior derecha en móvil */
+  .contenedor-superior-derecho {
+    display: none;
+  }
+
+  /* Mostramos el botón de logout dentro del menú en móvil */
+  .logout-mobile {
+    display: flex;
+  }
 }

@@ -56,7 +56,9 @@ export default function AdminUsuariosPage() {
     <>
       <div className="admin-usuarios-container">
         <h1>Administración de Usuarios</h1>
-        <div className="admin-usuarios-table-wrapper">
+        {/* En pantallas pequeñas, este contenedor permitirá hacer scroll horizontal
+            para ver toda la tabla sin romper el layout de la página. */}
+        <div className="admin-usuarios-table-wrapper" style={{ overflowX: 'auto' }}>
           <table className="admin-usuarios-table">
             <thead>
               <tr>

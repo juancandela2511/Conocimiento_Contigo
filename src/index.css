@@ -68,6 +68,13 @@ body {
   box-sizing: border-box;
 }
 
+@media (max-width: 1126px) {
+  #root {
+    width: 100%;
+    border-inline: none; /* Quitamos los bordes laterales en pantallas más pequeñas */
+  }
+}
+
 /* Contenedor para el contenido principal de la página.
    flex-grow: 1 asegura que este contenedor se expanda para llenar cualquier
    espacio vertical disponible, empujando el pie de página hacia abajo. */

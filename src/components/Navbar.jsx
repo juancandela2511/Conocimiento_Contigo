@@ -5,6 +5,7 @@
 */
 
 // Importaciones de React y librerías externas.
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Home, LogIn, Info, Menu, Search, UserCircle, Trophy, Users, BarChart, Settings } from 'lucide-react';
 
@@ -15,6 +16,7 @@ import ThemeSwitcher from './ThemeSwitcher'; // Importación sin extensión para
 
 // Definición del componente Navbar. Recibe props para funcionar.
 export default function BarraNavegacion({ sesionIniciada, alBuscar, alPresionarEnter, rolUsuario }) {
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
   
   // Lógica de Frontend: Si el usuario no ha iniciado sesión, no se muestra nada.
   if (!sesionIniciada) return null;
@@ -31,12 +33,12 @@ export default function BarraNavegacion({ sesionIniciada, alBuscar, alPresionarE
   return (
     <>
       {/* Barra de navegación principal, a la izquierda. */}
-      <nav className="contenedor-barra-navegacion">
+      <nav className={`contenedor-barra-navegacion ${isMenuOpen ? 'is-open' : ''}`}>
         
         {/* Icono que activa el menú al pasar el ratón. */}
-        <div className="activador-menu">
+        <button className="activador-menu" onClick={() => setIsMenuOpen(!isMenuOpen)} aria-label="Abrir menú">
           <Menu size={28} />
-        </div>
+        </button>
 
         {/* Contenido del menú que se expande. */}
         <div className="contenido-menu">
@@ -74,6 +76,14 @@ export default function BarraNavegacion({ sesionIniciada, alBuscar, alPresionarE
             </Link>
           )}
 
+          {/* Enlace a la página de administración de usuarios, visible solo para administradores */}
+          {rolUsuario === 'administrador' && (
+            <Link to="/admin/usuarios" className="elemento-nav" title="Administrar Usuarios">
+              <Settings size={20} />
+              <span></span>
+            </Link>
+          )}
+
           {/* Componente de búsqueda. */}
           <div className="contenedor-busqueda" onClick={(e) => e.stopPropagation()}>
             <Search size={20} />
@@ -93,6 +103,12 @@ export default function BarraNavegacion({ sesionIniciada, alBuscar, alPresionarE
             />
           </div>
 
+          {/* Botón de logout, visible solo en el menú expandido en móvil */}
+          <button onClick={handleLogout} className="elemento-nav logout-mobile">
+            <LogIn size={20} />
+            <span>Salir</span>
+          </button>
+
         </div>
       </nav>
 
@@ -100,13 +116,6 @@ export default function BarraNavegacion({ sesionIniciada, alBuscar, alPresionarE
       <div className="contenedor-superior-derecho">
         {/* Aquí colocamos el interruptor de tema, a la izquierda del rol de usuario. */}
         <ThemeSwitcher />
-
-        {/* Enlace a la página de administración de usuarios, visible solo para administradores */}
-        {rolUsuario === 'administrador' && (
-          <Link to="/admin/usuarios" className="boton-cierre-sesion-circular" title="Administrar Usuarios">
-            <Settings size={20} />
-          </Link>
-        )}
 
         {/* Indicador de rol del usuario. */}
         {rolUsuario && (
