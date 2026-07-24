@@ -71,7 +71,7 @@ const AddContentModal = ({ onClose, onContentAdded, curso_id, contentType }) => 
   };
 
   const addTrigger = () => {
-    setTriggers([...triggers, { time: '', pregunta: '', opciones: ['', '', ''], respuestaCorrecta: '' }]);
+    setTriggers([...triggers, { time: '', pregunta: '', opciones: ['', '', ''], respuestaCorrecta: null }]);
   };
 
   const handleTriggerChange = (tIndex, field, value) => {
@@ -145,8 +145,8 @@ const AddContentModal = ({ onClose, onContentAdded, curso_id, contentType }) => 
             finalVideoUrl = videoUrl;
           }
 
-          if (triggers.some(t => !t.time || !t.pregunta.trim() || t.opciones.some(o => !o.trim()) || t.respuestaCorrecta === '')) {
-            throw new Error('Para cada cuestionario en video, el tiempo, la pregunta, todas las opciones y la respuesta correcta son obligatorios.');
+          if (triggers.some(t => !t.time || !t.pregunta.trim() || t.opciones.some(o => !o.trim()) || t.respuestaCorrecta === null)) {
+            throw new Error('Para cada cuestionario en video, el tiempo, la pregunta, todas las opciones y la selección de la respuesta correcta son obligatorios.');
           }
           contenido_json = { url: finalVideoUrl, quizTriggers: triggers };
           break;

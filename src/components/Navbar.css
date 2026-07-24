@@ -493,8 +493,9 @@
     right: 0;
   }
 
-  /* Ocultamos los elementos de la esquina superior derecha en móvil */
-  .contenedor-superior-derecho {
+  /* Ocultamos el rol y el botón de logout en móvil, pero mantenemos el ThemeSwitcher */
+  .contenedor-superior-derecho .indicador-rol-usuario,
+  .contenedor-superior-derecho .boton-cierre-sesion-circular {
     display: none;
   }
 

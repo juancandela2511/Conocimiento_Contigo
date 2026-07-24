@@ -3,7 +3,7 @@
   Función: Muestra un modal con el contenido específico y gestiona la finalización automática.
   Tipo: Componente de Frontend.
 */
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { X } from 'lucide-react';
 // Se importa el módulo completo para manejar un posible problema de interoperabilidad
 // entre CommonJS y ES Modules que a veces ocurre con algunos bundlers.
@@ -21,6 +21,12 @@ const VideoPlayerWithTriggers = ({ content, onMarkAsComplete, isCompleted }) => 
   // con una propiedad 'default' (típico de la interoperabilidad CJS/ESM), se usa esa.
   const ReactPlayer = ReactPlayerModule.default || ReactPlayerModule;
   const videoUrl = content.contenido_json?.url;
+  const quizTriggers = content.contenido_json?.quizTriggers || [];
+
+  const [isPlaying, setIsPlaying] = useState(true);
+  const [activeQuiz, setActiveQuiz] = useState(null);
+  const [shownTriggers, setShownTriggers] = useState(new Set());
+  const [showSuccessAnimation, setShowSuccessAnimation] = useState(false);
 
   // Comprobación de seguridad para la URL del video.
   if (!videoUrl) {
@@ -34,23 +40,80 @@ const VideoPlayerWithTriggers = ({ content, onMarkAsComplete, isCompleted }) => 
     }
   };
 
-  // La lógica de los cuestionarios en video (triggers) se ha simplificado.
-  // ReactPlayer es muy versátil pero controlar la pausa/reproducción para los triggers
-  // requiere una lógica de estado más compleja que se puede añadir en el futuro.
-  // Por ahora, priorizamos que todos los videos carguen y se reproduzcan correctamente.
+  const handleProgress = (progress) => {
+    // No hacer nada si no hay triggers o si ya hay un quiz activo.
+    if (quizTriggers.length === 0 || activeQuiz) return;
+
+    const currentTime = progress.playedSeconds;
+
+    for (const trigger of quizTriggers) {
+      // Comprueba si se alcanzó el tiempo del trigger y si no se ha mostrado ya.
+      if (currentTime >= trigger.time && !shownTriggers.has(trigger.time)) {
+        setIsPlaying(false); // Pausa el video.
+        
+        // Prepara el objeto del cuestionario para QuizRunner.
+        const quizForRunner = {
+          contenido_json: {
+            preguntas: [{
+              pregunta: trigger.pregunta,
+              opciones: trigger.opciones,
+              respuestaCorrecta: trigger.respuestaCorrecta,
+            }]
+          }
+        };
+        setActiveQuiz(quizForRunner);
+        setShownTriggers(prev => new Set(prev).add(trigger.time));
+        break; // Muestra solo un cuestionario a la vez.
+      }
+    }
+  };
+
+  const handleQuizClose = () => {
+    // Muestra la animación de éxito.
+    setShowSuccessAnimation(true);
+
+    // Después de un par de segundos, oculta la animación y reanuda el video.
+    setTimeout(() => {
+      setShowSuccessAnimation(false);
+      setActiveQuiz(null);
+      setIsPlaying(true);
+    }, 2500); // Duración de la animación.
+  };
 
   return (
-    <div className="video-responsive-container">
-      <ReactPlayer
-        url={videoUrl}
-        controls
-        playing // Inicia la reproducción (si el navegador lo permite)
-        width="100%"
-        height="100%"
-        className="react-player" // Clase para aplicar estilos
-        onEnded={handleVideoEnd}
-      />
-    </div>
+    <>
+      {showSuccessAnimation && (
+        <div className="success-animation-overlay">
+          <div className="success-animation-content">
+            <svg className="success-checkmark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52">
+              <circle className="success-checkmark__circle" cx="26" cy="26" r="25" fill="none"/>
+              <path className="success-checkmark__check" fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8"/>
+            </svg>
+            <p>¡Correcto!</p>
+          </div>
+        </div>
+      )}
+      {activeQuiz && (
+        <div className="quiz-in-video-overlay">
+          <div className="quiz-in-video-modal">
+            <h3>¡Pregunta Rápida!</h3>
+            <QuizRunner content={activeQuiz} onQuizComplete={handleQuizClose} />
+          </div>
+        </div>
+      )}
+      <div className="video-responsive-container">
+        <ReactPlayer
+          url={videoUrl}
+          controls
+          playing={isPlaying}
+          width="100%"
+          height="100%"
+          className="react-player" // Clase para aplicar estilos
+          onEnded={handleVideoEnd}
+          onProgress={handleProgress}
+        />
+      </div>
+    </>
   );
 };
 
