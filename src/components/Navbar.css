@@ -493,6 +493,11 @@
     right: 0;
   }
 
+  /* Hacemos que el contenedor de la derecha se comporte como un botón más en el header */
+  .contenedor-superior-derecho {
+    position: static;
+  }
+
   /* Ocultamos el rol y el botón de logout en móvil, pero mantenemos el ThemeSwitcher */
   .contenedor-superior-derecho .indicador-rol-usuario,
   .contenedor-superior-derecho .boton-cierre-sesion-circular {
