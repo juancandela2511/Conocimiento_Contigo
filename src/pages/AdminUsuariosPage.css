@@ -74,13 +74,13 @@
 }
 
 .role-administrador {
-  background-color: #fee2e2; /* red-100 */
-  color: #b91c1c; /* red-700 */
+  background-color: #dcfce7; /* green-100 */
+  color: #281b38; /* green-800 */
 }
 
 .dark-mode .role-administrador {
-  background-color: #5f2727;
-  color: #fca5a5; /* red-300 */
+  background-color: #1c162c; /* green-900 */
+  color: #86efac; /* green-300 */
 }
 
 .role-usuario {

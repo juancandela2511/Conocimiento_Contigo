@@ -120,13 +120,12 @@ export default function BarraNavegacion({ sesionIniciada, alBuscar, alPresionarE
         {/* Indicador de rol del usuario. */}
         {rolUsuario && (
           <div 
-            // Lógica de Frontend: Aplica un estilo diferente si el rol es 'administrador' o 'usuario'.
-            className={`indicador-rol-usuario ${
-              rolUsuario === 'administrador' || rolUsuario === 'usuario' ? 'indicador-rol-admin' : ''
-            }`}
+            // Se añade una clase específica para el rol para poder aplicar colores distintos.
+            className={`indicador-rol-usuario role-${rolUsuario}`}
           >
             {/* Lógica de Frontend: Muestra 'aprendiz' si el rol es 'usuario', si no, muestra el rol tal cual. */}
-            <UserCircle size={20} /> <span>{rolUsuario === 'usuario' ? 'aprendiz' : rolUsuario}</span>
+            <UserCircle size={24} className="user-role-icon" />
+            <span className="user-role-text">{rolUsuario === 'usuario' ? 'aprendiz' : rolUsuario}</span>
           </div>
         )}
         {/* Botón para cerrar sesión. */}

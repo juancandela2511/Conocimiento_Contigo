@@ -82,6 +82,17 @@ body {
   flex-grow: 1;
 }
 
+/* Contenedor para las barras de navegación. En móvil, se vuelve un bloque pegajoso. */
+@media (max-width: 768px) {
+  .site-header {
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    background: var(--bg); /* Fondo para que el contenido no se vea a través al hacer scroll */
+    padding: 10px 10px 0 10px; /* Espaciado interno para las barras */
+  }
+}
+
 h1,
 h2 {
   font-family: var(--heading);

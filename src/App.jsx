@@ -224,30 +224,32 @@ function AppContent() {
       */}
       {!estaCargandoApp && (
         <>
-          {/* 
-            Barra de Navegación Principal:
-            Se muestra en todas las páginas para usuarios logueados. Recibe el estado de la sesión,
-            el rol del usuario y una función para actualizar el término de búsqueda.
-          */}
-          <BarraNavegacion 
-            sesionIniciada={sesionIniciada} 
-            alBuscar={definirTerminoDeBusqueda} 
-            rolUsuario={rolUsuario}
-          />
-
-          {/* 
-            Barra de Navegación del Editor (Solo para Administradores):
-            Este componente se renderiza condicionalmente solo si el `rolUsuario` es 'administrador'.
-            Proporciona atajos para agregar y editar contenido.
-          */}
-          {rolUsuario === 'administrador' && (
-            <BarraNavegacionEditor 
-              alHacerClicAgregarModulo={() => definirEsVisibleModalAgregarModulo(true)}
-              alHacerClicAgregarLectura={(idCurso) => abrirModalAgregarContenido('lectura', idCurso)}
-              alHacerClicAgregarVideo={(idCurso) => abrirModalAgregarContenido('video', idCurso)}
-              alHacerClicAgregarCuestionario={(idCurso) => abrirModalAgregarContenido('cuestionario', idCurso)}
+          <header className="site-header">
+            {/* 
+              Barra de Navegación Principal:
+              Se muestra en todas las páginas para usuarios logueados. Recibe el estado de la sesión,
+              el rol del usuario y una función para actualizar el término de búsqueda.
+            */}
+            <BarraNavegacion 
+              sesionIniciada={sesionIniciada} 
+              alBuscar={definirTerminoDeBusqueda} 
+              rolUsuario={rolUsuario}
             />
-          )}
+
+            {/* 
+              Barra de Navegación del Editor (Solo para Administradores):
+              Este componente se renderiza condicionalmente solo si el `rolUsuario` es 'administrador'.
+              Proporciona atajos para agregar y editar contenido.
+            */}
+            {rolUsuario === 'administrador' && (
+              <BarraNavegacionEditor 
+                alHacerClicAgregarModulo={() => definirEsVisibleModalAgregarModulo(true)}
+                alHacerClicAgregarLectura={(idCurso) => abrirModalAgregarContenido('lectura', idCurso)}
+                alHacerClicAgregarVideo={(idCurso) => abrirModalAgregarContenido('video', idCurso)}
+                alHacerClicAgregarCuestionario={(idCurso) => abrirModalAgregarContenido('cuestionario', idCurso)}
+              />
+            )}
+          </header>
 
           {/* 
             Asistente de IA (Chat):

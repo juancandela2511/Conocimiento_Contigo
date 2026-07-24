@@ -22,7 +22,7 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background: linear-gradient(270deg, #a8c0ff, #c2e9fb); /* Gradiente más suave para modo claro */
+  background: linear-gradient(270deg, #e0f2f7, #e8f8fd); /* Tonos azules/grises muy claros */
   background-size: 600% 600%;
   animation: fondoMovible 15s ease infinite;
   mix-blend-mode: overlay;
@@ -47,7 +47,7 @@
 
 /* --- Dark Mode --- */
 .dark-mode .hero-modern::before {
-  background: linear-gradient(270deg, #150f27, #1d25b1, #050e6c);
+  background: linear-gradient(270deg, #1a237e, #283593); /* Tonos azules oscuros, menos morados */
   background-size: 400% 400%;
   animation: fondoMovible 20s ease infinite;
   mix-blend-mode: color-dodge; /* 'color-dodge' crea un efecto de neón interesante sobre la imagen en modo oscuro */

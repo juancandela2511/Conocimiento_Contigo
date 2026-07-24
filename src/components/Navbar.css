@@ -11,34 +11,47 @@
   left: 20px;
   display: flex;
   align-items: center;
-  background-color: #282727;
+  background-color: #ffffff; /* Color claro para el modo día */
   padding: 10px;
   border-radius: 50px; /* Forma de píldora */
   transition: all 0.4s ease, width 0s, max-width 0s; /* Evita transiciones de ancho raras */
   z-index: 1000;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); /* Sombra para que destaque */
+  border: 1px solid #e5e5e5; /* Borde sutil */
 }
 
 /* --- Dark Mode --- */
 .dark-mode .contenedor-barra-navegacion {
   background-color: #2d3748; /* Azul pizarra para consistencia con el tema oscuro */
   box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+  border: none; /* Quitamos el borde en modo oscuro */
 }
 
 /* Estilo para la segunda barra de navegación (la de edición). */
 .editor-nav {
   top: 85px; /* La posicionamos debajo de la barra principal */
-  background-color: #005f5e; /* Un color verde para diferenciarla */
+  background-color: #e6f7f7; /* Un verde muy claro para el modo día */
   width: auto; /* Para que se ajuste al contenido */
+  border-color: #cceaea; /* Borde verde claro */
+}
+
+.dark-mode .editor-nav {
+  background-color: #005f5e; /* Se mantiene el verde oscuro para el modo noche */
+  border-color: transparent;
 }
 
 /* Icono que dispara la animación del menú. */
 .activador-menu {
-  color: rgb(255, 255, 255);
+  color: #333; /* Color oscuro para el icono en modo día */
   cursor: pointer;
   display: flex;
   background: none;
   border: none;
   padding: 0;
+}
+
+.dark-mode .activador-menu {
+  color: rgb(255, 255, 255); /* Se mantiene blanco en modo oscuro */
 }
 
 /* Por defecto, el contenido del menú está oculto. */
@@ -68,7 +81,7 @@
   display: flex;
   align-items: center;
   gap: 10px;
-  color: white;
+  color: #333; /* Color oscuro para el texto en modo día */
   text-decoration: none;
   margin-right: 20px;
   background: none;
@@ -76,6 +89,10 @@
   cursor: pointer;
   font-size: 16px;
   white-space: nowrap;
+}
+
+.dark-mode .elemento-nav, .dark-mode .nav-item-btn {
+  color: white; /* Se mantiene blanco en modo oscuro */
 }
 
 .elemento-nav:hover, .nav-item-btn:hover {
@@ -111,45 +128,110 @@
 
 /* Estilo para la "píldora" que muestra el rol del usuario. */
 .indicador-rol-usuario {
+  position: relative; /* Clave para posicionar el tooltip */
   display: flex;
   align-items: center;
-  gap: 10px;
-  background-color: #282727;
-  color: #a9a9a9;
-  padding: 10px 20px;
+  justify-content: center;
+  background-color: #eef2ff; /* Fondo azul muy claro para modo día */
+  width: 50px;
+  height: 50px;
   border-radius: 50px;
   z-index: 1000;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  border: 1px solid #dbeafe; /* Borde azul claro */
+}
+
+/* Al pasar el ratón, el contenedor se expande para mostrar el texto */
+.indicador-rol-usuario:hover {
+  transform: scale(1.1);
+}
+
+.user-role-icon {
+  transition: color 0.3s ease;
+}
+
+/* El texto del rol, ahora es un tooltip */
+.user-role-text {
+  position: absolute;
+  top: calc(100% + 8px); /* Lo posiciona justo debajo del círculo con un pequeño espacio */
+  left: 50%;
+  transform: translateX(-50%) translateY(-5px); /* Centrado y ligeramente hacia arriba para la animación */
+  background-color: #1e40af; /* Azul oscuro (blue-800) para el rol de usuario */
+  color: white;
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  font-weight: bold;
+  white-space: nowrap;
   text-transform: capitalize;
-  font-size: 16px;
-  transition: background-color 0.3s ease, color 0.3s ease; /* Añadimos una transición suave */
+  
+  /* Oculto por defecto */
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s ease, transform 0.3s ease;
+  pointer-events: none; /* Para que no interfiera con el hover del círculo */
+}
+
+/* Pequeño triángulo para el tooltip */
+.user-role-text::after {
+  content: '';
+  position: absolute;
+  bottom: 100%; /* En la parte superior del tooltip */
+  left: 50%;
+  margin-left: -5px;
+  border-width: 5px;
+  border-style: solid;
+  border-color: transparent transparent #1e40af transparent; /* Coincide con el fondo del tooltip de usuario */
+}
+
+/* Al pasar el ratón sobre el contenedor, el texto se muestra */
+.indicador-rol-usuario:hover .user-role-text {
+  opacity: 1;
+  visibility: visible;
+  transform: translateX(-50%) translateY(0);
 }
 
 /* --- Dark Mode --- */
 .dark-mode .indicador-rol-usuario {
   background-color: #2d3748; /* Azul pizarra para consistencia */
+  border-color: #4a5568;
+}
+
+.dark-mode .user-role-text {
+  background-color: #1e40af; /* Mantenemos el mismo azul oscuro */
   color: #e2e8f0;
 }
 
-/* Estilo especial que se aplica si el usuario es admin o aprendiz. */
-.indicador-rol-usuario.indicador-rol-admin {
-  background-color: #030303; /* Fondo oscuro */
-  color: white; /* Texto blanco por defecto */
+.dark-mode .user-role-text::after {
+  border-color: transparent transparent #1e40af transparent;
 }
 
-/* Efecto de hover para el indicador de rol. */
-.indicador-rol-usuario:hover {
-  color: #3308f1; /* Mismo azul que tenías (rgb(51, 8, 241)) */
+/* Estilos específicos para el tooltip del administrador */
+.indicador-rol-usuario.role-administrador .user-role-text {
+  background-color: #166534; /* Verde oscuro (green-800) */
+}
+.indicador-rol-usuario.role-administrador .user-role-text::after {
+  border-color: transparent transparent #166534 transparent;
+}
+.dark-mode .indicador-rol-usuario.role-administrador .user-role-text {
+  background-color: #166534; /* Mantenemos el mismo verde oscuro */
 }
 
-/* --- Dark Mode --- */
-.dark-mode .user-role-indicator:hover {
-  color: #5871ff;
+/* Colores específicos por rol para el icono */
+.indicador-rol-usuario.role-usuario .user-role-icon {
+  color: #3b82f6; /* Azul */
+}
+
+.indicador-rol-usuario.role-administrador .user-role-icon {
+  color: #22c55e; /* Verde */
 }
 
 /* Estilo para el botón circular de cerrar sesión. */
 .boton-cierre-sesion-circular {
-  background-color: #282727;
-  color: white;
+  background-color: #eef2ff; /* Mismo fondo azul claro que el de rol */
+  color: #333;
   border: none;
   width: 50px;
   height: 50px;
@@ -158,18 +240,25 @@
   justify-content: center;
   align-items: center;
   cursor: pointer;
-  transition: background-color 0.3s ease, transform 0.2s ease;
+  transition: background-color 0.3s ease, transform 0.2s ease, color 0.3s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  border: 1px solid #dbeafe; /* Mismo borde azul claro */
 }
 
 /* --- Dark Mode --- */
 .dark-mode .boton-cierre-sesion-circular {
   background-color: #2d3748; /* Azul pizarra para consistencia */
   color: #e2e8f0;
+  border: none;
 }
 
 .boton-cierre-sesion-circular:hover {
-  background-color: #ff8c00; /* Cambiado a un tono naranja oscuro */
   transform: scale(1.1);
+  color: #052fe9; /* Mismo color azul que los elementos del menú para consistencia */
+}
+
+.dark-mode .boton-cierre-sesion-circular:hover {
+  color: #5871ff; /* Mismo azul brillante que los elementos del menú en modo oscuro */
 }
 
 /* Botón de logout para móvil, oculto por defecto en escritorio */
@@ -200,7 +289,7 @@
 
 /* Al pasar el ratón, el fondo del buscador se vuelve blanco. */
 .contenedor-barra-navegacion.is-open .contenedor-busqueda:hover {
-  background: white;
+  background: #f0f0f0; /* Un gris claro para el hover en modo día */
 }
 
 /* --- Dark Mode --- */
@@ -328,12 +417,20 @@
 @media (max-width: 768px) {
   /* En móvil, la barra de navegación se pega a la parte superior */
   .contenedor-barra-navegacion {
-    top: 10px;
-    left: 10px;
-    right: 10px;
-    width: calc(100% - 20px);
+    position: relative; /* Quitamos el posicionamiento fijo para que fluya en el header */
+    top: auto;
+    left: auto;
+    right: auto;
+    width: 100%;
+    margin: 0 0 10px 0; /* Margen inferior para separar las barras */
     box-sizing: border-box;
     justify-content: space-between; /* Alinea el activador a la izquierda y el contenido a la derecha */
+    border-radius: 15px; /* Un radio más convencional para una barra completa */
+  }
+
+  .editor-nav {
+    top: auto; /* Sobrescribimos el 'top: 85px' de escritorio */
+    margin-top: 0; /* El margen ya está en la barra de arriba */
   }
 
   /* El menú se expande hacia abajo en lugar de a lo largo */
@@ -342,6 +439,7 @@
     flex-direction: column;
     align-items: flex-start;
     padding: 10px 15px;
+    border-radius: 15px;
   }
 
   .contenedor-barra-navegacion.is-open .contenido-menu {

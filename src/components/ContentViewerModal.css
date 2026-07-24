@@ -107,8 +107,8 @@
 
 /* Estilo "Cuaderno" para las lecturas */
 .lectura-viewer {
-  background-color: #fdfdf6;
-  border-left: 3px solid #ffaaab;
+  background-color: #f7f9fc; /* Un fondo ligeramente azulado */
+  border-left: 3px solid #a0bbf2; /* Un azul suave y frío */
   padding: 25px 30px;
   font-family: 'Georgia', serif;
   font-size: 1.1rem;
@@ -119,8 +119,8 @@
 
 /* --- Dark Mode --- */
 .dark-mode .lectura-viewer {
-  background-color: #111827; /* slate-900 */
-  border-left: 3px solid #f87171; /* red-400 */
+  background-color: #161d2b; /* Un poco más claro que el fondo del modal */
+  border-left: 3px solid #4f46e5; /* Un azul más intenso para el modo oscuro */
   color: #cbd5e1; /* slate-300 */
 }
 
