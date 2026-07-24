@@ -5,7 +5,10 @@
 */
 .curso-detalle-page {
   background-color: var(--bg);
-  min-height: calc(100vh - 120px); /* Calcula la altura menos la navbar aprox. */
+  min-height: calc(100vh - 120px);
+  @media (max-width: 768px) {
+    padding-top: 0; /* El main-content maneja el padding-top */
+  }
 }
 
 .contenido-curso-container {

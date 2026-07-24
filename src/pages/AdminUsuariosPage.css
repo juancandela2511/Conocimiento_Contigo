@@ -5,7 +5,10 @@
 .admin-usuarios-container {
   padding: 40px;
   max-width: 1200px;
-  margin: 0 auto;
+  margin: 0 auto; /* Por defecto para escritorio */
+  @media (max-width: 768px) {
+    padding-top: 0; /* El main-content maneja el padding-top */
+  }
 }
 
 .admin-usuarios-container h1 {
