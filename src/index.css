@@ -85,11 +85,16 @@ body {
 /* Contenedor para las barras de navegación. En móvil, se vuelve un bloque pegajoso. */
 @media (max-width: 768px) {
   .site-header {
-    position: sticky;
-    top: 0;
+    position: absolute; /* Cambiado a 'absolute' para que flote sobre el contenido */
+    top: 10px; /* Pequeño margen superior */
+    left: 10px;
+    right: 10px;
     z-index: 1000;
-    background: var(--bg); /* Fondo para que el contenido no se vea a través al hacer scroll */
-    padding: 10px 10px 0 10px; /* Espaciado interno para las barras */
+    background: transparent; /* Sin fondo, para que solo se vean los botones */
+    padding: 0; /* Sin padding, el espaciado lo da el 'gap' o los márgenes internos */
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
   }
 }
 

@@ -106,7 +106,7 @@ export default function BarraNavegacion({ sesionIniciada, alBuscar, alPresionarE
           {/* Botón de logout, visible solo en el menú expandido en móvil */}
           <button onClick={handleLogout} className="elemento-nav logout-mobile">
             <LogIn size={20} />
-            <span>Salir</span>
+            <span></span>
           </button>
 
         </div>

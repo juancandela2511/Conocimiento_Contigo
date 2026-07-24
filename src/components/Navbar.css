@@ -417,15 +417,18 @@
 @media (max-width: 768px) {
   /* En móvil, la barra de navegación se pega a la parte superior */
   .contenedor-barra-navegacion {
-    position: relative; /* Quitamos el posicionamiento fijo para que fluya en el header */
+    /* Se convierte en un botón compacto en lugar de una barra ancha */
+    position: relative;
     top: auto;
     left: auto;
     right: auto;
-    width: 100%;
-    margin: 0 0 10px 0; /* Margen inferior para separar las barras */
+    width: auto; /* El ancho se ajusta al contenido */
+    height: 38px;
+    margin: 0;
+    padding: 0 10px;
     box-sizing: border-box;
-    justify-content: space-between; /* Alinea el activador a la izquierda y el contenido a la derecha */
-    border-radius: 15px; /* Un radio más convencional para una barra completa */
+    justify-content: center;
+    border-radius: 8px;
   }
 
   .editor-nav {
@@ -433,21 +436,60 @@
     margin-top: 0; /* El margen ya está en la barra de arriba */
   }
 
-  /* El menú se expande hacia abajo en lugar de a lo largo */
+  /* El contenedor del botón NO se expande, se mantiene como un botón */
   .contenedor-barra-navegacion.is-open {
-    height: auto;
-    flex-direction: column;
-    align-items: flex-start;
-    padding: 10px 15px;
-    border-radius: 15px;
+    /* No necesita estilos de expansión, solo mantiene su estado de botón */
   }
 
+  /* El menú desplegable ahora es un panel flotante */
   .contenedor-barra-navegacion.is-open .contenido-menu {
+    position: absolute;
+    top: calc(100% + 5px); /* Justo debajo del botón */
+    left: 0;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 10px; /* Más delgado y estilizado */
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+    padding: 6px;
+    display: flex;
     flex-direction: column;
     align-items: flex-start;
+    gap: 3px;
+    z-index: 1010;
+    width: auto; /* El ancho se ajusta al contenido (solo los íconos) */
+    padding-left: 6px;
+  }
+
+  /* Estilos para los items dentro del menú flotante, como sugiere el usuario */
+  .contenedor-barra-navegacion.is-open .contenido-menu .elemento-nav,
+  .contenedor-barra-navegacion.is-open .contenido-menu .contenedor-busqueda {
     width: 100%;
-    max-width: 100%;
-    padding-top: 15px;
+    box-sizing: border-box;
+    margin-right: 0;
+    padding: 10px; /* Padding uniforme para centrar el ícono */
+    gap: 0; /* Sin espacio, ya que no hay texto */
+    justify-content: center; /* Centra el ícono horizontalmente */
+    border-radius: 6px;
+    transition: background-color 0.2s ease;
+  }
+
+  /* Ocultamos el texto de los íconos en el menú móvil */
+  .contenedor-barra-navegacion.is-open .contenido-menu .elemento-nav span,
+  .contenedor-barra-navegacion.is-open .contenido-menu .nav-item-btn span {
+    display: none;
+  }
+
+  .contenedor-barra-navegacion.is-open .contenido-menu .elemento-nav:hover {
+    background-color: rgba(0, 0, 0, 0.05); /* Hover sutil para modo claro */
+  }
+  .dark-mode .contenedor-barra-navegacion.is-open .contenido-menu .elemento-nav:hover {
+    background-color: rgba(255, 255, 255, 0.08); /* Hover sutil para modo oscuro */
+  }
+
+  /* Posicionamos el menú del editor a la derecha */
+  .editor-nav.is-open .contenido-menu {
+    left: auto;
+    right: 0;
   }
 
   /* Ocultamos los elementos de la esquina superior derecha en móvil */
