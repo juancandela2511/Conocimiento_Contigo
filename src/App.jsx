@@ -38,7 +38,6 @@ import UserProgressPage from './pages/UserProgressPage'; // Nueva página
 // --- Componentes de Modales para Administradores ---
 import ModalAgregarModulo from './components/Admin/AddCard'; // Renombrado a AddCourseModal
 import ModalEditarModulo from './components/Admin/EditCard'; // Renombrado a EditCourseModal
-import SettingsModal from './components/SettingsModal'; // Nuevo modal de configuración
 import AddContentModal from './components/Admin/AddContentModal'; // El nuevo modal genérico
 
 // --- Contexto para la Carga de Rutas ---
@@ -79,7 +78,6 @@ function AppContent() {
   const [esVisibleModalAgregarModulo, definirEsVisibleModalAgregarModulo] = useState(false);
   const [esVisibleModalEditarModulo, definirEsVisibleModalEditarModulo] = useState(false);
   const [esVisibleModalAgregarContenido, definirEsVisibleModalAgregarContenido] = useState(false);
-  const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false);
   const [tipoContenidoParaAgregar, definirTipoContenidoParaAgregar] = useState(null); // 'lectura', 'video', 'cuestionario'
    
   // =================================================================
@@ -235,7 +233,6 @@ function AppContent() {
             sesionIniciada={sesionIniciada} 
             alBuscar={definirTerminoDeBusqueda} 
             rolUsuario={rolUsuario}
-            onSettingsClick={() => setIsSettingsModalOpen(true)}
           />
 
           {/* 
@@ -289,99 +286,94 @@ function AppContent() {
             />
           )}
 
-          {isSettingsModalOpen && (
-            <SettingsModal
-              isOpen={isSettingsModalOpen}
-              onClose={() => setIsSettingsModalOpen(false)}
-              userRole={rolUsuario}
-            />
-          )}
+          {/* Contenedor principal que crecerá para empujar el footer hacia abajo */}
+          <main className="main-content">
+            {/* 
+              SISTEMA DE RUTAS PRINCIPAL:
+              El componente `Routes` de `react-router-dom` actúa como un conmutador.
+              Renderiza el primer `Route` que coincide con la URL actual.
+            */}
+            <Routes>
+              {/* Ruta Raíz ('/'): Muestra la página principal si el usuario está logueado, de lo contrario redirige a /login. */}
+              <Route 
+                path="/" 
+                element={sesionIniciada ? (
+                  <>
+                    <HeroPrincipal />
+                    <PaginaPrincipal 
+                      courses={listaCursos} // Pasa la lista de cursos filtrable
+                      userRole={rolUsuario} // Pasa el rol para mostrar/ocultar botones de admin
+                      terminoDeBusqueda={terminoDeBusqueda} 
+                      onEditCourseClick={manejarClicEditarCurso} // Pasa la función para abrir el modal de edición
+                    />
+                  </>
+                ) : (
+                  <Navigate to="/login" />
+                )} 
+              />
+              
+              {/* Ruta de Inicio de Sesión ('/login'): Es una ruta pública. */}
+              <Route path="/login" element={<InicioSesion />} />
+              
+              {/* Ruta de Detalle de Curso ('/curso/:id'): Ruta dinámica y protegida. */}
+              <Route 
+                path="/curso/:id" 
+                element={
+                  <RutaProtegida sesionIniciada={sesionIniciada} rolUsuario={rolUsuario}>
+                    {/* La `key` fuerza a React a volver a montar el componente si la clave cambia, útil para recargar datos. */}
+                    <DetalleCurso key={claveContenido} terminoDeBusqueda={terminoDeBusqueda} rolUsuario={rolUsuario} />
+                  </RutaProtegida>
+                } 
+              />
 
-          {/* 
-            SISTEMA DE RUTAS PRINCIPAL:
-            El componente `Routes` de `react-router-dom` actúa como un conmutador.
-            Renderiza el primer `Route` que coincide con la URL actual.
-          */}
-          <Routes>
-            {/* Ruta Raíz ('/'): Muestra la página principal si el usuario está logueado, de lo contrario redirige a /login. */}
-            <Route 
-              path="/" 
-              element={sesionIniciada ? (
-                <>
-                  <HeroPrincipal />
-                  <PaginaPrincipal 
-                    courses={listaCursos} // Pasa la lista de cursos filtrable
-                    userRole={rolUsuario} // Pasa el rol para mostrar/ocultar botones de admin
-                    terminoDeBusqueda={terminoDeBusqueda} 
-                    onEditCourseClick={manejarClicEditarCurso} // Pasa la función para abrir el modal de edición
-                  />
-                </>
-              ) : (
-                <Navigate to="/login" />
-              )} 
-            />
-            
-            {/* Ruta de Inicio de Sesión ('/login'): Es una ruta pública. */}
-            <Route path="/login" element={<InicioSesion />} />
-            
-            {/* Ruta de Detalle de Curso ('/curso/:id'): Ruta dinámica y protegida. */}
-            <Route 
-              path="/curso/:id" 
-              element={
-                <RutaProtegida sesionIniciada={sesionIniciada} rolUsuario={rolUsuario}>
-                  {/* La `key` fuerza a React a volver a montar el componente si la clave cambia, útil para recargar datos. */}
-                  <DetalleCurso key={claveContenido} terminoDeBusqueda={terminoDeBusqueda} />
-                </RutaProtegida>
-              } 
-            />
+              {/* Ruta de Logros ('/logros'): Protegida para usuarios logueados. */}
+              <Route
+                path="/logros"
+                element={
+                  <RutaProtegida sesionIniciada={sesionIniciada} rolUsuario={rolUsuario}>
+                    <PaginaLogros />
+                  </RutaProtegida>
+                }
+              />
 
-            {/* Ruta de Logros ('/logros'): Protegida para usuarios logueados. */}
-            <Route
-              path="/logros"
-              element={
-                <RutaProtegida sesionIniciada={sesionIniciada} rolUsuario={rolUsuario}>
-                  <PaginaLogros />
-                </RutaProtegida>
-              }
-            />
+              {/* Ruta de Progreso del Usuario ('/progreso'): Protegida para usuarios logueados. */}
+              <Route
+                path="/progreso"
+                element={
+                  <RutaProtegida sesionIniciada={sesionIniciada} rolUsuario={rolUsuario}>
+                    <UserProgressPage />
+                  </RutaProtegida>
+                }
+              />
 
-            {/* Ruta de Progreso del Usuario ('/progreso'): Protegida para usuarios logueados. */}
-            <Route
-              path="/progreso"
-              element={
-                <RutaProtegida sesionIniciada={sesionIniciada} rolUsuario={rolUsuario}>
-                  <UserProgressPage />
-                </RutaProtegida>
-              }
-            />
+              {/* Ruta de Progreso de Administrador ('/admin/progreso'): Protegida y restringida solo para el rol 'administrador'. */}
+              <Route
+                path="/admin/progreso"
+                element={
+                  <RutaProtegida 
+                    sesionIniciada={sesionIniciada} 
+                    rolUsuario={rolUsuario} 
+                    rolesAutorizados={['administrador']}
+                  >
+                    <PaginaProgresoAdmin />
+                  </RutaProtegida>
+                }
+              />
 
-            {/* Ruta de Progreso de Administrador ('/admin/progreso'): Protegida y restringida solo para el rol 'administrador'. */}
-            <Route
-              path="/admin/progreso"
-              element={
-                <RutaProtegida 
-                  sesionIniciada={sesionIniciada} 
-                  rolUsuario={rolUsuario} 
-                  rolesAutorizados={['administrador']}
-                >
-                  <PaginaProgresoAdmin />
-                </RutaProtegida>
-              }
-            />
-
-            {/* Ruta para la página de administración de usuarios (solo para administradores) */}
-            <Route
-              path="/admin/usuarios"
-              element={
-                <RutaProtegida 
-                  sesionIniciada={sesionIniciada} 
-                  rolUsuario={rolUsuario} 
-                  rolesAutorizados={['administrador']}>
-                  <AdminUsuariosPage />
-                </RutaProtegida>
-              }
-            />
-          </Routes>
+              {/* Ruta para la página de administración de usuarios (solo para administradores) */}
+              <Route
+                path="/admin/usuarios"
+                element={
+                  <RutaProtegida 
+                    sesionIniciada={sesionIniciada} 
+                    rolUsuario={rolUsuario} 
+                    rolesAutorizados={['administrador']}>
+                    <AdminUsuariosPage />
+                  </RutaProtegida>
+                }
+              />
+            </Routes>
+          </main>
           
           {/* Pie de Página: Componente estático con información de contacto. */}
           <InfoContactos/>

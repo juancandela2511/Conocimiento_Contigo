@@ -14,7 +14,7 @@ import { supabase } from '../services/supabaseClient';
 import ThemeSwitcher from './ThemeSwitcher'; // Importación sin extensión para consistencia
 
 // Definición del componente Navbar. Recibe props para funcionar.
-export default function BarraNavegacion({ sesionIniciada, alBuscar, alPresionarEnter, rolUsuario, onSettingsClick }) {
+export default function BarraNavegacion({ sesionIniciada, alBuscar, alPresionarEnter, rolUsuario }) {
   
   // Lógica de Frontend: Si el usuario no ha iniciado sesión, no se muestra nada.
   if (!sesionIniciada) return null;
@@ -101,10 +101,12 @@ export default function BarraNavegacion({ sesionIniciada, alBuscar, alPresionarE
         {/* Aquí colocamos el interruptor de tema, a la izquierda del rol de usuario. */}
         <ThemeSwitcher />
 
-        {/* Botón para abrir el modal de configuración */}
-        <button onClick={onSettingsClick} className="boton-cierre-sesion-circular" title="Configuración">
-          <Settings size={20} />
-        </button>
+        {/* Enlace a la página de administración de usuarios, visible solo para administradores */}
+        {rolUsuario === 'administrador' && (
+          <Link to="/admin/usuarios" className="boton-cierre-sesion-circular" title="Administrar Usuarios">
+            <Settings size={20} />
+          </Link>
+        )}
 
         {/* Indicador de rol del usuario. */}
         {rolUsuario && (

@@ -1,17 +1,18 @@
 /*
   Archivo: CursoDetalle.jsx
-  Función: Muestra la página de detalle de un curso, incluyendo el hero, la lista de contenidos con lógica de bloqueo y el progreso del usuario.
+   Función: Muestra la página de detalle de un curso, incluyendo el hero, la lista de contenidos con lógica de bloqueo y el progreso del usuario.
   Tipo: Componente de Frontend.
 */
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { supabase } from '../services/supabaseClient';
-import { BookOpen, Video, HelpCircle, Lock} from 'lucide-react';
+import { BookOpen, Video, HelpCircle, Lock } from 'lucide-react';
 import CursoHero from '../components/CursoHero';
-import Loading from '../components/Loading';
+
 import ContentViewerModal from '../components/ContentViewerModal';
 import { useRouteLoading } from '../components/RouteLoadingContext'; // Importamos el hook de carga
 import './CursoDetalle.css'; // Estilos para la lista de contenidos
+
 
 /**
  * Otorga un logro a un usuario por completar un curso.
@@ -22,42 +23,29 @@ import './CursoDetalle.css'; // Estilos para la lista de contenidos
 const otorgarLogroPorCursoCompletado = async (idUsuario, nombreCurso) => {
   try {
     const tituloLogro = `Completaste: ${nombreCurso}`;
-    const descripcionLogro = `Has finalizado con éxito todos los contenidos del curso "${nombreCurso}".`;
 
-    // Paso 1: Buscar si el logro ya existe.
-    let { data: logro, error: logroError } = await supabase
+    // Paso 1: Buscar si el logro para este curso ya fue creado por un administrador.
+    // Se elimina la lógica que intentaba crear logros, ya que eso viola las políticas de seguridad (RLS)
+    // para usuarios no administradores y es la causa del error 403 Forbidden.
+    const { data: logrosExistentes, error: logroError } = await supabase
       .from('logros')
       .select('id')
       .eq('titulo', tituloLogro)
-      .single();
+      .limit(1);
 
-    // Paso 2: Si el logro no existe, crearlo.
-    // 'PGRST116' es el código de Supabase para "no se encontraron filas".
-    if (logroError && logroError.code === 'PGRST116') {
-      console.log(`Logro para "${nombreCurso}" no encontrado. Creándolo automáticamente...`);
-      const { data: nuevoLogro, error: createError } = await supabase
-        .from('logros')
-        .insert({
-          titulo: tituloLogro,
-          descripcion: descripcionLogro,
-          // Aquí podrías definir un ícono por defecto si tu tabla 'logros' tiene esa columna.
-          // icono_url: '/icons/default_trophy.png'
-        })
-        .select('id')
-        .single();
-
-      if (createError) throw createError;
-      logro = nuevoLogro;
-    } else if (logroError) {
-      // Si hubo otro tipo de error al buscar, lo lanzamos.
+    if (logroError) {
       throw logroError;
     }
 
-    if (!logro) throw new Error("No se pudo encontrar o crear el logro.");
+    // Si no se encuentra un logro predefinido para este curso, se detiene el proceso.
+    if (!logrosExistentes || logrosExistentes.length === 0) {
+      console.warn(`No se encontró un logro predefinido para el curso "${nombreCurso}". No se otorgará ningún logro. Un administrador debe crearlo primero.`);
+      return;
+    }
 
-    const logroId = logro.id;
+    const logroId = logrosExistentes[0].id;
 
-    // Paso 3: Verificar si el usuario ya tiene este logro para no duplicarlo.
+    // Paso 2: Verificar si el usuario ya tiene este logro para no duplicarlo.
     const { count, error: checkError } = await supabase
       .from('logros_obtenidos')
       .select('*', { count: 'exact', head: true })
@@ -71,7 +59,7 @@ const otorgarLogroPorCursoCompletado = async (idUsuario, nombreCurso) => {
       return;
     }
 
-    // Paso 4: Otorgar el logro insertando el registro en la tabla.
+    // Paso 3: Otorgar el logro insertando el registro en la tabla de unión.
     await supabase.from('logros_obtenidos').insert({ user_id: idUsuario, logro_id: logroId });
     console.log(`¡Logro "${tituloLogro}" otorgado al usuario ${idUsuario}!`);
   } catch (error) {
@@ -79,7 +67,7 @@ const otorgarLogroPorCursoCompletado = async (idUsuario, nombreCurso) => {
   }
 };
 
-const CursoDetalle = ({ terminoDeBusqueda = '' }) => {
+const CursoDetalle = ({ terminoDeBusqueda = '', rolUsuario }) => {
   const { id: idCurso } = useParams(); // Obtiene el ID del curso de la URL y lo renombra
   const [curso, definirCurso] = useState(null);
   const [contenidos, setContenidos] = useState([]);
@@ -90,48 +78,44 @@ const CursoDetalle = ({ terminoDeBusqueda = '' }) => {
 
   useEffect(() => {
     const cargarDatosCurso = async () => {
-      setIsRouteLoading(true); // Activamos el cargador global
-
-      try {
-        const { data: { user } } = await supabase.auth.getUser();
-        if (!user) throw new Error("Usuario no autenticado.");
-        definirIdUsuario(user.id);
-
-        // --- INTERACCIÓN CON EL BACKEND (BASE DE DATOS) ---
-        // Cargamos el curso, sus contenidos y el progreso del usuario en paralelo.
-        const [respuestaCurso, respuestaContenidos, respuestaCompletados] = await Promise.all([
-          supabase.from('cursos').select('*').eq('id', idCurso).single(),
-          supabase.from('contenidos').select('*').eq('curso_id', idCurso).order('orden', { ascending: true }),
-          supabase.from('contenido_completado').select('contenido_id').eq('user_id', user.id).eq('curso_id', idCurso)
-        ]);
-
-        const { data: datosCurso, error: errorCurso } = respuestaCurso;
-        const { data: datosContenidos, error: errorContenidos } = respuestaContenidos;
-        const { data: datosCompletados, error: errorCompletados } = respuestaCompletados;
-
-        if (errorCurso) throw errorCurso;
-        definirCurso(datosCurso);
-
-        if (errorContenidos) throw errorContenidos;
-        setContenidos(datosContenidos);
-
-        if (errorCompletados) throw errorCompletados;
-        definirContenidosCompletados(new Set(datosCompletados.map(c => c.contenido_id)));
-
-      } catch (err) {
-        console.error("Error al cargar los datos del curso:", err);
-        definirCurso(null);
-        setContenidos([]);
-      } finally {
-        // Desactivamos el cargador global cuando todo ha terminado
+      setIsRouteLoading(true);
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
         setIsRouteLoading(false);
+        return;
       }
+      definirIdUsuario(user.id);
+
+      // --- CARGA DE DATOS DESDE SUPABASE ---
+      const [respuestaCurso, respuestaContenidos, respuestaCompletados] = await Promise.all([
+        // Se elimina .single() para evitar el error 406 si el curso no se encuentra.
+        // Se manejará el caso de que no se devuelvan datos.
+        supabase.from('cursos').select('*').eq('id', idCurso),
+        supabase.from('contenidos').select('*').eq('curso_id', idCurso).order('orden', { ascending: true }),
+        supabase.from('contenido_completado').select('contenido_id').eq('user_id', user.id).eq('curso_id', idCurso)
+      ]);
+
+      // Verificamos si la consulta del curso devolvió un resultado.
+      if (respuestaCurso.data && respuestaCurso.data.length > 0) {
+        definirCurso(respuestaCurso.data[0]);
+      } else {
+        console.error("Curso no encontrado con ID:", idCurso);
+        definirCurso(null); // Asegura que se muestre el mensaje "Curso no encontrado"
+      }
+
+      if (respuestaContenidos.data) {
+        setContenidos(respuestaContenidos.data);
+      }
+      if (respuestaCompletados.data) {
+        definirContenidosCompletados(new Set(respuestaCompletados.data.map(c => c.contenido_id)));
+      }
+
+      setIsRouteLoading(false);
     };
 
     if (idCurso) {
       cargarDatosCurso();
-    } 
-   
+    }
   }, [idCurso, setIsRouteLoading]);
 
   const marcarComoCompletado = async (idContenido) => {
@@ -143,33 +127,24 @@ const CursoDetalle = ({ terminoDeBusqueda = '' }) => {
     definirContenidosCompletados(nuevoSetCompletados);
 
     // --- LÓGICA DE LOGROS ---
-    // Verificamos si el curso se ha completado con este último contenido.
-    if (contenidos.length > 0 && nuevoSetCompletados.size === contenidos.length) {
+    if (contenidos.length > 0 && nuevoSetCompletados.size === contenidos.length && curso) {
       console.log(`¡Curso "${curso.curso}" completado! Otorgando logro...`);
-      // Llamamos a la función para dar el logro.
       otorgarLogroPorCursoCompletado(idUsuario, curso.curso);
     }
 
-    try {
-      // --- INTERACCIÓN CON EL BACKEND (BASE DE DATOS) ---
-      // Usamos upsert para evitar errores si el registro ya existe por alguna razón.
-      const { error } = await supabase.from('contenido_completado').upsert({
-        user_id: idUsuario,
-        contenido_id: idContenido,
-        curso_id: idCurso,
-      });
+    // --- SINCRONIZACIÓN CON SUPABASE ---
+    const registroCompletado = {
+      user_id: idUsuario,
+      contenido_id: idContenido,
+      curso_id: idCurso,
+    };
 
-      if (error) {
-        throw error;
-      }
+    try {
+      const { error } = await supabase.from('contenido_completado').upsert(registroCompletado);
+      if (error) throw error;
+      console.log('Contenido marcado como completado y sincronizado.');
     } catch (err) {
-      console.error("Error al marcar como completado:", err);
-      // Revertir la actualización optimista si la base de datos falla.
-      definirContenidosCompletados(prev => {
-        const newSet = new Set(prev);
-        newSet.delete(idContenido);
-        return newSet;
-      });
+      console.error("Error al sincronizar 'marcar como completado':", err);
     }
   };
 
@@ -189,7 +164,14 @@ const CursoDetalle = ({ terminoDeBusqueda = '' }) => {
               
               // Lógica de bloqueo mejorada: un contenido está bloqueado si CUALQUIER contenido anterior no está completado.
               const estaBloqueado = (() => {
-                if (index === 0) return false; // El primer contenido nunca está bloqueado.
+                // Los administradores pueden ver todo el contenido sin restricciones.
+                if (rolUsuario === 'administrador') {
+                  return false;
+                }
+
+                if (index === 0) return false; // El primer contenido nunca está bloqueado para otros usuarios.
+                
+                // Para usuarios normales, verificar el progreso secuencial.
                 for (let i = 0; i < index; i++) {
                   if (!contenidosCompletados.has(contenidos[i].id)) {
                     return true; // Si se encuentra un contenido anterior sin completar, se bloquea.

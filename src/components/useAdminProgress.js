@@ -1,98 +1,46 @@
 /*
   Archivo: useAdminProgress.js
-  Función: Hook personalizado que encapsula toda la lógica para obtener y procesar
-           los datos de progreso de los usuarios desde Supabase.
-  Tipo: Lógica de Frontend (Hook).
+  Función: Hook personalizado para obtener y procesar los datos de progreso de todos los usuarios.
+           Utiliza una función RPC de Supabase para máxima eficiencia y para evitar problemas de RLS.
+  Tipo: Hook de React (Lógica de Frontend).
 */
 import { useState, useEffect } from 'react';
 import { supabase } from '../services/supabaseClient';
 
 export const useAdminProgress = () => {
-  const [progressData, setProgressData] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState(null);
+  // Estado para almacenar los datos de progreso ya formateados.
+  const [datosProgreso, definirDatosProgreso] = useState([]);
+  // Estado para controlar la visualización del indicador de carga.
+  const [estaCargando, definirEstaCargando] = useState(true);
+  // Estado para almacenar cualquier error que ocurra durante la carga.
+  const [error, definirError] = useState(null);
 
   useEffect(() => {
-    const fetchData = async () => {
-      setIsLoading(true);
-      setError(null);
+    const cargarDatos = async () => {
+      definirEstaCargando(true);
+      definirError(null);
       try {
-        // 1. Obtener todos los usuarios con el rol 'usuario'
-        const { data: students, error: studentsError } = await supabase
-          .from('Usuario')
-          .select('id, Usuario')
-          .eq('profile', 'usuario');
-        if (studentsError) throw studentsError;
+        // Se llama a una única función RPC que realiza todo el trabajo pesado en la base de datos.
+        // Esto es más eficiente y soluciona problemas de permisos (RLS) al leer datos de otros usuarios.
+        const { data, error: rpcError } = await supabase.rpc('get_all_users_progress_matrix');
 
-        // 2. Obtener todos los cursos y su conteo de contenidos
-        const { data: coursesWithContent, error: coursesError } = await supabase
-          .from('cursos')
-          .select('id, curso, contenidos(count)');
-        if (coursesError) throw coursesError;
-
-        // 3. Obtener todos los registros de 'contenido_completado'
-        const { data: completions, error: completionsError } = await supabase
-          .from('contenido_completado')
-          .select('user_id, curso_id');
-        if (completionsError) throw completionsError;
-
-        // 4. Procesar los datos para construir la tabla de progreso
-        const studentProgress = {};
-        for (const completion of completions) {
-          if (!studentProgress[completion.user_id]) {
-            studentProgress[completion.user_id] = {};
-          }
-          studentProgress[completion.user_id][completion.curso_id] = (studentProgress[completion.user_id][completion.curso_id] || 0) + 1;
+        if (rpcError) {
+          throw rpcError;
         }
 
-        const result = [];
-        // NUEVA LÓGICA: Iterar sobre todos los estudiantes, no solo los que tienen progreso.
-        for (const student of students) {
-          const progressEntries = studentProgress[student.id];
-          
-          if (progressEntries) {
-            // Si el estudiante tiene progreso, lo procesamos como antes.
-            for (const courseId in progressEntries) {
-              const course = coursesWithContent.find(c => c.id.toString() === courseId);
-              if (course) {
-                const totalContents = course.contenidos[0]?.count || 0;
-                const completedContents = progressEntries[courseId];
+        definirDatosProgreso(data);
 
-                if (totalContents > 0) {
-                  const percentage = (completedContents / totalContents) * 100;
-                  result.push({
-                    id: `${student.id}-${course.id}`,
-                    userName: student.Usuario,
-                    courseName: course.curso,
-                    progress: Math.round(percentage),
-                    remaining: 100 - Math.round(percentage),
-                    status: percentage === 100 ? 'Completado' : 'En Progreso'
-                  });
-                }
-              }
-            }
-          } else {
-            // Si el estudiante no tiene ningún progreso, añadimos una fila indicándolo.
-            result.push({
-              id: student.id,
-              userName: student.Usuario,
-              courseName: 'Ningún curso iniciado',
-              progress: 0,
-              status: 'No Iniciado'
-            });
-          }
-        }
-        setProgressData(result);
       } catch (err) {
         console.error("Error al cargar los datos de progreso:", err);
-        setError(err);
+        definirError(err.message);
       } finally {
-        setIsLoading(false);
+        definirEstaCargando(false);
       }
     };
 
-    fetchData();
+    cargarDatos();
   }, []);
 
-  return { progressData, isLoading, error };
+  // 3. Devuelve los datos y los estados para que el componente que use el hook pueda utilizarlos.
+  return { progressData: datosProgreso, isLoading: estaCargando, error };
 };

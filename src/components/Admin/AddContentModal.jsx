@@ -16,7 +16,7 @@ const AddContentModal = ({ isOpen, onClose, onContentAdded, curso_id, contentTyp
   const [uploadMethod, setUploadMethod] = useState('file'); // 'file' o 'url'
   const [isDragging, setIsDragging] = useState(false); // Para la UI de arrastrar y soltar
   const [triggers, setTriggers] = useState([]);
-  const [preguntas, setPreguntas] = useState([{ pregunta: '', opciones: ['', '', '', ''], respuestaCorrecta: '' }]);
+  const [preguntas, setPreguntas] = useState([{ pregunta: '', opciones: ['', '', '', ''], respuestaCorrecta: null }]);
 
   // Resetea los campos del formulario cada vez que se abre el modal
   useEffect(() => {
@@ -28,7 +28,7 @@ const AddContentModal = ({ isOpen, onClose, onContentAdded, curso_id, contentTyp
       setVideoUrl('');
       setUploadMethod('file');
       setTriggers([]);
-      setPreguntas([{ pregunta: '', opciones: ['', '', '', ''], respuestaCorrecta: '' }]);
+      setPreguntas([{ pregunta: '', opciones: ['', '', '', ''], respuestaCorrecta: null }]);
     }
   }, [isOpen]);
 
@@ -47,8 +47,14 @@ const AddContentModal = ({ isOpen, onClose, onContentAdded, curso_id, contentTyp
     setPreguntas(nuevasPreguntas);
   };
 
+  const handleRespuestaCorrectaChange = (preguntaIndex, opcionIndex) => {
+    const nuevasPreguntas = [...preguntas];
+    nuevasPreguntas[preguntaIndex].respuestaCorrecta = opcionIndex;
+    setPreguntas(nuevasPreguntas);
+  };
+
   const agregarPregunta = () => {
-    setPreguntas([...preguntas, { pregunta: '', opciones: ['', '', '', ''], respuestaCorrecta: '' }]);
+    setPreguntas([...preguntas, { pregunta: '', opciones: ['', '', '', ''], respuestaCorrecta: null }]);
   };
 
   // --- Funciones para manejar los triggers del video ---
@@ -107,14 +113,14 @@ const AddContentModal = ({ isOpen, onClose, onContentAdded, curso_id, contentTyp
     setIsSaving(true);
     setError('');
 
-    let contenido_json = {};
+    let contenido_json;
 
     try {
       switch (contentType) {
         case 'lectura':
           contenido_json = { texto: textoLectura };
           break;
-        case 'video':
+        case 'video': {
           let finalVideoUrl = '';
 
           if (uploadMethod === 'file') {
@@ -127,7 +133,12 @@ const AddContentModal = ({ isOpen, onClose, onContentAdded, curso_id, contentTyp
 
             const { error: uploadError } = await supabase.storage
               .from('Videos')
-              .upload(filePath, videoFile);
+              .upload(filePath, videoFile, {
+                // Habilitamos la subida en trozos (chunking) para archivos grandes.
+                // Esto hace la subida más robusta y menos propensa a fallos por timeouts.
+                // 6MB es el tamaño recomendado por la documentación de Supabase.
+                chunkSize: 6 * 1024 * 1024,
+              });
 
             if (uploadError) throw uploadError;
 
@@ -142,7 +153,7 @@ const AddContentModal = ({ isOpen, onClose, onContentAdded, curso_id, contentTyp
             try {
               new URL(videoUrl); // Valida si la URL tiene un formato correcto
             } catch (_) {
-              throw new Error('La URL del video no es válida.');
+              throw new Error('La URL del video no es válida.', { cause: _ });
             }
             finalVideoUrl = videoUrl;
           }
@@ -152,10 +163,11 @@ const AddContentModal = ({ isOpen, onClose, onContentAdded, curso_id, contentTyp
           }
           contenido_json = { url: finalVideoUrl, quizTriggers: triggers };
           break;
+        }
         case 'cuestionario':
           // Corrección: La validación debe ser `p.respuestaCorrecta === ''` para que el índice 0 sea válido.
-          if (preguntas.some(p => !p.pregunta || p.opciones.some(o => !o) || p.respuestaCorrecta === '')) {
-            throw new Error('Completa todos los campos del cuestionario, incluyendo la selección de una respuesta correcta.');
+          if (preguntas.some(p => !p.pregunta.trim() || p.opciones.some(o => !o.trim()) || p.respuestaCorrecta === null)) {
+            throw new Error('Completa todos los campos de cada pregunta, incluyendo la selección de una respuesta correcta.');
           }
           contenido_json = { preguntas };
           break;
@@ -169,12 +181,11 @@ const AddContentModal = ({ isOpen, onClose, onContentAdded, curso_id, contentTyp
         .select('orden')
         .eq('curso_id', curso_id)
         .order('orden', { ascending: false })
-        .limit(1)
-        .single();
+        .limit(1);
 
-      if (orderError && orderError.code !== 'PGRST116') throw orderError;
+      if (orderError) throw orderError;
 
-      const nuevoOrden = maxOrderData ? maxOrderData.orden + 1 : 1;
+      const nuevoOrden = (maxOrderData && maxOrderData.length > 0) ? maxOrderData[0].orden + 1 : 1;
 
       const { error: insertError } = await supabase
         .from('contenidos')
@@ -257,21 +268,25 @@ const AddContentModal = ({ isOpen, onClose, onContentAdded, curso_id, contentTyp
         );
       case 'cuestionario':
         return (
-          <div className="form-group-cuestionario">
-            {preguntas.map((p, pIndex) => (
-              <div key={pIndex} className="pregunta-block">
-                <label>Pregunta {pIndex + 1}</label>
-                <input type="text" placeholder={`Texto de la pregunta ${pIndex + 1}`} value={p.pregunta} onChange={(e) => handlePreguntaChange(pIndex, 'pregunta', e.target.value)} />
-                <label>Opciones</label>
-                {p.opciones.map((opcion, oIndex) => (
-                  <input key={oIndex} type="text" placeholder={`Opción ${oIndex + 1}`} value={opcion} onChange={(e) => handleOpcionChange(pIndex, oIndex, e.target.value)} />
+          <>
+            {preguntas.map((pregunta, pIndex) => (
+              <div key={pIndex} className="pregunta-editor">
+                <div className="pregunta-header">
+                  <h4>Pregunta {pIndex + 1}</h4>
+                  {/* Aquí se podría agregar un botón para eliminar la pregunta */}
+                </div>
+                <input type="text" placeholder="Texto de la pregunta" value={pregunta.pregunta} onChange={(e) => handlePreguntaChange(pIndex, 'pregunta', e.target.value)} />
+                <label className="opciones-label">Opciones (marca la correcta):</label>
+                {pregunta.opciones.map((opcion, oIndex) => (
+                  <div key={oIndex} className="opcion-editor">
+                    <input type="radio" name={`correcta-pregunta-${pIndex}`} checked={pregunta.respuestaCorrecta === oIndex} onChange={() => handleRespuestaCorrectaChange(pIndex, oIndex)} />
+                    <input type="text" placeholder={`Opción ${oIndex + 1}`} value={opcion} onChange={(e) => handleOpcionChange(pIndex, oIndex, e.target.value)} />
+                  </div>
                 ))}
-                <label>Respuesta Correcta</label>
-                <input type="text" placeholder="Escribe el texto exacto de la opción correcta" value={p.respuestaCorrecta} onChange={(e) => handlePreguntaChange(pIndex, 'respuestaCorrecta', e.target.value)} />
               </div>
             ))}
-            <button type="button" onClick={agregarPregunta} className="btn-secondary">Añadir otra pregunta</button>
-          </div>
+            <button type="button" className="btn-add-pregunta" onClick={agregarPregunta}>+ Añadir Pregunta</button>
+          </>
         );
       default: return null;
     }
