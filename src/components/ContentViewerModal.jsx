@@ -5,7 +5,9 @@
 */
 import { useEffect } from 'react';
 import { X } from 'lucide-react';
-import ReactPlayer from 'react-player';
+// Se importa el módulo completo para manejar un posible problema de interoperabilidad
+// entre CommonJS y ES Modules que a veces ocurre con algunos bundlers.
+import ReactPlayerModule from 'react-player';
 
 import QuizRunner from './QuizRunner';
 import './ContentViewerModal.css';
@@ -15,6 +17,9 @@ import './ContentViewerModal.css';
 // ya que no se pueden llamar Hooks (`useRef`, `useState`) de forma condicional.
 
 const VideoPlayerWithTriggers = ({ content, onMarkAsComplete, isCompleted }) => {
+  // Se extrae el componente ReactPlayer del módulo. Si el módulo se importó como un objeto
+  // con una propiedad 'default' (típico de la interoperabilidad CJS/ESM), se usa esa.
+  const ReactPlayer = ReactPlayerModule.default || ReactPlayerModule;
   const videoUrl = content.contenido_json?.url;
 
   // Comprobación de seguridad para la URL del video.

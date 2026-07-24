@@ -367,7 +367,8 @@
 .content-submenu {
   position: absolute;
   top: 100%; /* Lo posiciona justo debajo del botón, eliminando el espacio. */
-  left: 0;
+  left: 50%; /* Lo centra horizontalmente */
+  transform: translateX(-50%); /* Ajuste fino para el centrado exacto */
   background-color: #004c4b; /* Un tono verde más oscuro que la barra de edición. */
   border-radius: 10px;
   padding: 8px;
