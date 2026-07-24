@@ -1,9 +1,9 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { supabase } from '../../services/supabaseClient';
 import './AddModals.css'; // Reutilizamos estilos existentes
 import './AddContentModal.css'; // Añadimos estilos específicos para el cuestionario
 
-const AddContentModal = ({ isOpen, onClose, onContentAdded, curso_id, contentType }) => {
+const AddContentModal = ({ onClose, onContentAdded, curso_id, contentType }) => {
   // Estado común para todos los tipos de contenido
   const [titulo, setTitulo] = useState('');
   const [isSaving, setIsSaving] = useState(false);
@@ -18,21 +18,8 @@ const AddContentModal = ({ isOpen, onClose, onContentAdded, curso_id, contentTyp
   const [triggers, setTriggers] = useState([]);
   const [preguntas, setPreguntas] = useState([{ pregunta: '', opciones: ['', '', '', ''], respuestaCorrecta: null }]);
 
-  // Resetea los campos del formulario cada vez que se abre el modal
-  useEffect(() => {
-    if (isOpen) {
-      setTitulo('');
-      setError('');
-      setTextoLectura('');
-      setVideoFile(null);
-      setVideoUrl('');
-      setUploadMethod('file');
-      setTriggers([]);
-      setPreguntas([{ pregunta: '', opciones: ['', '', '', ''], respuestaCorrecta: null }]);
-    }
-  }, [isOpen]);
-
-  if (!isOpen) return null;
+  // El estado se resetea automáticamente cuando el modal se monta/desmonta,
+  // por lo que el useEffect anterior para resetear el estado no es necesario y causaba renders extra.
 
   // --- Funciones para manejar el formulario de cuestionario ---
   const handlePreguntaChange = (index, field, value) => {

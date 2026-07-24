@@ -278,7 +278,6 @@ function AppContent() {
 
           {esVisibleModalAgregarContenido && (
             <AddContentModal
-              isOpen={esVisibleModalAgregarContenido}
               onClose={() => definirEsVisibleModalAgregarContenido(false)}
               onContentAdded={manejarContenidoAgregado}
               curso_id={idCursoActual} // ID del curso al que se agregará el contenido

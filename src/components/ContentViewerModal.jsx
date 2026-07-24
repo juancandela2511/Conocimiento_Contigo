@@ -3,7 +3,7 @@
   Función: Muestra un modal con el contenido específico y gestiona la finalización automática.
   Tipo: Componente de Frontend.
 */
-import { useEffect, useRef, useState } from 'react';
+import { useEffect } from 'react';
 import { X } from 'lucide-react';
 import ReactPlayer from 'react-player/lazy'; // Importamos un reproductor de video universal
 import QuizRunner from './QuizRunner'; // Importa el nuevo componente de cuestionario
