@@ -19,28 +19,33 @@ export default function BarraNavegacionEditor({ alHacerClicAgregarModulo, alHace
   const location = useLocation();
   const estaEnPaginaCurso = location.pathname.startsWith('/curso/');
   const idCurso = estaEnPaginaCurso ? location.pathname.split('/')[2] : null;
+  const [isEditorMenuOpen, setIsEditorMenuOpen] = useState(false);
   const [estaAbiertoMenuContenido, definirEstaAbiertoMenuContenido] = useState(false);
 
   const manejarClicSubMenu = (action) => {
     if (action) action();
     definirEstaAbiertoMenuContenido(false); // Cierra el menú después de la acción
+    setIsEditorMenuOpen(false); // Cierra el menú principal también
+  };
+
+  const handleAddModuleClick = () => {
+    alHacerClicAgregarModulo();
+    setIsEditorMenuOpen(false); // Cierra el menú después de la acción
   };
 
   return (
     // Usamos las mismas clases que Navbar para mantener la consistencia visual.
     // Le añadimos una clase 'editor-nav' para poder posicionarla de forma distinta.
-    <nav className="contenedor-barra-navegacion editor-nav">
+    <nav className={`contenedor-barra-navegacion editor-nav ${isEditorMenuOpen ? 'is-open' : ''}`}>
       
       {/* Icono de edición que actúa como disparador del menú */}
-      {/* Se elimina el onClick que causaba un comportamiento confuso.
-          El menú principal se abre al pasar el ratón (hover), y el submenú de 
-          "Agregar Contenido" se gestiona únicamente con el clic en su propio botón. */}
-      <div className="activador-menu">
+      <button className="activador-menu" onClick={() => setIsEditorMenuOpen(!isEditorMenuOpen)} aria-label="Abrir menú de edición">
         <Edit size={28} />
-      </div>
+      </button>
 
       {/* Contenido del menú de edición que se expande */}
-      <div className="menu-content">
+      {/* CORRECCIÓN: La clase debe ser 'contenido-menu' para que los estilos de expansión se apliquen. */}
+      <div className="contenido-menu">
         {estaEnPaginaCurso ? (
           <div className="content-menu-container">
             <div 
@@ -65,10 +70,10 @@ export default function BarraNavegacionEditor({ alHacerClicAgregarModulo, alHace
           <div 
             role="button" 
             tabIndex="0" 
-            onClick={alHacerClicAgregarModulo} 
+            onClick={handleAddModuleClick} 
             onKeyDown={(e) => { 
               if (e.key === 'Enter' || e.key === ' ') {
-                alHacerClicAgregarModulo();
+                handleAddModuleClick();
               }
             }} 
             className="nav-item-btn"
