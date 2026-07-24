@@ -6,7 +6,7 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { supabase } from '../services/supabaseClient';
-import { BookOpen, Video, HelpCircle, Lock } from 'lucide-react';
+import { BookOpen, Video, HelpCircle, Lock, Trash2, ChevronRight } from 'lucide-react';
 import CursoHero from '../components/CursoHero';
 
 import ContentViewerModal from '../components/ContentViewerModal';
@@ -75,6 +75,57 @@ const CursoDetalle = ({ terminoDeBusqueda = '', rolUsuario }) => {
   const [contenidosCompletados, definirContenidosCompletados] = useState(new Set());
   const [idUsuario, definirIdUsuario] = useState(null);
   const { setIsRouteLoading } = useRouteLoading(); // Usamos el estado de carga global
+
+  const handleDeleteContent = async (contentId) => {
+    // Ventana de confirmación para evitar borrados accidentales.
+    if (window.confirm('¿Estás seguro de que quieres eliminar este contenido? Esta acción no se puede deshacer.')) {
+        try {
+            setIsRouteLoading(true);
+
+            // Buscamos el contenido para obtener sus detalles antes de borrarlo.
+            const contentToDelete = contenidos.find(c => c.id === contentId);
+            if (!contentToDelete) {
+                throw new Error("Contenido no encontrado para eliminar.");
+            }
+
+            // 1. Elimina el registro de la tabla 'contenidos'.
+            const { error: deleteError } = await supabase
+                .from('contenidos')
+                .delete()
+                .eq('id', contentId);
+
+            if (deleteError) throw deleteError;
+
+            // 2. Si es un video subido a nuestro almacenamiento, elimina también el archivo.
+            if (contentToDelete.tipo === 'video' && contentToDelete.contenido_json?.url) {
+                const url = contentToDelete.contenido_json.url;
+                const supabaseStorageUrlSignature = `/storage/v1/object/public/Videos/`;
+                
+                // Solo intentamos borrar si es una URL de nuestro storage.
+                if (url.includes(supabaseStorageUrlSignature)) {
+                    const filePath = url.split(supabaseStorageUrlSignature)[1];
+                    if (filePath) {
+                        const { error: storageError } = await supabase.storage.from('Videos').remove([filePath]);
+                        if (storageError) {
+                            // No detenemos el proceso, pero informamos del error.
+                            console.error("Error eliminando el archivo del storage, pero el registro de la DB fue eliminado:", storageError);
+                        }
+                    }
+                }
+            }
+
+            // 3. Actualiza la interfaz de usuario para reflejar el cambio al instante.
+            setContenidos(prevContenidos => prevContenidos.filter(c => c.id !== contentId));
+            console.log('Contenido eliminado con éxito.');
+
+        } catch (error) {
+            console.error('Error al eliminar el contenido:', error);
+            alert(`No se pudo eliminar el contenido: ${error.message}`);
+        } finally {
+            setIsRouteLoading(false);
+        }
+    }
+  };
 
   useEffect(() => {
     const cargarDatosCurso = async () => {
@@ -193,7 +244,13 @@ const CursoDetalle = ({ terminoDeBusqueda = '', rolUsuario }) => {
               }[item.tipo];
 
               return (
-                <div key={item.id} className={`contenido-item-card ${estaBloqueado ? 'is-locked' : ''}`}>
+                <div 
+                  key={item.id} 
+                  className={`contenido-item-card ${estaBloqueado ? 'is-locked' : 'is-clickable'}`}
+                  onClick={!estaBloqueado ? () => definirContenidoSeleccionado(item) : undefined}
+                  role={!estaBloqueado ? 'button' : undefined}
+                  tabIndex={!estaBloqueado ? 0 : -1}
+                >
                   <div className="contenido-icon-container">
                     {Icon && <Icon size={24} />}
                   </div>
@@ -207,8 +264,18 @@ const CursoDetalle = ({ terminoDeBusqueda = '', rolUsuario }) => {
                     {estaBloqueado ? (
                       <Lock size={24} className="lock-icon" />
                     ) : (
-                      <button className="ver-contenido-btn" onClick={() => definirContenidoSeleccionado(item)}>
-                        Ver
+                      <ChevronRight size={24} className="access-icon" />
+                    )}
+                    {rolUsuario === 'administrador' && (
+                      <button 
+                        className="delete-contenido-btn" 
+                        onClick={(e) => {
+                          e.stopPropagation(); // Evita que se abra el modal al hacer clic en eliminar
+                          handleDeleteContent(item.id);
+                        }} 
+                        title="Eliminar contenido"
+                      >
+                        <Trash2 size={18} />
                       </button>
                     )}
                   </div>

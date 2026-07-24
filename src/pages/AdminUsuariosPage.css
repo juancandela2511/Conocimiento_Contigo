@@ -7,7 +7,7 @@
   max-width: 1200px;
   margin: 0 auto; /* Por defecto para escritorio */
   @media (max-width: 768px) {
-    padding-top: 0; /* El main-content maneja el padding-top */
+    padding-top: 70px; /* Espacio para el header flotante */
   }
 }
 

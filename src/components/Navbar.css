@@ -11,33 +11,41 @@
   left: 20px;
   display: flex;
   align-items: center;
-  background-color: #ffffff; /* Color claro para el modo día */
+  background-color: rgba(255, 255, 255, 0.6); /* Fondo más transparente */
+  backdrop-filter: blur(8px); /* Efecto de cristal esmerilado */
+  -webkit-backdrop-filter: blur(8px); /* Compatibilidad con Safari */
   padding: 10px;
   border-radius: 50px; /* Forma de píldora */
   transition: all 0.4s ease, width 0s, max-width 0s; /* Evita transiciones de ancho raras */
   z-index: 1000;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); /* Sombra para que destaque */
-  border: 1px solid #e5e5e5; /* Borde sutil */
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08); /* Sombra más sutil */
+  border: 1px solid rgba(229, 229, 229, 0.5); /* Borde semi-transparente */
 }
 
 /* --- Dark Mode --- */
 .dark-mode .contenedor-barra-navegacion {
-  background-color: #2d3748; /* Azul pizarra para consistencia con el tema oscuro */
-  box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
-  border: none; /* Quitamos el borde en modo oscuro */
+  background-color: rgba(45, 55, 72, 0.6); /* Azul pizarra más transparente */
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(74, 85, 104, 0.5); /* Borde semi-transparente */
 }
 
 /* Estilo para la segunda barra de navegación (la de edición). */
 .editor-nav {
   top: 85px; /* La posicionamos debajo de la barra principal */
-  background-color: #e6f7f7; /* Un verde muy claro para el modo día */
+  background-color: rgba(230, 247, 247, 0.6); /* Verde muy claro más transparente */
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
   width: auto; /* Para que se ajuste al contenido */
-  border-color: #cceaea; /* Borde verde claro */
+  border-color: rgba(204, 234, 234, 0.5); /* Borde verde claro semi-transparente */
 }
 
 .dark-mode .editor-nav {
-  background-color: #005f5e; /* Se mantiene el verde oscuro para el modo noche */
-  border-color: transparent;
+  background-color: rgba(0, 95, 94, 0.6); /* Verde oscuro más transparente */
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border-color: rgba(0, 95, 94, 0.5); /* Borde semi-transparente */
 }
 
 /* Icono que dispara la animación del menú. */
@@ -306,12 +314,16 @@
   opacity: 0;              /* Invisible inicialmente */
   outline: none;
   transition: all 0.4s ease;
-  color: #575656;             /* Texto oscuro para que se vea sobre el blanco */
+  background-color: white; /* Fondo sólido para el texto */
+  color: #333; /* Color oscuro para el texto */
+  border: 1px solid #ccc; /* Borde sutil */
 }
 
 /* --- Dark Mode --- */
 .dark-mode .contenedor-barra-navegacion.is-open .contenedor-busqueda:hover .input-busqueda {
-  color: #eee;
+  background-color: #1e293b; /* Fondo oscuro para el texto */
+  color: #f1f5f9; /* Color claro para el texto */
+  border-color: #475569;
 }
 
 /* Al pasar el ratón, el campo de texto se expande. */
@@ -430,11 +442,16 @@
     box-sizing: border-box;
     justify-content: center;
     border-radius: 8px;
+    /* Hacemos los botones semi-transparentes para que no tapen completamente el contenido */
+    background-color: rgba(255, 255, 255, 0.6); /* Más transparente */
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
   }
 
   .editor-nav {
     top: auto; /* Sobrescribimos el 'top: 85px' de escritorio */
     margin-top: 0; /* El margen ya está en la barra de arriba */
+    background-color: rgba(230, 247, 247, 0.6); /* Verde claro más transparente */
   }
 
   /* El contenedor del botón NO se expande, se mantiene como un botón */
@@ -485,6 +502,14 @@
   }
   .dark-mode .contenedor-barra-navegacion.is-open .contenido-menu .elemento-nav:hover {
     background-color: rgba(255, 255, 255, 0.08); /* Hover sutil para modo oscuro */
+  }
+
+  /* --- Dark Mode para botones transparentes --- */
+  .dark-mode .contenedor-barra-navegacion {
+    background-color: rgba(45, 55, 72, 0.6); /* Azul pizarra más transparente */
+  }
+  .dark-mode .editor-nav {
+    background-color: rgba(0, 95, 94, 0.6); /* Verde oscuro más transparente */
   }
 
   /* Posicionamos el menú del editor a la derecha */

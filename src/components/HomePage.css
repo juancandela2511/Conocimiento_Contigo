@@ -29,10 +29,10 @@
 .courses-grid {
   display: grid;
   /* Esta es la línea clave: crea columnas que se ajustan automáticamente.
-     Cada columna tendrá un mínimo de 280px y se expandirá para llenar el espacio. */
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: 25px;
-  gap: 35px; /* Aumentamos el espacio entre las tarjetas de los cursos */
+     Se usa un ancho fijo para las tarjetas y se centra la cuadrícula. */
+  grid-template-columns: repeat(auto-fit, 280px);
+  gap: 35px;
+  justify-content: center; /* Centra la cuadrícula de tarjetas */
 }
 
 /* Estilo base para cada tarjeta de curso. */
