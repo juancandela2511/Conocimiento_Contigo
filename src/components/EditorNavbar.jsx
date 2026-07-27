@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useLocation } from 'react-router-dom';
-import { Edit, PlusSquare, Video, BookOpen, HelpCircle } from 'lucide-react';
+import { Edit, PlusSquare, Video, BookOpen, HelpCircle, ListOrdered } from 'lucide-react';
 import './Navbar.css'; // Reutilizamos los mismos estilos
 
 /**
@@ -14,8 +14,9 @@ import './Navbar.css'; // Reutilizamos los mismos estilos
  * @param {() => void} props.alHacerClicAgregarLectura - Función para abrir el modal de agregar lectura.
  * @param {() => void} props.alHacerClicAgregarVideo - Función para abrir el modal de agregar video.
  * @param {() => void} props.alHacerClicAgregarCuestionario - Función para abrir el modal de agregar cuestionario.
+ * @param {() => void} props.alHacerClicAgregarOrdenarPasos - Función para abrir el modal de ordenar pasos.
  */
-export default function BarraNavegacionEditor({ alHacerClicAgregarModulo, alHacerClicAgregarLectura, alHacerClicAgregarVideo, alHacerClicAgregarCuestionario }) {
+export default function BarraNavegacionEditor({ alHacerClicAgregarModulo, alHacerClicAgregarLectura, alHacerClicAgregarVideo, alHacerClicAgregarCuestionario, alHacerClicAgregarOrdenarPasos }) {
   const location = useLocation();
   const estaEnPaginaCurso = location.pathname.startsWith('/curso/');
   const idCurso = estaEnPaginaCurso ? location.pathname.split('/')[2] : null;
@@ -63,6 +64,7 @@ export default function BarraNavegacionEditor({ alHacerClicAgregarModulo, alHace
                 <button onClick={() => manejarClicSubMenu(() => alHacerClicAgregarVideo(idCurso))} className="submenu-item-btn"><Video size={18} /><span>Video</span></button>
                 <button onClick={() => manejarClicSubMenu(() => alHacerClicAgregarLectura(idCurso))} className="submenu-item-btn"><BookOpen size={18} /><span>Lectura</span></button>
                 <button onClick={() => manejarClicSubMenu(() => alHacerClicAgregarCuestionario(idCurso))} className="submenu-item-btn"><HelpCircle size={18} /><span>Cuestionario</span></button>
+                <button onClick={() => manejarClicSubMenu(() => alHacerClicAgregarOrdenarPasos(idCurso))} className="submenu-item-btn"><ListOrdered size={18} /><span>Ordenar Pasos</span></button>
               </div>
             )}
           </div>

@@ -1,97 +1,157 @@
 /*
   Archivo: AdminProgresoPage.css
-  Función: Estilos para la página de progreso de usuarios.
+  Función: Estilos para la página de administración de progreso con formato de tabla expandible.
   Tipo: Frontend.
 */
 
-.admin-progreso-container {
+.admin-progreso-table-page {
   padding: 40px;
   max-width: 1200px;
-  margin: 0 auto 40px auto; /* Elimina el margin-top fijo */
-  @media (min-width: 769px) { /* Aplica el margen de escritorio solo en pantallas más grandes */
-    margin-top: 120px;
-  }
-  font-family: 'Segoe UI', sans-serif;
-  background-color: var(--bg);
+  margin: 120px auto 40px auto;
 }
 
-.admin-progreso-container h1 {
+.admin-progreso-title {
   text-align: center;
   margin-bottom: 40px;
-  color: #333;
   font-size: 2.5rem;
+  font-weight: 700;
+  color: var(--text-h);
 }
 
-.dark-mode .admin-progreso-container h1 {
-  color: #e2e8f0;
+.admin-progreso-loading {
+  text-align: center;
+  margin-top: 150px;
+  font-size: 1.2rem;
+  color: var(--text);
 }
 
-.progreso-table {
+.table-wrapper {
+  background-color: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  box-shadow: var(--shadow);
+  overflow: hidden;
+}
+
+.learners-table {
   width: 100%;
   border-collapse: collapse;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-  border-radius: 12px;
-  overflow: hidden; /* Para que el border-radius afecte a las celdas */
 }
 
-.progreso-table th, .progreso-table td {
-  padding: 16px 20px;
+.learners-table th {
+  padding: 16px 25px;
   text-align: left;
-  border-bottom: 1px solid #e0e0e0;
-}
-
-.progreso-table thead {
-  background-color: #f7f9fa;
-}
-
-.progreso-table th {
+  font-size: 0.9rem;
   font-weight: 600;
-  color: #555;
+  color: var(--text);
   text-transform: uppercase;
-  font-size: 0.85rem;
+  letter-spacing: 0.5px;
+  border-bottom: 2px solid var(--border);
 }
 
-.progreso-table tbody tr:last-child td {
-  border-bottom: none;
+.learner-table-row {
+  cursor: pointer;
+  transition: background-color 0.2s;
 }
 
-.progreso-table tbody tr:hover {
-  background-color: #f5f5f5;
+.learner-table-row:hover {
+  background-color: var(--accent-bg);
 }
 
-/* --- Dark Mode --- */
-.dark-mode .progreso-table {
-  background-color: #2d3748;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+.learners-table td {
+  padding: 20px 25px;
+  font-size: 1.1rem;
+  font-weight: 500;
+  color: var(--text-h);
+  border-top: 1px solid var(--border);
 }
 
-.dark-mode .progreso-table th, .dark-mode .progreso-table td {
-  border-bottom: 1px solid #4a5568;
+.accordion-chevron {
+  color: var(--text);
+  transition: transform 0.4s cubic-bezier(0.25, 1, 0.5, 1);
 }
 
-.dark-mode .progreso-table thead {
-  background-color: #1a202c;
+.accordion-chevron.open {
+  transform: rotate(180deg);
+  color: var(--accent);
 }
 
-.dark-mode .progreso-table th {
-  color: #a0aec0;
+/* Fila de detalles que se expande */
+.progress-details-row td {
+  padding: 0; /* Quitamos el padding por defecto */
+  border-top: 1px solid var(--border);
 }
 
-.dark-mode .progreso-table tbody tr:hover {
-  background-color: #4a5568;
+.details-inner-content {
+  padding: 30px 25px;
+  background-color: var(--accent-bg);
+  /* Animación de entrada para el contenido desplegado */
+  animation: fadeInDetails 0.6s ease-out forwards;
 }
 
-/* Nueva cuadrícula para las tarjetas de progreso del usuario */
-.user-progress-grid {
+.progress-details-row td p {
+  padding: 20px 0;
+}
+
+@keyframes fadeInDetails {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.progress-cards-grid {
   display: grid;
-  grid-template-columns: 1fr; /* Una columna por defecto */
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
   gap: 20px;
 }
 
-/* Para pantallas más grandes, podemos usar dos columnas */
-@media (min-width: 768px) {
-  .user-progress-grid {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 25px;
+.progress-card {
+  background-color: var(--bg);
+  border: 1px solid var(--border);
+  padding: 20px;
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.progress-card h4 {
+  margin: 0;
+  font-size: 1.1rem;
+  color: var(--text-h);
+}
+
+/* --- Dark Mode --- */
+.dark-mode .table-wrapper {
+  background-color: #1e293b;
+  border-color: #334155;
+}
+
+.dark-mode .learner-table-row:hover {
+  background-color: #293548;
+}
+
+.dark-mode .learners-table td {
+  border-top-color: #334155;
+}
+
+.dark-mode .details-inner-content {
+  background-color: #1a2436;
+}
+
+.dark-mode .progress-card {
+  background-color: #2d3748;
+  border-color: #4a5568;
+}
+
+@media (max-width: 768px) {
+  .admin-progreso-table-page {
+    margin-top: 80px;
+    padding: 20px;
+  }
+  .admin-progreso-title {
+    font-size: 2rem;
+  }
+  .learners-table td, .learners-table th {
+    padding: 15px;
   }
 }

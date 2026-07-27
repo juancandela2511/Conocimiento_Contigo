@@ -4,14 +4,14 @@
   Tipo: Componente de Frontend.
 */
 import { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useSearchParams } from 'react-router-dom';
 import { supabase } from '../services/supabaseClient';
-import { BookOpen, Video, HelpCircle, Lock, Trash2, ChevronRight } from 'lucide-react';
+import { BookOpen, Video, HelpCircle, Lock, Trash2, Edit, ChevronRight, ListOrdered } from 'lucide-react';
 import CursoHero from '../components/CursoHero';
 
 import ContentViewerModal from '../components/ContentViewerModal';
-import { useRouteLoading } from '../components/RouteLoadingContext'; // Importamos el hook de carga
-import './CursoDetalle.css'; // Estilos para la lista de contenidos
+import { useRouteLoading } from '../components/RouteLoadingContext';
+import './CursoDetalle.css'; // Importamos los nuevos estilos
 
 
 /**
@@ -67,7 +67,8 @@ const otorgarLogroPorCursoCompletado = async (idUsuario, nombreCurso) => {
   }
 };
 
-const CursoDetalle = ({ terminoDeBusqueda = '', rolUsuario }) => {
+const CursoDetalle = ({ terminoDeBusqueda = '', rolUsuario, onEditContentClick }) => {
+  const esAdmin = rolUsuario === 'administrador';
   const { id: idCurso } = useParams(); // Obtiene el ID del curso de la URL y lo renombra
   const [curso, definirCurso] = useState(null);
   const [contenidos, setContenidos] = useState([]);
@@ -75,58 +76,78 @@ const CursoDetalle = ({ terminoDeBusqueda = '', rolUsuario }) => {
   const [contenidosCompletados, definirContenidosCompletados] = useState(new Set());
   const [idUsuario, definirIdUsuario] = useState(null);
   const { setIsRouteLoading } = useRouteLoading(); // Usamos el estado de carga global
+  const [highlightedContentId, setHighlightedContentId] = useState(null); // Nuevo estado para resaltar
+  const [searchParams, setSearchParams] = useSearchParams();
+  const [draggedIndex, setDraggedIndex] = useState(null); // Estado para el drag and drop
+
 
   const handleDeleteContent = async (contentId) => {
-    // Ventana de confirmación para evitar borrados accidentales.
-    if (window.confirm('¿Estás seguro de que quieres eliminar este contenido? Esta acción no se puede deshacer.')) {
-        try {
-            setIsRouteLoading(true);
+    if (!window.confirm('¿Estás seguro de que quieres eliminar este contenido? Esta acción no se puede deshacer.')) {
+      return;
+    }
 
-            // Buscamos el contenido para obtener sus detalles antes de borrarlo.
-            const contentToDelete = contenidos.find(c => c.id === contentId);
-            if (!contentToDelete) {
-                throw new Error("Contenido no encontrado para eliminar.");
-            }
+    setIsRouteLoading(true);
+    try {
+      // 1. Intenta eliminar el registro de la base de datos.
+      const { error } = await supabase
+        .from('contenidos')
+        .delete()
+        .eq('id', contentId);
 
-            // 1. Elimina el registro de la tabla 'contenidos'.
-            const { error: deleteError } = await supabase
-                .from('contenidos')
-                .delete()
-                .eq('id', contentId);
+      // 2. Si hay un error (por RLS o cualquier otra causa), lo lanzamos para que lo capture el 'catch'.
+      if (error) {
+        throw error;
+      }
 
-            if (deleteError) throw deleteError;
+      // 3. Si NO hubo error, la eliminación fue exitosa. Actualizamos la interfaz.
+      // NOTA: La eliminación de archivos de video del storage se puede añadir aquí si es necesario,
+      // pero la prioridad es asegurar que la eliminación de la base de datos funcione.
+      setContenidos(prevContenidos => prevContenidos.filter(c => c.id !== contentId));
+      console.log('Contenido eliminado con éxito.');
 
-            // 2. Si es un video subido a nuestro almacenamiento, elimina también el archivo.
-            if (contentToDelete.tipo === 'video' && contentToDelete.contenido_json?.url) {
-                const url = contentToDelete.contenido_json.url;
-                const supabaseStorageUrlSignature = `/storage/v1/object/public/Videos/`;
-                
-                // Solo intentamos borrar si es una URL de nuestro storage.
-                if (url.includes(supabaseStorageUrlSignature)) {
-                    const filePath = url.split(supabaseStorageUrlSignature)[1];
-                    if (filePath) {
-                        const { error: storageError } = await supabase.storage.from('Videos').remove([filePath]);
-                        if (storageError) {
-                            // No detenemos el proceso, pero informamos del error.
-                            console.error("Error eliminando el archivo del storage, pero el registro de la DB fue eliminado:", storageError);
-                        }
-                    }
-                }
-            }
-
-            // 3. Actualiza la interfaz de usuario para reflejar el cambio al instante.
-            setContenidos(prevContenidos => prevContenidos.filter(c => c.id !== contentId));
-            console.log('Contenido eliminado con éxito.');
-
-        } catch (error) {
-            console.error('Error al eliminar el contenido:', error);
-            alert(`No se pudo eliminar el contenido: ${error.message}`);
-        } finally {
-            setIsRouteLoading(false);
-        }
+    } catch (error) {
+      console.error('Error al eliminar el contenido:', error);
+      alert(`No se pudo eliminar el contenido. Causa probable: Permisos insuficientes (RLS). Error: ${error.message}`);
+    } finally {
+      setIsRouteLoading(false);
     }
   };
 
+  const handleDragStart = (index) => {
+    setDraggedIndex(index);
+  };
+
+  const handleDrop = async (targetIndex) => {
+    if (draggedIndex === null || draggedIndex === targetIndex) {
+      setDraggedIndex(null);
+      return;
+    }
+
+    // 1. Reordenar localmente para una UI instantánea
+    const reorderedContenidos = [...contenidos];
+    const [draggedItem] = reorderedContenidos.splice(draggedIndex, 1);
+    reorderedContenidos.splice(targetIndex, 0, draggedItem);
+    
+    setContenidos(reorderedContenidos);
+    setDraggedIndex(null);
+
+    // 2. Preparar los datos para actualizar el 'orden' en la base de datos
+    const updates = reorderedContenidos.map((content, index) => ({
+      id: content.id,
+      orden: index,
+    }));
+
+    // 3. Enviar las actualizaciones a Supabase
+    try {
+      const { error } = await supabase.from('contenidos').upsert(updates);
+      if (error) throw error;
+      console.log('Orden del contenido actualizado con éxito.');
+    } catch (error) {
+      console.error('Error al actualizar el orden del contenido:', error);
+      alert('No se pudo guardar el nuevo orden. La página se recargará para restaurar el orden anterior.');
+      window.location.reload();
+    }
+  };
   useEffect(() => {
     const cargarDatosCurso = async () => {
       setIsRouteLoading(true);
@@ -161,13 +182,47 @@ const CursoDetalle = ({ terminoDeBusqueda = '', rolUsuario }) => {
         definirContenidosCompletados(new Set(respuestaCompletados.data.map(c => c.contenido_id)));
       }
 
+      // --- LÓGICA PARA ABRIR CONTENIDO DESDE URL (CHAT IA) ---
+      const contentToOpenId = searchParams.get('open');
+      if (contentToOpenId && respuestaContenidos.data) {
+        const allContents = respuestaContenidos.data;
+        const completedContents = new Set(respuestaCompletados.data.map(c => c.contenido_id));
+        const contentToOpen = allContents.find(c => c.id.toString() === contentToOpenId);
+
+        if (contentToOpen) {
+          setHighlightedContentId(contentToOpen.id); // Guardamos el ID para resaltarlo
+          const contentIndex = allContents.findIndex(c => c.id === contentToOpen.id);
+          let isLocked = false;
+          // Replicamos la lógica de bloqueo para verificar si se puede abrir.
+          if (rolUsuario !== 'administrador' && contentIndex > 0) {
+            for (let i = 0; i < contentIndex; i++) {
+              if (!completedContents.has(allContents[i].id)) {
+                isLocked = true;
+                break;
+              }
+            }
+          }
+
+          if (!isLocked) {
+            definirContenidoSeleccionado(contentToOpen);
+          } else {
+            alert("Cerebrito intentó llevarte a un contenido que aún está bloqueado. ¡Sigue avanzando para desbloquearlo!");
+          }
+
+          // Limpiamos el parámetro de la URL para que no se vuelva a abrir al recargar.
+          searchParams.delete('open');
+          setSearchParams(searchParams, { replace: true });
+        }
+      }
+
       setIsRouteLoading(false);
     };
 
     if (idCurso) {
       cargarDatosCurso();
     }
-  }, [idCurso, setIsRouteLoading]);
+    // Añadimos dependencias para que el efecto se ejecute si cambian.
+  }, [idCurso, setIsRouteLoading, searchParams, setSearchParams, rolUsuario]);
 
   const marcarComoCompletado = async (idContenido) => {
     // Evita marcar como completado si no hay datos o si ya está completado.
@@ -216,7 +271,7 @@ const CursoDetalle = ({ terminoDeBusqueda = '', rolUsuario }) => {
               // Lógica de bloqueo mejorada: un contenido está bloqueado si CUALQUIER contenido anterior no está completado.
               const estaBloqueado = (() => {
                 // Los administradores pueden ver todo el contenido sin restricciones.
-                if (rolUsuario === 'administrador') {
+                if (esAdmin) {
                   return false;
                 }
 
@@ -241,15 +296,21 @@ const CursoDetalle = ({ terminoDeBusqueda = '', rolUsuario }) => {
                 lectura: BookOpen,
                 video: Video,
                 cuestionario: HelpCircle,
-              }[item.tipo];
+                ordenar_pasos: ListOrdered,
+              }[item.tipo] || HelpCircle; // Icono por defecto si el tipo no se reconoce
 
               return (
                 <div 
                   key={item.id} 
-                  className={`contenido-item-card ${estaBloqueado ? 'is-locked' : 'is-clickable'}`}
+                  className={`contenido-item-card ${estaBloqueado ? 'is-locked' : 'is-clickable'} ${item.id === highlightedContentId ? 'highlighted-by-ai' : ''} ${index === draggedIndex ? 'dragging' : ''}`}
                   onClick={!estaBloqueado ? () => definirContenidoSeleccionado(item) : undefined}
                   role={!estaBloqueado ? 'button' : undefined}
                   tabIndex={!estaBloqueado ? 0 : -1}
+                  // Props para Drag and Drop (solo para administradores)
+                  draggable={esAdmin}
+                  onDragStart={() => esAdmin && handleDragStart(index)}
+                  onDragOver={(e) => esAdmin && e.preventDefault()}
+                  onDrop={() => esAdmin && handleDrop(index)}
                 >
                   <div className="contenido-icon-container">
                     {Icon && <Icon size={24} />}
@@ -266,17 +327,27 @@ const CursoDetalle = ({ terminoDeBusqueda = '', rolUsuario }) => {
                     ) : (
                       <ChevronRight size={24} className="access-icon" />
                     )}
-                    {rolUsuario === 'administrador' && (
-                      <button 
-                        className="delete-contenido-btn" 
-                        onClick={(e) => {
-                          e.stopPropagation(); // Evita que se abra el modal al hacer clic en eliminar
-                          handleDeleteContent(item.id);
-                        }} 
-                        title="Eliminar contenido"
-                      >
-                        <Trash2 size={18} />
-                      </button>
+                    {/* Mostramos los botones de admin solo si el usuario tiene el rol correcto */}
+                    {esAdmin && (
+                      <>
+                        <button
+                          className="edit-contenido-btn"
+                          onClick={(e) => { e.stopPropagation(); onEditContentClick(item); }}
+                          title="Editar contenido"
+                        >
+                          <Edit size={18} />
+                        </button>
+                        <button 
+                          className="delete-contenido-btn" 
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleDeleteContent(item.id);
+                          }} 
+                          title="Eliminar contenido"
+                        >
+                          <Trash2 size={18} />
+                        </button>
+                      </>
                     )}
                   </div>
                 </div>

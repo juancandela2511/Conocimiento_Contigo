@@ -63,7 +63,7 @@
 }
 
 /* Insignia para cursos completados */
-.completed-badge {
+.course-completed-badge {
   position: absolute;
   top: 15px;
   right: 15px;
@@ -90,10 +90,17 @@
 }
 
 /* Estilo para el título dentro de la tarjeta. */
+.card-content {
+  /* Posicionado al final de la tarjeta para empujar el contenido hacia abajo */
+  margin-top: auto;
+  padding-top: 20px; /* Espacio para que el título no choque con los botones de admin */
+}
+
 .card-content h3 {
   margin: 0 0 10px 0;
   font-size: 1.4rem;
   text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.6);
+  color: white;
 }
 
 /* --- Dark Mode --- */
@@ -101,68 +108,71 @@
   color: #ffffff;
 }
 
-/* Contenedor para los botones de acción ('Editar', 'Acceder'). */
-.card-actions {
+/* --- Botones de Administración (Editar/Eliminar) --- */
+.course-admin-actions {
+  position: absolute;
+  top: 15px;
+  left: 15px;
   display: flex;
-  flex-direction: column;
-  gap: 10px;
-  margin-top: 20px;
+  gap: 8px;
+  z-index: 3;
+  opacity: 0;
+  transform: scale(0.9);
+  transition: all 0.3s ease;
 }
 
-/* Estilo base para los botones de acción. */
-.action-button {
-  width: 100%;
-  padding: 12px 20px;
-  border: none;
-  border-radius: 8px;
+.course-card:hover .course-admin-actions {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.admin-action-btn {
+  /* Estilo de cristal brillante */
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.25), rgba(255, 255, 255, 0.1));
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2), inset 0 1px 1px rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  width: 38px;
+  height: 38px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
   cursor: pointer;
-  font-weight: bold;
-  font-size: 1rem;
-  text-align: center; /* Asegura que el texto esté centrado */
-  display: block; /* Hace que el enlace ocupe todo el ancho */
-  text-decoration: none; /* Quita el subrayado de los enlaces */
-  box-sizing: border-box; /* Asegura que el padding no desborde el contenedor */
-  transition: background-color 0.2s ease;
+  transition: all 0.2s ease;
 }
 
-/* Estilo específico para el botón de editar. */
-.edit-button {
-  background-color: #ff9800;
+.admin-action-btn:hover {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.35), rgba(255, 255, 255, 0.15));
+  transform: scale(1.1);
+}
+
+/* --- Botón de Acceso (Siempre visible) --- */
+.access-button-bubble {
+  display: inline-block;
+  margin-top: 15px;
+  padding: 10px 25px;
+  border-radius: 50px; /* Estilo píldora */
+  /* Estilo de gota de agua / cristal */
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.25), rgba(255, 255, 255, 0.1));
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15), inset 0 1px 2px rgba(255, 255, 255, 0.4);
   color: white;
+  font-weight: 600;
+  text-decoration: none;
+  text-align: center;
+  transition: all 0.3s ease;
 }
 
-.edit-button:hover {
-  background-color: #e68900;
-}
-
-/* --- Dark Mode --- */
-.dark-mode .edit-button {
-  background-color: #d97706; /* amber-600 */
-  color: white;
-}
-
-.dark-mode .edit-button:hover {
-  background-color: #b45309; /* amber-700 */
-}
-
-/* Estilo específico para el botón de acceder. */
-.access-button {
-  background-color: #052fe9;
-  color: #f6efef;
-}
-
-.access-button:hover {
-  background-color: #0428c9;
-}
-
-/* --- Dark Mode --- */
-.dark-mode .access-button {
-  background-color: #4f46e5; /* indigo-600 */
-  color: white;
-}
-
-.dark-mode .access-button:hover {
-  background-color: #4338ca; /* indigo-700 */
+.access-button-bubble:hover {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.35), rgba(255, 255, 255, 0.15));
+  border-color: rgba(255, 255, 255, 0.6);
+  transform: scale(1.05);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2), inset 0 1px 2px rgba(255, 255, 255, 0.4);
 }
 
 /* Keyframes para la animación de entrada de las tarjetas */

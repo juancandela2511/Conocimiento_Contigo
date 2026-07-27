@@ -11,9 +11,9 @@
 // 1. IMPORTACIONES
 // =================================================================
 // Hooks y utilidades de React.
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 // Componentes de 'react-router-dom' para crear el sistema de navegación y rutas.
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate, useNavigate } from 'react-router-dom';
 // Cliente de Supabase para interactuar con el backend.
 import { supabase } from './services/supabaseClient';
 
@@ -26,6 +26,7 @@ import BarraNavegacionEditor from './components/EditorNavbar';
 import InfoContactos from './components/ContactsInfo';
 import Cargando from './components/Loading';
 import AsistenteIA from './ChatIA';
+import AnunciosPanel from './components/AnunciosPanel'; // Importamos el panel de anuncios
 
 // --- Componentes de Páginas (Vistas) ---
 import InicioSesion from './pages/Login';
@@ -38,7 +39,13 @@ import UserProgressPage from './pages/UserProgressPage'; // Nueva página
 // --- Componentes de Modales para Administradores ---
 import ModalAgregarModulo from './components/Admin/AddCard'; // Renombrado a AddCourseModal
 import ModalEditarModulo from './components/Admin/EditCard'; // Renombrado a EditCourseModal
-import AddContentModal from './components/Admin/AddContentModal'; // El nuevo modal genérico
+// Se reemplaza el modal genérico por modales específicos para mayor claridad
+import AddLecturaModal from './components/Admin/AddLecturaModal';
+// NOTA: Asumimos que AddVideoModal y AddCuestionarioModal existen o se crearán siguiendo el mismo patrón.
+import EditContentModal from './components/Admin/EditContentModal'; // Nuevo modal para editar
+import AddVideoModal from './components/Admin/AddVideoModal';
+import AddCuestionarioModal from './components/Admin/AddCuestionarioModal';
+import AddOrdenarPasosModal from './components/Admin/AddOrdenarPasosModal';
 
 // --- Contexto para la Carga de Rutas ---
 // Importamos el proveedor y el hook del nuevo contexto.
@@ -63,7 +70,7 @@ function AppContent() {
   const [sesionIniciada, definirSesionIniciada] = useState(false);
   const [rolUsuario, definirRolUsuario] = useState(null);
   const [estaCargandoApp, definirEstaCargandoApp] = useState(true); // Carga inicial de la app
-  const { estaCargandoRuta } = useRouteLoading(); // Carga durante la navegación entre páginas
+  const { estaCargandoRuta, setIsRouteLoading } = useRouteLoading(); // Carga durante la navegación entre páginas
 
   // --- Estados de la Interfaz y Navegación ---
   const [terminoDeBusqueda, definirTerminoDeBusqueda] = useState('');
@@ -77,8 +84,9 @@ function AppContent() {
   // --- Estados de Visibilidad de Modales ---
   const [esVisibleModalAgregarModulo, definirEsVisibleModalAgregarModulo] = useState(false);
   const [esVisibleModalEditarModulo, definirEsVisibleModalEditarModulo] = useState(false);
-  const [esVisibleModalAgregarContenido, definirEsVisibleModalAgregarContenido] = useState(false);
-  const [tipoContenidoParaAgregar, definirTipoContenidoParaAgregar] = useState(null); // 'lectura', 'video', 'cuestionario'
+  const [esVisibleModalEditarContenido, definirEsVisibleModalEditarContenido] = useState(false);
+  const [contenidoEditandose, definirContenidoEditandose] = useState(null);
+  const [tipoContenidoParaAgregar, definirTipoContenidoParaAgregar] = useState(null); // 'lectura', 'video', 'cuestionario', 'crucigrama', etc.
    
   // =================================================================
   // 3. EFECTOS (LÓGICA DE INICIALIZACIÓN Y SUSCRIPCIONES)
@@ -178,6 +186,43 @@ function AppContent() {
     definirCursoEditandose(null);
   };
 
+  const manejarClicEliminarCurso = async (idCurso) => {
+    if (window.confirm('¿Estás seguro de que quieres eliminar este módulo? Esta acción también eliminará todo su contenido y es irreversible.')) {
+      definirEstaCargandoApp(true);
+      try {
+        // Por seguridad, primero eliminamos el contenido asociado al curso.
+        const { error: errorContenido } = await supabase.from('contenidos').delete().eq('curso_id', idCurso);
+        if (errorContenido) throw errorContenido;
+
+        // Luego, eliminamos el curso.
+        const { error: errorCurso } = await supabase.from('cursos').delete().eq('id', idCurso);
+        if (errorCurso) throw errorCurso;
+
+        // Finalmente, actualizamos el estado para reflejar el cambio en la UI.
+        definirListaCursos(cursosAnteriores => cursosAnteriores.filter(c => c.id !== idCurso));
+
+      } catch (error) {
+        console.error('Error al eliminar el curso:', error);
+        alert('No se pudo eliminar el curso. Revisa los permisos (RLS) o la consola para más detalles.');
+      } finally {
+        definirEstaCargandoApp(false);
+      }
+    }
+  };
+
+  const abrirModalEditarContenido = (contenido) => {
+    definirContenidoEditandose(contenido);
+    definirEsVisibleModalEditarContenido(true);
+  };
+
+  const manejarContenidoActualizado = (contenidoActualizado) => {
+    // Para actualizar el contenido en la lista, necesitamos forzar una recarga de la página del curso.
+    // La forma más sencilla es cambiar la 'key' del componente DetalleCurso.
+    definirClaveContenido(claveAnterior => claveAnterior + 1);
+    definirEsVisibleModalEditarContenido(false);
+    definirContenidoEditandose(null);
+  };
+
   /**
    * Abre el modal correspondiente para agregar contenido (lectura, video, etc.)
    * y guarda el ID del curso al que pertenece.
@@ -185,22 +230,51 @@ function AppContent() {
    * @param {string} idCurso - El ID del curso actual.
    */
   const abrirModalAgregarContenido = (tipoContenido, idCurso) => {
-    if (idCurso) {
+    if (idCurso && tipoContenido) {
       definirIdCursoActual(idCurso);
       definirTipoContenidoParaAgregar(tipoContenido);
-      definirEsVisibleModalAgregarContenido(true);
     } else {
-      console.error("No se puede agregar contenido sin un ID de curso.");
+      console.error("No se puede agregar contenido sin un ID de curso y un tipo de contenido.");
     }
   };
 
   const manejarContenidoAgregado = () => {
-    definirEsVisibleModalAgregarContenido(false);
     definirTipoContenidoParaAgregar(null);
     // Cambiamos la 'key' para que React piense que es un componente nuevo y lo vuelva a renderizar.
     definirClaveContenido(claveAnterior => claveAnterior + 1); 
     definirIdCursoActual(null); // Limpia el ID del curso actual.
   };
+
+  // --- Navegación desde el Chat ---
+  const navigate = useNavigate();
+
+  const handleNavigationRequest = useCallback(async (targetName) => {
+    if (!targetName) return;
+
+    setIsRouteLoading(true);
+    try {
+      // Llamamos a nuestra nueva función en Supabase para encontrar el curso y el contenido.
+      const { data, error } = await supabase.rpc('find_content_location', {
+        p_content_name: targetName
+      });
+
+      if (error) throw error;
+
+      if (data && data.length > 0) {
+        const { curso_id, content_id } = data[0];
+        // Navegamos a la URL del curso con un parámetro para abrir el modal.
+        navigate(`/curso/${curso_id}?open=${content_id}`);
+      } else {
+        // Si no se encuentra, podríamos notificar al usuario a través del chat,
+        // pero por ahora lo dejamos en la consola.
+        console.warn(`El asistente de IA no pudo encontrar el contenido: "${targetName}"`);
+      }
+    } catch (error) {
+      console.error("Error en la solicitud de navegación:", error);
+    } finally {
+      setIsRouteLoading(false);
+    }
+  }, [navigate, setIsRouteLoading]);
 
   // =================================================================
   // 5. RENDERIZADO DEL COMPONENTE
@@ -247,6 +321,7 @@ function AppContent() {
                 alHacerClicAgregarLectura={(idCurso) => abrirModalAgregarContenido('lectura', idCurso)}
                 alHacerClicAgregarVideo={(idCurso) => abrirModalAgregarContenido('video', idCurso)}
                 alHacerClicAgregarCuestionario={(idCurso) => abrirModalAgregarContenido('cuestionario', idCurso)}
+                alHacerClicAgregarOrdenarPasos={(idCurso) => abrirModalAgregarContenido('ordenar_pasos', idCurso)}
               />
             )}
           </header>
@@ -255,7 +330,13 @@ function AppContent() {
             Asistente de IA (Chat):
             Componente global que se muestra como un widget flotante para todos los usuarios logueados.
           */}
-          {sesionIniciada && <AsistenteIA />}
+          {sesionIniciada && <AsistenteIA onNavigateRequest={handleNavigationRequest} />}
+
+          {/*
+            Panel de Anuncios:
+            Componente global que se muestra como un widget flotante para todos los usuarios logueados.
+          */}
+          {sesionIniciada && <AnunciosPanel rolUsuario={rolUsuario} />}
 
           {/* 
             BLOQUE DE MODALES:
@@ -278,12 +359,52 @@ function AppContent() {
             />
           )}
 
-          {esVisibleModalAgregarContenido && (
-            <AddContentModal
-              onClose={() => definirEsVisibleModalAgregarContenido(false)}
+          {esVisibleModalEditarContenido && contenidoEditandose && (
+            <EditContentModal
+              isOpen={esVisibleModalEditarContenido}
+              onClose={() => {
+                definirEsVisibleModalEditarContenido(false);
+                definirContenidoEditandose(null);
+              }}
+              content={contenidoEditandose}
+              onContentUpdated={manejarContenidoActualizado}
+            />
+          )}
+
+          {/* Renderizado condicional de modales de contenido */}
+          {tipoContenidoParaAgregar === 'lectura' && (
+            <AddLecturaModal
+              isOpen={true}
+              onClose={() => definirTipoContenidoParaAgregar(null)}
               onContentAdded={manejarContenidoAgregado}
-              curso_id={idCursoActual} // ID del curso al que se agregará el contenido
-              contentType={tipoContenidoParaAgregar} // Tipo de contenido a agregar
+              curso_id={idCursoActual}
+            />
+          )}
+          
+          {tipoContenidoParaAgregar === 'video' && (
+            <AddVideoModal
+              isOpen={true}
+              onClose={() => definirTipoContenidoParaAgregar(null)}
+              onContentAdded={manejarContenidoAgregado}
+              curso_id={idCursoActual}
+            />
+          )}
+
+          {tipoContenidoParaAgregar === 'cuestionario' && (
+            <AddCuestionarioModal
+              isOpen={true}
+              onClose={() => definirTipoContenidoParaAgregar(null)}
+              onContentAdded={manejarContenidoAgregado}
+              curso_id={idCursoActual}
+            />
+          )}
+
+          {tipoContenidoParaAgregar === 'ordenar_pasos' && (
+            <AddOrdenarPasosModal
+              isOpen={true}
+              onClose={() => definirTipoContenidoParaAgregar(null)}
+              onContentAdded={manejarContenidoAgregado}
+              curso_id={idCursoActual}
             />
           )}
 
@@ -306,6 +427,7 @@ function AppContent() {
                       userRole={rolUsuario} // Pasa el rol para mostrar/ocultar botones de admin
                       terminoDeBusqueda={terminoDeBusqueda} 
                       onEditCourseClick={manejarClicEditarCurso} // Pasa la función para abrir el modal de edición
+                      onDeleteCourseClick={manejarClicEliminarCurso} // Pasa la función para eliminar
                     />
                   </>
                 ) : (
@@ -322,7 +444,7 @@ function AppContent() {
                 element={
                   <RutaProtegida sesionIniciada={sesionIniciada} rolUsuario={rolUsuario}>
                     {/* La `key` fuerza a React a volver a montar el componente si la clave cambia, útil para recargar datos. */}
-                    <DetalleCurso key={claveContenido} terminoDeBusqueda={terminoDeBusqueda} rolUsuario={rolUsuario} />
+                    <DetalleCurso key={claveContenido} terminoDeBusqueda={terminoDeBusqueda} rolUsuario={rolUsuario} onEditContentClick={abrirModalEditarContenido} />
                   </RutaProtegida>
                 } 
               />

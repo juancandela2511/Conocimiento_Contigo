@@ -7,10 +7,11 @@
 /* Switcher para método de subida */
 .upload-method-switcher {
   display: flex;
-  margin-bottom: 20px;
-  border: 1px solid #ccc;
-  border-radius: 8px;
-  overflow: hidden;
+  margin-bottom: 25px;
+  background-color: var(--accent-bg);
+  border-radius: 12px;
+  padding: 5px;
+  border: 1px solid var(--border);
 }
 
 .dark-mode .upload-method-switcher {
@@ -19,13 +20,14 @@
 
 .upload-method-switcher button {
   flex: 1;
-  padding: 10px;
+  padding: 12px;
   border: none;
   background-color: transparent;
   cursor: pointer;
   font-weight: 600;
-  color: #555;
-  transition: background-color 0.2s, color 0.2s;
+  color: var(--text);
+  transition: background-color 0.3s, color 0.3s, box-shadow 0.3s;
+  border-radius: 8px;
 }
 
 .dark-mode .upload-method-switcher button {
@@ -33,23 +35,27 @@
 }
 
 .upload-method-switcher button.active {
-  background-color: #052fe9;
-  color: white;
+  background-color: var(--bg);
+  color: var(--text-h);
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
 }
 
 .dark-mode .upload-method-switcher button.active {
   background-color: #4f46e5; /* indigo-600 */
+  color: white;
+  box-shadow: 0 4px 15px -5px #4f46e5;
 }
 
 /* Zona de arrastrar y soltar */
 .drop-zone {
-  border: 2px dashed #ccc;
-  border-radius: 8px;
-  padding: 40px 20px;
+  border: 2px dashed var(--border);
+  border-radius: 12px;
+  padding: 50px 20px;
   text-align: center;
   cursor: pointer;
-  transition: border-color 0.2s, background-color 0.2s;
-  color: #888;
+  transition: border-color 0.3s, background-color 0.3s, transform 0.3s;
+  color: var(--text);
+  background-color: var(--accent-bg);
 }
 
 .dark-mode .drop-zone {
@@ -58,8 +64,8 @@
 }
 
 .drop-zone:hover {
-  border-color: #052fe9;
-  background-color: #f4f7f9;
+  border-color: var(--accent);
+  transform: scale(1.02);
 }
 
 .dark-mode .drop-zone:hover {
@@ -68,13 +74,14 @@
 }
 
 .drop-zone.is-dragging {
-  border-color: #052fe9;
-  background-color: rgba(5, 47, 233, 0.1);
+  border-color: var(--accent);
+  transform: scale(1.02);
+  box-shadow: 0 0 0 4px var(--accent-bg);
 }
 
 .dark-mode .drop-zone.is-dragging {
   border-color: #818cf8;
-  background-color: rgba(129, 140, 248, 0.1);
+  box-shadow: 0 0 0 4px rgba(129, 140, 248, 0.1);
 }
 
 .drop-zone p {

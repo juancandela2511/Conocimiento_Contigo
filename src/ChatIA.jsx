@@ -13,7 +13,7 @@ import { supabase } from './services/supabaseClient';
 import './ChatIA.css';
 
 // Definición del componente.
-export default function ChatIA() {
+export default function ChatIA({ onNavigateRequest }) {
   // Lógica de Frontend: Estados para controlar la visibilidad, mensajes, input y estado de carga.
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState([]);
@@ -47,9 +47,23 @@ export default function ChatIA() {
 
       if (error) throw error;
 
+      // CONSOLE.LOG PARA DEPURACIÓN: Mostramos en la consola del navegador la respuesta exacta de la IA.
+      console.log("Respuesta recibida de la IA:", data);
+
       // Lógica de Frontend: Añade la respuesta de la IA a la lista de mensajes.
-      const aiMessage = { role: 'ai', text: data.reply };
-      setMessages((prev) => [...prev, aiMessage]);
+      // La respuesta ahora puede ser un objeto con acciones o solo texto.
+      if (data && typeof data === 'object' && data.type) {
+        const aiMessage = { role: 'ai', text: data.reply };
+        setMessages((prev) => [...prev, aiMessage]);
+
+        // Si la IA nos pide navegar, llamamos a la función que nos pasaron.
+        if (data.type === 'navigate' && onNavigateRequest) {
+          onNavigateRequest(data.target);
+        }
+      } else {
+        const aiMessage = { role: 'ai', text: data.reply || (typeof data === 'string' ? data : 'No entendí la respuesta.') };
+        setMessages((prev) => [...prev, aiMessage]);
+      }
 
     } catch (error) {
       // Lógica de Frontend: Manejo de errores mejorado.

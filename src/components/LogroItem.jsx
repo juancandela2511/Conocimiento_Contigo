@@ -3,7 +3,7 @@
   Función: Renderiza una tarjeta individual para un logro.
   Tipo: Componente de Frontend.
 */
-import React from 'react';
+
 import './LogroItem.css';
 
 const LogroItem = ({ logro }) => {

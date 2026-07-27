@@ -4,7 +4,7 @@
            Incluye el nombre del curso, una barra de progreso y el estado.
   Tipo: Componente de Frontend (Presentacional).
 */
-import React from 'react';
+
 import './UserProgressCard.css';
 
 // Componente interno para la barra de progreso visual.

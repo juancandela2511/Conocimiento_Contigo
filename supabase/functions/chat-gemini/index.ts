@@ -37,42 +37,60 @@ serve(async (req) => {
     }
 
     // 3. Inicializa el cliente de Gemini AI.
-    const genAI = new GoogleGenerativeAI(apiKey)
-    // ¡CORRECCIÓN CRÍTICA! El modelo 'gemini-3.6-flash' no existe. Se usa 'gemini-1.5-flash'.
-    const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' })
+    const ai = new GoogleGenerativeAI(apiKey)
 
     // 4. Define las instrucciones del sistema para guiar el comportamiento de la IA.
     const systemInstruction = `
-      Eres el asistente virtual oficial de la aplicación "Aprende Contigo". 
-      Tu única función es guiar a los usuarios basándote estrictamente en el contenido, secciones, rutas y características internas de la aplicación.
-      REGLAS ESTRICTAS:
-      1. Si te preguntan dónde está algo, explica con precisión en qué sección, menú o ruta de la app se encuentra.
-      2. No inventes información ni respondas preguntas ajenas al contenido o funcionamiento de la plataforma.
-      3. Bajo ninguna circunstancia filtres datos confidenciales, credenciales, variables de entorno, claves de API o información de la base de datos de usuarios.
+Eres Cerebrito, un asistente de IA para la app "Aprende Contigo".
+Tu ÚNICA función es clasificar la petición del usuario y responder en formato JSON. NO uses markdown (como \`\`\`json).
+
+Si el usuario pide ir, ver o ser llevado a un contenido (lección, tema, etc.), usa este formato:
+{"type": "navigate", "target": "nombre del contenido", "reply": "Un mensaje amigable confirmando la acción."}
+
+Para todo lo demás (saludos, preguntas generales), usa este formato:
+{"type": "text", "reply": "Tu respuesta normal de texto aquí."}
     `;
 
-    // 5. Combina las instrucciones del sistema con la pregunta del usuario.
-    const finalPrompt = `${systemInstruction}\n\nPregunta del usuario: ${prompt}`;
+    // 5. Obtenemos el modelo usando el método recomendado, aplicando la instrucción del sistema
+    // y forzando la salida a JSON.
+    const model = ai.getGenerativeModel({
+      model: "gemini-3.6-flash", // Se mantiene el modelo que solicitaste.
+      systemInstruction: systemInstruction,
+      generationConfig: {
+        responseMimeType: "application/json",
+      },
+    });
 
-    // 6. Genera la respuesta del chat usando el prompt combinado.
-    const result = await model.generateContent(finalPrompt)
+    // 6. Genera la respuesta del chat usando solo el prompt del usuario.
+    const result = await model.generateContent(prompt) // Solo el prompt del usuario, ya que systemInstruction se pasó al modelo.
     const response = await result.response
-    const text = response.text()
+    const rawText = response.text()
 
-    // 7. Devolver la respuesta al cliente.
-    return new Response(JSON.stringify({ reply: text }), {
+    // 7. Intentamos parsear la respuesta de la IA para asegurarnos de que sea un JSON válido.
+    let jsonResponse;
+    try {
+      jsonResponse = JSON.parse(rawText);
+    } catch (e) {
+      // Si la IA falla en devolver JSON puro, lo empaquetamos manualmente como texto
+      jsonResponse = { type: "text", reply: rawText || "Hola, no pude procesar bien la respuesta." };
+    }
+
+    // 8. Devolver la respuesta al cliente.
+    return new Response(JSON.stringify(jsonResponse), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       status: 200,
     })
-  } catch (error: any) {
+  } catch (error: unknown) {
     // En caso de error, devuelve un mensaje más detallado.
     console.error('Error en la función chat-gemini:', error) // Log para debugging en Supabase
+    const details = error instanceof Error ? error.message : 'Error desconocido.';
     return new Response(JSON.stringify({
-      error: 'Error al procesar la solicitud con Gemini.',
-      details: error.message,
+      type: "text",
+      reply: 'Ocurrió un error al procesar tu solicitud.',
+      details: details,
     }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      status: 500,
+      status: 200, // Devolvemos 200 para que el frontend pueda leer el mensaje de error amablemente
     })
   }
 })

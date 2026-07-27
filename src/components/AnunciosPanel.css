@@ -85,6 +85,13 @@
   color: #333;
 }
 
+/* Contenedor para los botones de acción en la cabecera */
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
 .dark-mode .announcements-header {
   border-bottom-color: #334155;
 }
@@ -93,16 +100,109 @@
   color: #e2e8f0;
 }
 
-.announcements-close-btn {
+.announcements-close-btn,
+.announcements-add-btn {
   background: none;
   border: none;
   cursor: pointer;
   padding: 5px;
   color: #888;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: background-color 0.2s;
 }
 
-.dark-mode .announcements-close-btn {
+.announcements-add-btn {
+  color: #28a745; /* Verde para 'agregar' */
+}
+
+.dark-mode .announcements-close-btn,
+.dark-mode .announcements-add-btn {
   color: #94a3b8;
+}
+
+.dark-mode .announcements-add-btn {
+  color: #34d399; /* Verde esmeralda */
+}
+
+.announcements-close-btn:hover,
+.announcements-add-btn:hover {
+  background-color: rgba(0,0,0,0.05);
+}
+
+.dark-mode .announcements-close-btn:hover,
+.dark-mode .announcements-add-btn:hover {
+  background-color: rgba(255,255,255,0.1);
+}
+
+
+/* --- Formulario para agregar anuncio --- */
+.add-announcement-form {
+  padding: 15px 20px;
+  border-bottom: 1px solid #e0e0e0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  background-color: rgba(0,0,0,0.02);
+}
+
+.dark-mode .add-announcement-form {
+  border-bottom-color: #334155;
+  background-color: rgba(0,0,0,0.1);
+}
+
+.add-announcement-form input,
+.add-announcement-form textarea {
+  width: 100%;
+  padding: 8px 12px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  font-family: 'Segoe UI', sans-serif;
+  font-size: 0.9rem;
+}
+
+.add-announcement-form textarea {
+  resize: vertical;
+  min-height: 80px;
+}
+
+.dark-mode .add-announcement-form input,
+.dark-mode .add-announcement-form textarea {
+  background-color: #1e293b;
+  border-color: #475569;
+  color: #e2e8f0;
+}
+
+.add-announcement-form .form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.add-announcement-form .submit-btn,
+.add-announcement-form .cancel-btn {
+  padding: 6px 12px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.add-announcement-form .submit-btn {
+  background-color: #052fe9;
+  color: white;
+}
+
+.add-announcement-form .cancel-btn {
+  background-color: #6c757d;
+  color: white;
+}
+
+.add-announcement-form .submit-btn:disabled {
+  background-color: #cccccc;
+  cursor: not-allowed;
 }
 
 /* Área de contenido con las notas */
@@ -165,6 +265,38 @@
   transform: translateX(-50%);
   color: #e74c3c;
   filter: drop-shadow(0 2px 2px rgba(0,0,0,0.3));
+}
+
+/* Botón para eliminar una nota (solo para admins) */
+.note-delete-btn {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  background: none;
+  border: none;
+  color: rgba(0, 0, 0, 0.4);
+  cursor: pointer;
+  padding: 5px;
+  border-radius: 50%;
+  /* Hacemos el botón visible por defecto para los admins */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 11;
+}
+
+.note-delete-btn:hover {
+  background-color: rgba(0, 0, 0, 0.1);
+  color: #e74c3c;
+}
+
+.dark-mode .note-delete-btn {
+  color: rgba(255, 255, 255, 0.4);
+}
+
+.dark-mode .note-delete-btn:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+  color: #ff6b6b;
 }
 
 /* --- Sección de Apuntes Temporales --- */

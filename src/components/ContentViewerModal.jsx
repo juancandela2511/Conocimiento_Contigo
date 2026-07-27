@@ -10,6 +10,7 @@ import { X } from 'lucide-react';
 import ReactPlayerModule from 'react-player';
 
 import QuizRunner from './QuizRunner';
+import OrdenarPasosRunner from './OrdenarPasosRunner'; // Importamos el nuevo componente
 import './ContentViewerModal.css';
 
 // --- Componente específico para el reproductor de video ---
@@ -144,6 +145,15 @@ const ContentRenderer = ({ content, onMarkAsComplete, isCompleted, onClose }) =>
           onQuizComplete={() => {
             onMarkAsComplete(content.id);
             onClose();
+          }}
+        />
+      );
+    case 'ordenar_pasos':
+      return (
+        <OrdenarPasosRunner
+          content={content}
+          onGameComplete={() => {
+            onMarkAsComplete(content.id);
           }}
         />
       );

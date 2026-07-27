@@ -1,217 +1,147 @@
 /*
   Archivo: AddModals.css
-  Función: Estilos compartidos para los modales de "Agregar Contenido".
+  Función: Estilos compartidos para los modales de "Agregar" contenido y cursos.
   Tipo: Frontend.
 */
+
 .modal-overlay {
   position: fixed;
   top: 0;
   left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: rgba(0, 0, 0, 0.7);
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.7); /* Overlay más oscuro */
   display: flex;
   justify-content: center;
   align-items: center;
   z-index: 2000;
+  backdrop-filter: blur(8px); /* Más desenfoque */
+  animation: overlay-fade-in 0.4s ease-out;
 }
 
 .modal-content {
-  background: white;
-  padding: 30px 40px;
-  border-radius: 16px;
+  background: var(--bg);
+  padding: 35px 40px; /* Más espaciado interno */
+  border-radius: 16px; /* Bordes más redondeados */
+  box-shadow: var(--shadow);
   width: 90%;
   max-width: 600px;
-  box-shadow: 0 5px 15px rgba(0,0,0,0.3);
-  position: relative;
-  max-height: 90vh; /* Para permitir scroll en modales largos */
-  overflow-y: auto; /* Habilita el scroll */
-}
-
-.dark-mode .modal-content {
-  background: #1e293b; /* slate-800 */
-  box-shadow: 0 5px 15px rgba(0,0,0,0.5);
+  animation: modal-slide-down 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards; /* Animación de entrada mejorada */
+  text-align: left;
+  border: 1px solid var(--border);
 }
 
 .modal-content h2 {
   margin-top: 0;
-  color: #333;
+  margin-bottom: 30px;
+  color: var(--text-h);
   font-size: 1.8rem;
-  text-align: center;
-  margin-bottom: 25px;
-}
-
-.dark-mode .modal-content h2 {
-  color: #e2e8f0; /* slate-200 */
+  font-weight: 700;
+  letter-spacing: -0.5px;
 }
 
 .form-group {
-  margin-bottom: 20px;
+  margin-bottom: 22px;
 }
 
 .form-group label {
   display: block;
-  margin-bottom: 8px;
-  font-weight: bold;
-  color: #555;
-}
-
-.dark-mode .form-group label {
-  color: #94a3b8; /* slate-400 */
+  margin-bottom: 10px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: var(--text);
 }
 
 .form-group input,
-.form-group textarea,
-.form-group select {
+.form-group textarea {
   width: 100%;
-  padding: 12px;
-  border: 1px solid #ccc;
-  border-radius: 8px;
-  font-size: 1rem;
   box-sizing: border-box;
+  padding: 14px 16px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background-color: var(--accent-bg); /* Fondo sutil para los inputs */
+  color: var(--text-h);
+  font-size: 1rem;
+  transition: border-color 0.3s, box-shadow 0.3s;
 }
 
-.dark-mode .form-group input,
-.dark-mode .form-group textarea,
-.dark-mode .form-group select {
-  background-color: #334155; /* slate-700 */
-  border-color: #475569; /* slate-600 */
-  color: #f1f5f9; /* slate-100 */
+.form-group input:focus,
+.form-group textarea:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-bg);
 }
 
 .modal-actions {
   display: flex;
   justify-content: flex-end;
   gap: 15px;
-  margin-top: 30px;
-}
-
-.modal-actions button {
-  padding: 10px 25px;
-  border: none;
-  border-radius: 8px;
-  font-weight: bold;
-  cursor: pointer;
-  transition: background-color 0.2s;
-}
-
-.btn-primary {
-  background-color: #052fe9;
-  color: white;
-}
-
-.btn-secondary {
-  background-color: #f0f0f0;
-  color: #333;
-  border: 1px solid #ddd;
-}
-
-.dark-mode .btn-secondary {
-  background-color: #334155; /* slate-700 */
-  color: #e2e8f0; /* slate-200 */
-  border: 1px solid #475569; /* slate-600 */
+  margin-top: 35px;
 }
 
 .error-message {
-    color: #d93025;
-    font-size: 0.9rem;
-    text-align: center;
-    margin-top: -10px;
-    margin-bottom: 15px;
-}
-
-/* --- Estilos para el editor de cuestionarios --- */
-
-.form-divider {
-  border: none;
-  border-top: 1px solid #eee;
-  margin: 30px 0;
-}
-
-.dark-mode .form-divider {
-  border-top-color: #334155; /* slate-700 */
-}
-
-.pregunta-editor {
-  background-color: #f9f9f9;
-  border: 1px solid #e0e0e0;
+  color: #e53e3e;
+  background-color: rgba(229, 62, 62, 0.1);
+  padding: 12px;
   border-radius: 8px;
-  padding: 20px;
-  margin-bottom: 20px;
-}
-
-.dark-mode .pregunta-editor {
-  background-color: #111827; /* slate-900 */
-  border-color: #334155; /* slate-700 */
-}
-
-.pregunta-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 15px;
-}
-
-.pregunta-header h4 {
-  margin: 0;
-  color: #333;
-}
-
-.dark-mode .pregunta-header h4 {
-  color: #e2e8f0; /* slate-200 */
-}
-
-.opciones-label {
-  display: block;
-  font-weight: bold;
-  color: #555;
-  margin-top: 15px;
-  margin-bottom: 10px;
+  margin-top: 20px;
   font-size: 0.9rem;
+  border: 1px solid rgba(229, 62, 62, 0.2);
 }
 
-.dark-mode .opciones-label {
-  color: #94a3b8; /* slate-400 */
-}
-
-.opcion-editor {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin-bottom: 10px;
-}
-
-.opcion-editor input[type="radio"] {
-  flex-shrink: 0;
-}
-
-.btn-add-pregunta {
-  width: 100%;
-  padding: 10px;
-  background-color: #e8eaf6;
-  border: 1px dashed #c5cae9;
-  color: #3f51b5;
-  font-weight: bold;
-  cursor: pointer;
-  border-radius: 8px;
-  margin-bottom: 20px;
-}
-
-.dark-mode .btn-add-pregunta {
-  background-color: #1e293b; /* slate-800 */
-  border-color: #334155; /* slate-700 */
-  color: #818cf8; /* indigo-400 */
-}
-
-.btn-delete {
-  background: none;
+.btn-primary {
+  padding: 12px 24px;
   border: none;
-  color: #e53935;
+  border-radius: 10px;
+  font-weight: 600;
+  font-size: 0.95rem;
   cursor: pointer;
-  font-size: 0.8rem;
-  font-weight: bold;
+  transition: all 0.3s ease;
+  background-color: var(--accent);
+  color: white;
+  box-shadow: 0 4px 15px -5px var(--accent);
 }
 
-.dark-mode .btn-delete {
-  color: #f87171; /* red-400 */
+.btn-primary:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px -6px var(--accent);
+}
+
+.btn-secondary {
+  padding: 12px 24px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  font-weight: 600;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  background-color: var(--accent-bg);
+  color: var(--text-h);
+}
+
+.btn-secondary:hover:not(:disabled) {
+  background-color: var(--accent-border);
+  border-color: var(--accent-border);
+}
+
+.btn-primary:disabled,
+.btn-secondary:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+@keyframes overlay-fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes modal-slide-down {
+  from {
+    opacity: 0;
+    transform: translateY(-30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
