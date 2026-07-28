@@ -215,7 +215,7 @@ function AppContent() {
     definirEsVisibleModalEditarContenido(true);
   };
 
-  const manejarContenidoActualizado = (contenidoActualizado) => {
+  const manejarContenidoActualizado = () => {
     // Para actualizar el contenido en la lista, necesitamos forzar una recarga de la página del curso.
     // La forma más sencilla es cambiar la 'key' del componente DetalleCurso.
     definirClaveContenido(claveAnterior => claveAnterior + 1);
@@ -435,8 +435,13 @@ function AppContent() {
                 )} 
               />
               
-              {/* Ruta de Inicio de Sesión ('/login'): Es una ruta pública. */}
-              <Route path="/login" element={<InicioSesion />} />
+              {/* 
+                Ruta de Inicio de Sesión ('/login'):
+                - Si el usuario YA ha iniciado sesión, lo redirige a la página principal ('/').
+                - Si NO ha iniciado sesión, muestra el componente de inicio de sesión.
+                Esto evita que un usuario logueado vea la página de login, que es la causa del problema reportado.
+              */}
+              <Route path="/login" element={!sesionIniciada ? <InicioSesion /> : <Navigate to="/" />} />
               
               {/* Ruta de Detalle de Curso ('/curso/:id'): Ruta dinámica y protegida. */}
               <Route 

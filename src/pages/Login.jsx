@@ -56,12 +56,15 @@ function InicioSesion() {
         
         if (errorInsercion) throw errorInsercion;
 
-        alert("¡Registro exitoso! Por favor, inicia sesión.");
-        definirEsRegistro(false); // Cambia al modo de inicio de sesión.
+        // El registro fue exitoso. Supabase inicia sesión automáticamente.
+        // El componente App.jsx se encargará de redirigir al usuario a la página principal gracias a la nueva guarda de ruta.
+        // Solo mostramos un mensaje de bienvenida.
+        alert("¡Registro exitoso! Bienvenido a Aprende Contigo.");
+        definirEsRegistro(false);
 
       } else {
         // Lógica para el inicio de sesión de un usuario existente.
-        const { data: datosAutenticacion, error } = await supabase.auth.signInWithPassword({
+        const { error } = await supabase.auth.signInWithPassword({
           email: correo,
           password: contrasena,
         });
