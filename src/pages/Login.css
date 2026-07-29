@@ -1,123 +1,299 @@
-/* 1. Forzamos la altura desde la raíz de React */
-#root {
-  width: 100%;
-  height: 100vh; /* Usamos 100vh para asegurar que sea el 100% del alto de la ventana */
-  display: flex;
-  flex-direction: column;
-}
-/* 1. Fondo animado en toda la página */
-.container {
-  display: flex;
-  width: 100%;
-  min-height: 100%;
-  overflow: hidden;
-  
-  /* Tu fondo animado ahora en el contenedor principal */
-  background: linear-gradient(270deg, #eeecff, #dfe3ff, #a1bfff);
-  background-size: 600% 600%;
-  animation: fondoMovible 15s ease infinite;
-}
+/*
+  Archivo: Login.css
+  Estilo: Neumorfismo 3D Extra Grande (PC) con escalado proporcional.
+*/
 
-/* 2. Panel Imagen (Izquierdo) */
-/* 2. Panel Imagen (Izquierdo) */
-.panel-imagen {
-  flex: 1;
+/* 1. Fondo animado con degradado a Pantalla Completa */
+.login-page-container {
   display: flex;
-  flex-direction: column; /* Esto pone el eslogan arriba y el logo abajo */
-  gap: 20px;
-  padding: 20px;
-  position: absolute; /* Saca el panel del flujo normal */
-  top: -0px;          /* Distancia desde el borde superior */
-  left: 0px;
-  z-index: 5;
-}
-.panel-imagen img {
-  width: 15%;
-  transform: perspective(600px) rotateY(15deg);
-  filter: drop-shadow(15px 15px 10px rgba(4, 3, 20, 0.3));
-  transition: transform 0.5s ease;
- 
-}
-
-.panel-imagen img:hover {
-  transform: perspective(600px) rotateY(0deg) scale(1.1);
-  filter: drop-shadow(20px 20px 15px rgba(0,0,0,0.4));
-}
-
-/* 3. Panel Formulario con fondo blanco */
-.panel-formulario {
-  flex: 1;
-  display: flex;
-  align-items: center;
-  flex-direction: column;
   justify-content: center;
   align-items: center;
-  
-  /* El recuadro blanco del formulario */
-  background: rgba(255, 255, 255, 0.95);
-  margin: 5% auto;
-  width: 100%;
-  max-width: 600px;
-  
-  border-radius: 30px;
-  box-shadow: 0 30px 60px rgba(123, 0, 255, 0.15);
-  padding: 70px;
+  width: 100vw;
+  height: 100vh;
+  background: linear-gradient(-45deg, #0f172a, #172554, #1e40af, #1d4ed8, #0f172a);
+  background-size: 400% 400%;
+  animation: fondoAnimado 12s ease infinite;
+  font-family: 'Poppins', system-ui, -apple-system, sans-serif;
+  position: relative;
+  overflow: hidden;
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
 }
 
-/* Animación del fondo (ahora aplicada al .container) */
-@keyframes fondoMovible {
-  0% { background-position: 0% 50% }
-  50% { background-position: 100% 50% }
-  100% { background-position: 0% 50% }
+@keyframes fondoAnimado {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
 }
 
-/* Estilos de inputs y botón (dentro del recuadro blanco) */
-.panel-formulario input {
-  width: 100%;
-  max-width: 350px;
-  padding: 18px;
-  margin: 12px 0;
-  border: 1px solid rgba(0,0,0,0.1);
-  border-radius: 15px;
-  background: #f9f9f9;
-  font-size: 16px;
+/* Logo contrastado sobre fondo oscuro */
+.brand-logo-top-left {
+  position: absolute;
+  top: 35px;
+  left: 45px;
+  width: 260px;
+  max-width: 25vw;
+  height: auto;
+  z-index: 10;
+  filter: brightness(0) invert(1) drop-shadow(0px 3px 8px rgba(0, 0, 0, 0.4));
+  transition: all 0.3s ease-in-out;
 }
 
-.panel-formulario button {
+/* 2. Tarjeta Neumórfica 3D (Súper amplia) */
+.login-card {
+  width: 760px;  /* Subió de 700px a 760px */
+  height: 860px; /* Subió de 800px a 860px */
+  position: relative;
+  perspective: 1400px;
+}
+
+.login-card-inner {
   width: 100%;
-  max-width: 350px;
-  padding: 18px;
-  margin: 25px;
-  background: #052fe9;
-  color: white;
-  border: none;
-  border-radius: 15px;
+  height: 100%;
+  position: relative;
+  transform-style: preserve-3d;
+  transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.login-card.show-signup .login-card-inner {
+  transform: rotateY(180deg);
+}
+
+/* 3. Caras Frontal y Trasera */
+.login-card-front,
+.login-card-back {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  background: #f3f5f9;
+  border-radius: 52px;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  box-shadow: 
+    35px 35px 75px rgba(0, 0, 0, 0.45),
+    -15px -15px 45px rgba(255, 255, 255, 0.25),
+    inset 1px 1px 2px rgba(255, 255, 255, 0.9);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 70px 75px 45px 75px;
+  box-sizing: border-box;
+}
+
+.login-card-back {
+  transform: rotateY(180deg);
+}
+
+/* 4. Avatar 3D gigante */
+.login-avatar {
+  position: absolute;
+  top: -70px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 140px; /* Subió de 120px a 140px */
+  height: 140px;
+  background: #2563eb;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #ffffff;
+  box-shadow: 
+    0px 18px 36px rgba(0, 0, 0, 0.35),
+    inset 4px 4px 8px rgba(255, 255, 255, 0.4),
+    inset -4px -4px 8px rgba(0, 0, 0, 0.2);
+  z-index: 5;
+}
+
+.login-avatar svg {
+  width: 60px;
+  height: 60px;
+}
+
+/* 5. Formulario y Textos Maximizados */
+.auth-form {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin-top: 25px;
+}
+
+.auth-form h2 {
+  font-size: 3.2rem; /* Subió de 2.6rem a 3.2rem */
   font-weight: 700;
-  cursor: pointer;
+  color: #2c3e50;
+  margin-bottom: 45px;
+  text-align: center;
 }
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@900&display=swap');
 
-/* ================================================================= */
-/* 4. RESPONSIVIDAD (MEDIA QUERIES)                                  */
-/* ================================================================= */
+/* 6. Inputs Neumórficos */
+.input-group {
+  width: 100%;
+  margin-bottom: 30px;
+}
 
-/* Estilos para pantallas de tablets y móviles (ancho menor a 768px) */
-@media (max-width: 768px) {
-  .container {
-    /* Hacemos que el contenedor principal pueda centrar el formulario */
-    justify-content: center;
+.input-group input {
+  width: 100%;
+  padding: 24px 30px; /* Campos más gruesos y cómodos */
+  border: none;
+  outline: none;
+  background: #e6ecf5;
+  border-radius: 26px;
+ font-size: 2.0rem; /* <-- Aumentado de 1.4rem a 1.8rem para que el texto al escribir se vea grande */
+  font-weight: 500;
+  color: #334155;
+  box-sizing: border-box;
+  box-shadow: 
+    inset 6px 6px 12px rgba(0, 0, 0, 0.14),
+    inset -6px -6px 12px rgba(255, 255, 255, 0.85);
+  transition: all 0.2s ease;
+}
+
+.input-group input:focus {
+  box-shadow: 
+    inset 3px 3px 6px rgba(0, 0, 0, 0.2),
+    inset -3px -3px 6px rgba(255, 255, 255, 0.9),
+    0 0 0 4px rgba(37, 99, 235, 0.3);
+}
+
+/* 7. Botón Principal */
+.auth-form button {
+  width: 100%;
+  padding: 24px;
+  margin-top: 22px;
+  border: none;
+  border-radius: 26px;
+  background: #5aafff;
+  color: #ffffff;
+  font-weight: 700;
+  font-size: 1.4rem; /* Subió de 1.2rem a 1.4rem */
+  letter-spacing: 2px;
+  cursor: pointer;
+  text-transform: uppercase;
+  box-shadow: 0px 16px 30px rgba(90, 244, 255, 0.45);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.auth-form button:hover {
+  transform: translateY(-3px);
+  box-shadow: 0px 20px 36px rgba(9, 50, 233, 0.55);
+}
+
+/* 8. Textos y enlaces */
+.toggle-link {
+  margin-top: 40px;
+  font-size: 1.3rem; /* Subió de 1.1rem a 1.3rem */
+  color: #64748b;
+  cursor: pointer;
+  text-align: center;
+  user-select: none;
+}
+
+.toggle-link strong {
+  color: #2563eb;
+  font-weight: 600;
+}
+
+/* =========================================================
+   9. MEDIA QUERIES (RESPONSIVE)
+   ========================================================= */
+
+@media (max-width: 1024px) {
+  .login-card {
+    width: 550px;
+    height: 680px;
   }
 
-  .panel-imagen {
-    /* Ocultamos la imagen decorativa en móviles para dar espacio al contenido principal */
-    display: none;
+  .auth-form h2 {
+    font-size: 2.3rem;
+    margin-bottom: 30px;
   }
 
-  .panel-formulario {
-    /* El formulario ocupa la mayor parte de la pantalla */
-    width: 90%;
-    margin: 0; /* Quitamos el margen automático */
-    padding: 40px 25px; /* Reducimos el padding para pantallas pequeñas */
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1); /* Sombra más sutil */
+  .input-group input,
+  .auth-form button {
+    padding: 18px 22px;
+    font-size: 1.1rem;
   }
+
+  .toggle-link {
+    font-size: 1rem;
+  }
+
+  .login-avatar {
+    width: 110px;
+    height: 110px;
+    top: -55px;
+  }
+}
+
+@media (max-width: 480px) {
+  .brand-logo-top-left {
+    width: 110px;
+    top: 20px;
+    left: 20px;
+  }
+
+  .login-card {
+    width: 88%;
+    max-width: 350px;
+    height: 500px;
+  }
+
+  .login-card-front,
+  .login-card-back {
+    padding: 35px 22px 20px 22px;
+    border-radius: 32px;
+  }
+
+  .auth-form h2 {
+    font-size: 1.5rem;
+    margin-bottom: 20px;
+  }
+
+  .input-group {
+    margin-bottom: 15px;
+  }
+
+  .input-group input {
+    padding: 13px 16px;
+    font-size: 0.95rem;
+    border-radius: 14px;
+  }
+
+  .auth-form button {
+    padding: 13px;
+    font-size: 0.95rem;
+    border-radius: 14px;
+    margin-top: 10px;
+  }
+
+  .toggle-link {
+    margin-top: 20px;
+    font-size: 0.85rem;
+  }
+
+  .login-avatar {
+    width: 80px;
+    height: 80px;
+    top: -40px;
+  }
+
+  .login-avatar svg {
+    width: 32px;
+    height: 32px;
+  }
+}
+
+html, body, #root {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  overflow-x: hidden;
 }

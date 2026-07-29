@@ -1,19 +1,18 @@
 /*
   Archivo: Login.jsx
   Función: Gestiona la interfaz y lógica de autenticación (inicio de sesión y registro) del usuario.
-  Tipo: Página (Componente de Frontend).
+  Tipo: Página (Componente de Frontend) con estilo Neumórfico 3D.
 */
 
 // Hooks de React para manejar el estado y la navegación.
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 
 // Cliente de Supabase para interactuar con el backend.
 import { supabase } from '../services/supabaseClient';
 
 // Componentes y estilos.
-import Cargando from '../components/Loading';
 import './Login.css';
+import { User } from 'lucide-react'; // Ícono para el avatar
 
 // Define la función principal del componente Login.
 function InicioSesion() {
@@ -22,16 +21,10 @@ function InicioSesion() {
   const [correo, definirCorreo] = useState('');
   const [contrasena, definirContrasena] = useState('');
   const [nombreUsuario, definirNombreUsuario] = useState('');
-  const [estaCargando, definirEstaCargando] = useState(false);
-    
-  // Hook para la navegación programática.
-  const navegar = useNavigate();
 
   // Función que se ejecuta al enviar el formulario.
   const manejarAutenticacion = async (e) => {
     e.preventDefault(); // Previene la recarga de la página.
-    
-    definirEstaCargando(true);
 
     try {
       // Lógica para el registro de un nuevo usuario.
@@ -57,8 +50,6 @@ function InicioSesion() {
         if (errorInsercion) throw errorInsercion;
 
         // El registro fue exitoso. Supabase inicia sesión automáticamente.
-        // El componente App.jsx se encargará de redirigir al usuario a la página principal gracias a la nueva guarda de ruta.
-        // Solo mostramos un mensaje de bienvenida.
         alert("¡Registro exitoso! Bienvenido a Aprende Contigo.");
         definirEsRegistro(false);
 
@@ -69,60 +60,95 @@ function InicioSesion() {
           password: contrasena,
         });
         if (error) throw error;
-
-        // Redirige al usuario a la página principal tras un inicio de sesión exitoso.
-        navegar('/');
       }
     } catch (err) {
       // Captura y muestra cualquier error de Supabase.
       console.error("Error de autenticación:", err.message);
       alert("Error: " + err.message);
-    } finally {
-      // Se ejecuta siempre, haya o no error.
-      definirEstaCargando(false);
     }
   };
 
-  // Muestra la pantalla de carga mientras se procesa la solicitud.
-  if (estaCargando) {
-    return <Cargando />;
-  }
-
   return (
-    <div className="container">
-      <div className="panel-imagen">
-        <img src="/logo.png" alt="Logo" />
-      </div>
-      <div className="panel-formulario">
-        <form onSubmit={manejarAutenticacion}>
-          <h1>{esRegistro ? "Registrarse" : "Iniciar Sesión"}</h1>
-          
-          {esRegistro && (
-            <input
-              type="text"
-              placeholder="Nombre de usuario"
-              onChange={(e) => definirNombreUsuario(e.target.value)}
-            />
-          )}
+    <div className="login-page-container">
+      {/* Carga del logo desde la carpeta /public directamente */}
+      <img src="/logo.png" alt="Logo Aprende Contigo" className="brand-logo-top-left" />
+      
+      {/* La clase 'show-signup' controla la animación de giro */}
+      <div className={`login-card ${esRegistro ? 'show-signup' : ''}`}>
+        <div className="login-card-inner">
+          {/* --- Cara Frontal: Iniciar Sesión --- */}
+          <div className="login-card-front">
+            <div className="login-avatar">
+              <User size={40} strokeWidth={1.5} />
+            </div>
+            <form onSubmit={manejarAutenticacion} className="auth-form">
+              <h2>Iniciar Sesión</h2>
+              <div className="input-group">
+                <input 
+                  type="email" 
+                  placeholder="Correo" 
+                  required 
+                  value={correo}
+                  onChange={(e) => definirCorreo(e.target.value)} 
+                />
+              </div>
+              <div className="input-group">
+                <input 
+                  type="password" 
+                  placeholder="Contraseña" 
+                  required 
+                  value={contrasena}
+                  onChange={(e) => definirContrasena(e.target.value)} 
+                />
+              </div>
+              <button type="submit">LOGIN</button>
+              <p className="toggle-link" onClick={() => definirEsRegistro(true)}>
+                ¿No tienes cuenta? <strong>Regístrate</strong>
+              </p>
+            </form>
+          </div>
 
-          <input
-            type="email"
-            placeholder="Correo"
-            onChange={(e) => definirCorreo(e.target.value)}
-          />
-          
-          <input
-            type="password"
-            placeholder="Contraseña"
-            onChange={(e) => definirContrasena(e.target.value)}
-          />
-          
-          <button type="submit">{esRegistro ? "Crear cuenta" : "Entrar"}</button>
-        </form>
-
-        <p onClick={() => definirEsRegistro(!esRegistro)}>
-          {esRegistro ? "¿Ya tienes cuenta? Inicia sesión" : "¿No tienes cuenta? Regístrate"}
-        </p>
+          {/* --- Cara Trasera: Registro --- */}
+          <div className="login-card-back">
+            <div className="login-avatar">
+              <User size={40} strokeWidth={1.5} />
+            </div>
+            <form onSubmit={manejarAutenticacion} className="auth-form">
+              <h2>Crear Cuenta</h2>
+              <div className="input-group">
+                <input 
+                  type="text" 
+                  placeholder="Nombre de usuario" 
+                  required 
+                  value={nombreUsuario}
+                  onChange={(e) => definirNombreUsuario(e.target.value)} 
+                />
+              </div>
+              <div className="input-group">
+                <input 
+                  type="email" 
+                  placeholder="Correo" 
+                  required 
+                  value={correo}
+                  onChange={(e) => definirCorreo(e.target.value)} 
+                />
+              </div>
+              <div className="input-group">
+                <input 
+                  type="password" 
+                  placeholder="Contraseña" 
+                  required 
+                  value={contrasena}
+                  onChange={(e) => definirContrasena(e.target.value)} 
+                />
+              </div>
+              <button type="submit">REGISTRARME</button>
+              <p className="toggle-link" onClick={() => definirEsRegistro(false)}>
+                ¿Ya tienes cuenta? <strong>Inicia sesión</strong>
+              </p>
+            </form>
+          </div>
+        </div>
       </div>
     </div>
   );
