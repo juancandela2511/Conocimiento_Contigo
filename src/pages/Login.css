@@ -42,8 +42,8 @@
 
 /* 2. Tarjeta Neumórfica 3D (Súper amplia) */
 .login-card {
-  width: 760px;  /* Subió de 700px a 760px */
-  height: 860px; /* Subió de 800px a 860px */
+  width: 700px;  /* Subió de 700px a 760px */
+  height: 800px; /* Subió de 800px a 860px */
   position: relative;
   perspective: 1400px;
 }
