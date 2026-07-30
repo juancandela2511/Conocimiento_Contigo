@@ -4,46 +4,47 @@
   Tipo: Componente de Frontend.
 */
 import { useEffect, useState } from 'react';
-import { useParams, useSearchParams } from 'react-router-dom';
+import { Link, useParams, useSearchParams } from 'react-router-dom';
 import { supabase } from '../services/supabaseClient';
-import { BookOpen, Video, HelpCircle, Lock, Trash2, Edit, ChevronRight, ListOrdered } from 'lucide-react';
+import { BookOpen, Video, HelpCircle, Lock, Trash2, Edit, ChevronRight, ListOrdered, Trophy } from 'lucide-react';
 import CursoHero from '../components/CursoHero';
+import { DiplomaModal } from '../components/CompletedCourseCard'; // Importamos el modal del diploma
 
 import ContentViewerModal from '../components/ContentViewerModal';
 import { useRouteLoading } from '../components/RouteLoadingContext';
 import './CursoDetalle.css'; // Importamos los nuevos estilos
+import '../components/CompletedCourseCard.css'; // Importamos los estilos del diploma
 
 
 /**
  * Otorga un logro a un usuario por completar un curso.
  * Si el logro para ese curso no existe, lo crea automáticamente.
- * @param {string} userId - El ID del usuario que completó el curso.
- * @param {string} courseName - El nombre del curso, usado para encontrar/crear el logro.
+ * @param {string} idUsuario - El ID del usuario que completó el curso.
+ * @param {string} idCurso - El ID del curso que se ha completado.
  */
-const otorgarLogroPorCursoCompletado = async (idUsuario, nombreCurso) => {
+const otorgarLogroPorCursoCompletado = async (idUsuario, idCurso) => {
   try {
-    const tituloLogro = `Completaste: ${nombreCurso}`;
-
-    // Paso 1: Buscar si el logro para este curso ya fue creado por un administrador.
-    // Se elimina la lógica que intentaba crear logros, ya que eso viola las políticas de seguridad (RLS)
-    // para usuarios no administradores y es la causa del error 403 Forbidden.
+    // Paso 1: Buscar el logro específico asociado a este curso.
+    // Esta es una lógica más robusta que buscar por nombre.
     const { data: logrosExistentes, error: logroError } = await supabase
       .from('logros')
-      .select('id')
-      .eq('titulo', tituloLogro)
+      .select('id, titulo')
+      .eq('curso_id', idCurso) // Buscamos por el ID del curso.
       .limit(1);
 
     if (logroError) {
       throw logroError;
     }
 
-    // Si no se encuentra un logro predefinido para este curso, se detiene el proceso.
+    // Si no se encuentra un logro asignado a este curso por un administrador,
+    // simplemente se registra en la consola y no se otorga nada.
     if (!logrosExistentes || logrosExistentes.length === 0) {
-      console.warn(`No se encontró un logro predefinido para el curso "${nombreCurso}". No se otorgará ningún logro. Un administrador debe crearlo primero.`);
+      console.log(`El curso con ID ${idCurso} no tiene un logro asociado. No se otorgará nada.`);
       return;
     }
 
     const logroId = logrosExistentes[0].id;
+    const tituloLogro = logrosExistentes[0].titulo;
 
     // Paso 2: Verificar si el usuario ya tiene este logro para no duplicarlo.
     const { count, error: checkError } = await supabase
@@ -55,7 +56,7 @@ const otorgarLogroPorCursoCompletado = async (idUsuario, nombreCurso) => {
     if (checkError) throw checkError;
 
     if (count > 0) {
-      console.log(`El usuario ya tiene el logro para "${nombreCurso}".`);
+      console.log(`El usuario ya tiene el logro "${tituloLogro}".`);
       return;
     }
 
@@ -79,6 +80,14 @@ const CursoDetalle = ({ terminoDeBusqueda = '', rolUsuario, onEditContentClick }
   const [highlightedContentId, setHighlightedContentId] = useState(null); // Nuevo estado para resaltar
   const [searchParams, setSearchParams] = useSearchParams();
   const [draggedIndex, setDraggedIndex] = useState(null); // Estado para el drag and drop
+
+  const [showCourseCompletedModal, setShowCourseCompletedModal] = useState(false); // Estado para la animación de felicitación
+
+  // --- Estados para el certificado ---
+  const [isCourseComplete, setIsCourseComplete] = useState(false);
+  const [completionDate, setCompletionDate] = useState(null);
+  const [userName, setUserName] = useState('');
+  const [isDiplomaModalOpen, setDiplomaModalOpen] = useState(false);
 
 
   const handleDeleteContent = async (contentId) => {
@@ -158,6 +167,14 @@ const CursoDetalle = ({ terminoDeBusqueda = '', rolUsuario, onEditContentClick }
       }
       definirIdUsuario(user.id);
 
+      // --- Lógica para obtener el nombre del usuario para el certificado ---
+      let finalUserName = user.user_metadata?.full_name;
+      if (!finalUserName) {
+        const { data: profileData } = await supabase.from('Usuario').select('Usuario').eq('id', user.id).single();
+        finalUserName = profileData?.Usuario;
+      }
+      setUserName(finalUserName || user.email);
+
       // --- CARGA DE DATOS DESDE SUPABASE ---
       const [respuestaCurso, respuestaContenidos, respuestaCompletados] = await Promise.all([
         // Se elimina .single() para evitar el error 406 si el curso no se encuentra.
@@ -179,7 +196,28 @@ const CursoDetalle = ({ terminoDeBusqueda = '', rolUsuario, onEditContentClick }
         setContenidos(respuestaContenidos.data);
       }
       if (respuestaCompletados.data) {
-        definirContenidosCompletados(new Set(respuestaCompletados.data.map(c => c.contenido_id)));
+        const completedSet = new Set(respuestaCompletados.data.map(c => c.contenido_id));
+        definirContenidosCompletados(completedSet);
+
+        // Comprobar si el curso está completo para mostrar el botón de descarga del certificado
+        if (respuestaContenidos.data && respuestaContenidos.data.length > 0 && completedSet.size === respuestaContenidos.data.length) {
+          setIsCourseComplete(true);
+          // Si está completo, buscar la fecha de finalización
+          const { data: logroData } = await supabase
+            .from('logros_obtenidos')
+            .select('created_at, logros!inner(curso_id)')
+            .eq('user_id', user.id)
+            .eq('logros.curso_id', idCurso)
+            .order('created_at', { ascending: true })
+            .limit(1)
+            .single();
+          
+          if (logroData) {
+            setCompletionDate(logroData.created_at);
+          }
+        }
+      } else {
+        definirContenidosCompletados(new Set());
       }
 
       // --- LÓGICA PARA ABRIR CONTENIDO DESDE URL (CHAT IA) ---
@@ -222,7 +260,22 @@ const CursoDetalle = ({ terminoDeBusqueda = '', rolUsuario, onEditContentClick }
       cargarDatosCurso();
     }
     // Añadimos dependencias para que el efecto se ejecute si cambian.
-  }, [idCurso, setIsRouteLoading, searchParams, setSearchParams, rolUsuario]);
+  }, [
+    idCurso,
+    setIsRouteLoading,
+    searchParams,
+    setSearchParams,
+    rolUsuario,
+    definirIdUsuario,
+    setUserName,
+    definirCurso,
+    setContenidos,
+    definirContenidosCompletados,
+    setIsCourseComplete,
+    setCompletionDate,
+    setHighlightedContentId,
+    definirContenidoSeleccionado
+  ]);
 
   const marcarComoCompletado = async (idContenido) => {
     // Evita marcar como completado si no hay datos o si ya está completado.
@@ -234,8 +287,9 @@ const CursoDetalle = ({ terminoDeBusqueda = '', rolUsuario, onEditContentClick }
 
     // --- LÓGICA DE LOGROS ---
     if (contenidos.length > 0 && nuevoSetCompletados.size === contenidos.length && curso) {
-      console.log(`¡Curso "${curso.curso}" completado! Otorgando logro...`);
-      otorgarLogroPorCursoCompletado(idUsuario, curso.curso);
+      console.log(`¡Curso "${curso.curso}" (ID: ${idCurso}) completado! Verificando si hay un logro para otorgar...`);
+      otorgarLogroPorCursoCompletado(idUsuario, idCurso);
+      setShowCourseCompletedModal(true); // ¡Mostramos la animación!
     }
 
     // --- SINCRONIZACIÓN CON SUPABASE ---
@@ -260,7 +314,11 @@ const CursoDetalle = ({ terminoDeBusqueda = '', rolUsuario, onEditContentClick }
 
   return (
     <div className="curso-detalle-page">
-      <CursoHero course={curso} />
+      <CursoHero 
+        course={curso} 
+        isComplete={isCourseComplete}
+        onDownloadClick={() => setDiplomaModalOpen(true)}
+      />
       <div className="contenido-curso-container">
         <h2>Contenido del Módulo</h2>
         {contenidos.length > 0 ? (
@@ -361,6 +419,31 @@ const CursoDetalle = ({ terminoDeBusqueda = '', rolUsuario, onEditContentClick }
       {/* Renderiza el modal del visor si hay un contenido seleccionado */}
       {contenidoSeleccionado && (
         <ContentViewerModal content={contenidoSeleccionado} onClose={() => definirContenidoSeleccionado(null)} onMarkAsComplete={marcarComoCompletado} isCompleted={contenidosCompletados.has(contenidoSeleccionado.id)} />
+      )}
+
+      {/* Modal del Diploma/Certificado */}
+      {isDiplomaModalOpen && (
+        <DiplomaModal
+          course={{ course_name: curso.curso, completion_date: completionDate }}
+          userName={userName}
+          onClose={() => setDiplomaModalOpen(false)}
+        />
+      )}
+
+      {/* Modal de felicitación por completar el curso */}
+      {showCourseCompletedModal && (
+        <div className="completion-modal-overlay">
+          <div className="completion-modal-content">
+            <Trophy size={80} className="completion-trophy-icon" />
+            <h2>¡Felicidades!</h2>
+            <p>Has completado el módulo "{curso.curso}".</p>
+            <p>Puedes ver tu nuevo logro en tu perfil.</p>
+            <div className="completion-modal-actions">
+              <button onClick={() => setShowCourseCompletedModal(false)} className="btn-secondary">Cerrar</button>
+              <Link to="/logros" className="btn-primary">Ver mis logros</Link>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );

@@ -1,0 +1,91 @@
+.progreso-detalle-panel {
+  background-color: var(--bg-alt);
+  border-radius: 16px;
+  border: 1px solid var(--border);
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.progreso-detalle-panel-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  color: var(--text-light);
+  gap: 20px;
+}
+
+.pdp-header {
+  padding: 20px 25px;
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+
+.pdp-header h3 {
+  margin: 0 0 5px 0;
+  font-size: 1.3rem;
+  color: var(--text-h);
+}
+
+.pdp-header p {
+  margin: 0;
+  font-size: 0.9rem;
+  color: var(--text);
+}
+
+.pdp-content-list {
+  padding: 15px;
+  overflow-y: auto;
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 8px; /* Añade espacio vertical entre los elementos de la lista */
+}
+
+.pdp-content-item {
+  display: flex;
+  align-items: center;
+  gap: 20px; /* Más espacio entre icono y texto */
+  padding: 15px 20px; /* Más espacio interno */
+  border-radius: 8px;
+  transition: background-color 0.2s ease;
+}
+
+.pdp-content-item:hover {
+  background-color: var(--bg-disabled);
+}
+
+.pdp-icon-completed {
+  color: #22c55e; /* green-500 */
+  flex-shrink: 0;
+}
+
+.pdp-icon-pending {
+  color: var(--text-light);
+  flex-shrink: 0;
+}
+
+.pdp-item-title {
+  flex-grow: 1;
+  font-weight: 500;
+  color: var(--text);
+}
+
+.pdp-item-type {
+  font-size: 0.8rem;
+  color: var(--text-light);
+  background-color: var(--bg-disabled);
+  padding: 3px 8px;
+  border-radius: 10px;
+  text-transform: capitalize;
+  flex-shrink: 0; /* Evita que el tipo de contenido se encoja y aplaste el título */
+}
+
+.pdp-empty {
+  text-align: center;
+  padding: 40px 20px;
+  color: var(--text-light);
+}

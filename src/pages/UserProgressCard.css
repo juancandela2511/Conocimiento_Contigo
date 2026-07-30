@@ -1,0 +1,73 @@
+.user-progress-card-link {
+  display: block;
+  text-decoration: none;
+  color: inherit;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  border-radius: 16px;
+  height: 100%;
+}
+
+.user-progress-card-link:hover {
+  transform: translateY(-5px);
+  box-shadow: var(--shadow-lg);
+}
+
+.user-progress-card {
+  background-color: var(--bg-alt);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 25px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  height: 100%;
+}
+
+.user-progress-course-name {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--text-h);
+  margin: 0;
+  flex-grow: 1;
+}
+
+.user-progress-details {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.user-progress-bar-container {
+  flex-grow: 1;
+}
+
+.user-progress-status {
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.user-progress-status.status-completado {
+  background-color: #d1fae5; /* green-100 */
+  color: #065f46; /* green-800 */
+}
+
+.user-progress-status.status-en-progreso {
+  background-color: #fee2e2; /* red-100 */
+  color: #991b1b; /* red-800 */
+}
+
+.dark-mode .user-progress-status.status-completado {
+  background-color: #064e3b; /* green-900 */
+  color: #a7f3d0; /* green-200 */
+}
+
+.dark-mode .user-progress-status.status-en-progreso {
+  background-color: #7f1d1d; /* red-900 */
+  color: #fecaca; /* red-200 */
+}

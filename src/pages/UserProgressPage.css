@@ -1,0 +1,61 @@
+.user-progress-page {
+  padding: 40px;
+  padding-top: 120px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.user-progress-header {
+  display: flex;
+  align-items: center;
+  gap: 25px;
+  margin-bottom: 30px;
+  padding-bottom: 30px;
+  border-bottom: 1px solid var(--border);
+}
+
+.user-progress-header .header-icon {
+  color: var(--accent);
+  flex-shrink: 0;
+}
+
+.user-progress-header h1 {
+  font-size: 2.5rem;
+  margin: 0 0 5px 0;
+  color: var(--text-h);
+}
+
+.user-progress-header p {
+  font-size: 1.1rem;
+  color: var(--text);
+  margin: 0;
+}
+
+.user-progress-summary {
+  text-align: center;
+  font-size: 1.2rem;
+  font-weight: 500;
+  padding: 15px;
+  background-color: var(--bg-alt);
+  border-radius: 12px;
+  margin-bottom: 40px;
+}
+
+.user-progress-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+  gap: 30px;
+}
+
+.user-progress-card-link {
+  text-decoration: none;
+  color: inherit;
+}
+
+.no-progress-data {
+  grid-column: 1 / -1; /* Ocupa todo el ancho de la grilla */
+  text-align: center;
+  padding: 50px;
+  font-size: 1.1rem;
+  color: var(--text-light);
+}

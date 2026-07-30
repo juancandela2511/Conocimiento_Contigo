@@ -32,8 +32,9 @@ import AnunciosPanel from './components/AnunciosPanel'; // Importamos el panel d
 import InicioSesion from './pages/Login';
 import DetalleCurso from './pages/CursoDetalle';
 import PaginaLogros from './pages/LogrosPage';
-import PaginaProgresoAdmin from './AdminProgresoPage';
+import PaginaProgresoAdmin from './pages/AdminProgresoPage';
 import AdminUsuariosPage from './pages/AdminUsuariosPage'; // Nueva página de admin
+import AdminLogrosPage from './pages/AdminLogrosPage'; // Nueva página de admin de logros
 import UserProgressPage from './pages/UserProgressPage'; // Nueva página
 
 // --- Componentes de Modales para Administradores ---
@@ -483,7 +484,7 @@ function AppContent() {
                     rolUsuario={rolUsuario} 
                     rolesAutorizados={['administrador']}
                   >
-                    <PaginaProgresoAdmin />
+                    <PaginaProgresoAdmin terminoDeBusqueda={terminoDeBusqueda} />
                   </RutaProtegida>
                 }
               />
@@ -497,6 +498,20 @@ function AppContent() {
                     rolUsuario={rolUsuario} 
                     rolesAutorizados={['administrador']}>
                     <AdminUsuariosPage />
+                  </RutaProtegida>
+                }
+              />
+
+              {/* Ruta para la página de administración de logros (solo para administradores) */}
+              <Route
+                path="/admin/logros"
+                element={
+                  <RutaProtegida 
+                    sesionIniciada={sesionIniciada} 
+                    rolUsuario={rolUsuario} 
+                    rolesAutorizados={['administrador']}
+                  >
+                    <AdminLogrosPage />
                   </RutaProtegida>
                 }
               />

@@ -62,3 +62,242 @@
     transform: translateY(0);
   }
 }
+
+/* Estilos para el Modal del Diploma */
+.diploma-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  animation: diplomaFadeIn 0.3s ease-out;
+}
+
+.diploma-modal-content {
+  position: relative;
+  background-color: #fff;
+  border-radius: 10px;
+  max-width: 90vw;
+  max-height: 90vh;
+  animation: diplomaSlideInUp 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  /* Eliminamos el padding para que la imagen ocupe todo el espacio sin bordes blancos. */
+  padding: 0;
+  /* Hacemos que el contenido (la imagen) se ajuste al borde redondeado. */
+  overflow: hidden;
+}
+
+.diploma-modal-close-button {
+  position: absolute;
+  top: 10px; /* Ajustamos la posición para que esté dentro del modal */
+  right: 10px;
+  background: white;
+  border: 2px solid #333;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  cursor: pointer;
+  color: #333;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.2s ease, background-color 0.2s ease;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+  z-index: 10; /* Nos aseguramos que esté por encima de la imagen. */
+}
+
+.diploma-download-button {
+  position: absolute;
+  top: 10px;
+  right: 60px; /* Al lado del botón de cerrar */
+  background: white;
+  border: 2px solid #333;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  cursor: pointer;
+  color: #333;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+  z-index: 10;
+}
+
+.diploma-download-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.diploma-modal-close-button:hover {
+  transform: scale(1.1);
+  background-color: #f0f0f0;
+}
+
+.diploma-image-container {
+  position: relative;
+  /*
+    Se definen dimensiones y propiedades de fondo para el contenedor.
+    - `aspect-ratio` mantiene la forma del diploma.
+    - `background-size: contain` asegura que toda la imagen sea visible.
+    - `background-color` da un fondo de respaldo si la imagen no carga.
+    Esto crea un diseño robusto que no se rompe visualmente.
+  */
+  width: 95vw; /* Ocupa más ancho de la pantalla */
+  max-width: 1100px; /* Hacemos el diploma aún más grande */
+  aspect-ratio: 16 / 12; /* Lo hacemos más alto para dar más espacio vertical */
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-color: #f5f2e9; /* Un color pergamino de respaldo */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Georgia', serif;
+  color: #3d2c1d;
+  /* Marco dorado y sombra para un look premium */
+  border: 12px solid #c0a16b; /* Marco exterior más grueso */
+  padding: 25px; /* Más espacio interior */
+  box-shadow: 0 0 0 2px #3d2c1d, 0 10px 30px rgba(0,0,0,0.4);
+}
+
+/* Añadimos un pseudo-elemento para crear el marco interior solicitado */
+.diploma-image-container::after {
+  content: '';
+  position: absolute;
+  top: 40px; /* Distancia desde el borde exterior (padding + border) */
+  left: 40px;
+  right: 40px;
+  bottom: 40px;
+  border: 2px solid #d4af37; /* Un borde dorado más fino y decorativo */
+  pointer-events: none; /* Para que no interfiera con el texto */
+}
+
+
+.diploma-logo {
+  position: absolute;
+  top: 50px;
+  right: 50px; /* Movemos el logo a la derecha para balancear */
+  left: auto;
+  transform: none;
+  width: 200px; /* Hacemos el logo más grande */
+  height: auto;
+  z-index: 10;
+}
+
+.diploma-title {
+  position: absolute;
+  top: 170px; /* Bajamos el título */
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 42px; /* Aumentado para mayor énfasis */
+  font-family: 'Garamond', 'Times New Roman', serif;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  color: #3d2c1d;
+  z-index: 10;
+}
+
+.diploma-recipient-name {
+  position: absolute;
+  top: 40%; /* Reposicionamos para dar más espacio */
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 46px; /* Aumentado */
+  font-family: 'Brush Script MT', 'Brush Script Std', cursive;
+  font-weight: normal;
+  width: 80%;
+  text-align: center;
+  z-index: 10;
+}
+
+.diploma-course-name {
+  position: absolute;
+  top: 54%; /* Reposicionamos */
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 28px; /* Aumentado */
+  font-weight: bold;
+  color: #4a3c2f;
+  text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.3);
+  width: 70%;
+  text-align: center;
+  font-family: 'Times New Roman', serif;
+  z-index: 10;
+}
+
+.diploma-description {
+  position: absolute;
+  top: 64%; /* Reposicionamos */
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 16px; /* Aumentado */
+  width: 60%;
+  text-align: center;
+  line-height: 1.4;
+  z-index: 10;
+}
+
+.diploma-date {
+  position: absolute;
+  bottom: 15%; /* Hacemos espacio para el sello y la mancha */
+  left: 25%;
+  transform: translateX(-50%);
+  font-size: 17px; /* Aumentado */
+  text-align: center;
+  width: 40%;
+  z-index: 2; /* Por encima de la mancha de acuarela */
+}
+
+.diploma-issuer {
+  position: absolute;
+  bottom: 15%; /* Hacemos espacio para el sello */
+  left: 75%; /* Posición simétrica a la fecha para mejor balance */
+  transform: translateX(-50%);
+  font-size: 19px; /* Aumentado */
+  font-weight: bold;
+  text-align: center;
+  width: 40%;
+  border-top: 1px solid #3d2c1d;
+  padding-top: 5px;
+  z-index: 2;
+}
+
+/* Estilos para el nuevo sello dorado */
+.diploma-seal {
+  position: absolute;
+  top: 100px; /* Mantenemos la posición vertical */
+  left: 120px; /* Lo movemos más a la derecha */
+  width: 224px; /* Lo hacemos un 40% más grande (160px * 1.4) */
+  height: auto;
+  z-index: 5; /* Por encima de la mancha azul pero debajo del texto si se superpone */
+  filter: drop-shadow(3px 3px 5px rgba(0,0,0,0.2));
+}
+
+/* Animaciones para el modal */
+@keyframes diplomaFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes diplomaSlideInUp {
+  from { transform: translateY(50px) scale(0.95); opacity: 0; }
+  to { transform: translateY(0) scale(1); opacity: 1; }
+}
+
+/* Media query para que el texto no sea demasiado pequeño en móviles */
+@media (max-width: 768px) {
+  .diploma-logo { width: 100px; top: 30px; }
+  .diploma-title { font-size: 22px; top: 110px; }
+  .diploma-recipient-name { font-size: 24px; }
+  .diploma-course-name { font-size: 18px; }
+  .diploma-description { font-size: 12px; }
+  .diploma-date { font-size: 12px; }
+  .diploma-issuer { font-size: 14px; }
+}

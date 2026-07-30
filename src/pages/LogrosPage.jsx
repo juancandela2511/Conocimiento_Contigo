@@ -15,6 +15,7 @@ const LogrosPage = () => {
   const [logros, setLogros] = useState([]);
   const [cursosCompletados, setCursosCompletados] = useState([]);
   const [progresoCursos, setProgresoCursos] = useState({ completados: 0, total: 0 });
+  const [userName, setUserName] = useState(''); // Estado para el nombre del usuario
   const { setIsRouteLoading } = useRouteLoading(); // Usamos el estado de carga global
 
   useEffect(() => {
@@ -25,18 +26,55 @@ const LogrosPage = () => {
         const { data: { user } } = await supabase.auth.getUser();
         if (!user) throw new Error("Usuario no autenticado.");
 
+        // --- Lógica mejorada para obtener el nombre del usuario ---
+        // Esta nueva lógica soluciona el problema de que aparezca el email en lugar del nombre
+        // para usuarios antiguos.
+        let finalUserName = user.user_metadata?.full_name;
+
+        // Si el nombre no está en los metadatos (usuarios antiguos), lo buscamos en la tabla de perfiles 'Usuario'.
+        if (!finalUserName) {
+          const { data: profileData, error: profileError } = await supabase
+            .from('Usuario')
+            .select('Usuario') // La columna que contiene el nombre de usuario.
+            .eq('id', user.id)
+            .single();
+          
+          if (profileError) {
+            console.warn("Perfil de usuario no encontrado en la tabla 'Usuario', se usará el email como último recurso.", profileError.message);
+          } else if (profileData) {
+            finalUserName = profileData.Usuario;
+          }
+        }
+
+        // Guardamos el nombre del usuario para pasarlo al diploma. Como último recurso, se usa el email.
+        setUserName(finalUserName || user.email);
+
         // Hacemos las dos consultas en paralelo para mayor eficiencia.
-        const [logrosResponse, progressResponse, coursesResponse] = await Promise.all([
-          supabase.from('logros_obtenidos').select('logros(*)').eq('user_id', user.id),
+        const [logrosObtenidosResponse, progressResponse, coursesResponse] = await Promise.all([
+          // Modificamos la consulta para obtener la fecha de obtención del logro y el curso asociado.
+          // Esta fecha se usará como la fecha de finalización en el diploma.
+          supabase.from('logros_obtenidos').select('created_at, logros(id, titulo, curso_id)').eq('user_id', user.id),
           supabase.rpc('get_user_course_progress', { p_user_id: user.id }),
           supabase.from('cursos').select('id, imagen_url') // Traemos las imágenes de los cursos
         ]);
 
-        const { data, error } = logrosResponse;
-        if (error) throw new Error(`Error al cargar logros: ${error.message}`);
+        const { data: logrosObtenidosData, error: logrosError } = logrosObtenidosResponse;
+        if (logrosError) throw new Error(`Error al cargar logros: ${logrosError.message}`);
 
-        // 3. Mapear los datos para obtener una lista limpia de objetos de logro.
-        const logrosObtenidos = data.map(item => item.logros);
+        // Creamos un mapa de curso_id -> fecha_de_finalizacion para usarlo más adelante.
+        const completionDateMap = new Map(
+          logrosObtenidosData
+            .filter(lo => lo.logros?.curso_id) // Nos aseguramos de que el logro esté asociado a un curso.
+            .map(lo => [lo.logros.curso_id, lo.created_at])
+        );
+
+        // 3. Mapear los datos y eliminar duplicados para obtener una lista limpia de objetos de logro.
+        //    Esto previene que se muestren logros repetidos si hay data inconsistente en la base de datos.
+        //    Se usará el título del logro como clave para la deduplicación.
+        const logrosCrudos = logrosObtenidosData.map(item => item.logros).filter(Boolean);
+        const mapaLogros = new Map(logrosCrudos.map(logro => [logro.titulo, logro]));
+        const logrosObtenidos = [...mapaLogros.values()];
+
         setLogros(logrosObtenidos);
 
         const { data: progressData, error: progressError } = progressResponse;
@@ -51,7 +89,11 @@ const LogrosPage = () => {
         // Calculamos el total de cursos y los completados.
         const cursosCompletadosData = progressData
           .filter(p => p.progress === 100)
-          .map(p => ({ ...p, imagen_url: courseImageMap.get(p.course_id) })); // Añadimos la URL de la imagen
+          .map(p => ({ 
+            ...p, 
+            imagen_url: courseImageMap.get(p.course_id),
+            completion_date: completionDateMap.get(p.course_id) // Añadimos la fecha de finalización desde el mapa.
+          })); // Añadimos la URL de la imagen
 
         const totalCursos = progressData.length;
         setProgresoCursos({ completados: cursosCompletadosData.length, total: totalCursos });
@@ -68,7 +110,7 @@ const LogrosPage = () => {
     };
 
     fetchDatos();
-  }, []); // El array vacío asegura que se ejecute solo una vez.
+  }, [setIsRouteLoading]); // Se añade la dependencia para cumplir con las reglas de los hooks.
 
   return (
     <div className="logros-page-container">
@@ -95,6 +137,7 @@ const LogrosPage = () => {
               <CompletedCourseCard 
                 key={curso.course_id} 
                 course={curso} 
+                userName={userName}
                 style={{ animationDelay: `${index * 100}ms` }} />
             ))}
           </div>

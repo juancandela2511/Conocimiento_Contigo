@@ -3,11 +3,10 @@
   Función: Renderiza la barra de navegación principal y el indicador de rol/logout.
   Tipo: Componente de Frontend.
 */
-
 // Importaciones de React y librerías externas.
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Home, LogIn, Info, Menu, Search, UserCircle, Trophy, Users, BarChart, Settings } from 'lucide-react';
+import { Home, LogIn, Info, Menu, Search, UserCircle, Trophy, Users, BarChart, Settings, Award } from 'lucide-react';
 
 // Importaciones de archivos locales.
 import './Navbar.css';
@@ -72,6 +71,14 @@ export default function BarraNavegacion({ sesionIniciada, alBuscar, alPresionarE
             // Los usuarios ven su propio progreso.
             <Link to="/progreso" className="elemento-nav">
               <BarChart size={20} />
+              <span></span>
+            </Link>
+          )}
+
+          {/* Enlace a la página de administración de logros, visible solo para administradores */}
+          {rolUsuario === 'administrador' && (
+            <Link to="/admin/logros" className="elemento-nav" title="Administrar Logros">
+              <Award size={20} />
               <span></span>
             </Link>
           )}

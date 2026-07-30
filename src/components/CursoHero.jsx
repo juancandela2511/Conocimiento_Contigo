@@ -4,9 +4,10 @@
   Tipo: Componente de Frontend.
 */
 
+import { Download } from 'lucide-react';
 import './CursoHero.css';
 
-const CursoHero = ({ course }) => {
+const CursoHero = ({ course, isComplete, onDownloadClick }) => {
   if (!course) {
     return null; // No renderiza nada si no hay datos del curso
   }
@@ -18,6 +19,12 @@ const CursoHero = ({ course }) => {
         <div className="curso-hero-box">
           <img src="/logo.png" alt="Logo Aprende Contigo" className="curso-hero-logo" />
           <h1 className="curso-hero-title">{course.curso}</h1>
+          {isComplete && (
+            <button onClick={onDownloadClick} className="download-certificate-btn">
+              <Download size={20} />
+              <span>Ver Certificado</span>
+            </button>
+          )}
         </div>
       </div>
     </div>

@@ -1,0 +1,129 @@
+.admin-logros-page {
+  max-width: 900px;
+  margin: 40px auto;
+  padding: 20px;
+  padding-top: 120px; /* Space for navbars */
+}
+
+.admin-logros-header {
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+.admin-logros-header h1 {
+  font-size: 2rem;
+  margin-bottom: 10px;
+}
+
+.admin-logros-header p {
+  font-size: 1.1rem;
+  color: var(--text-light);
+}
+
+.courses-list-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.course-achievement-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px;
+  background-color: var(--bg-alt);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  transition: all 0.2s ease;
+}
+
+.course-achievement-item:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 4px 15px rgba(0,0,0,0.07);
+  border-color: var(--accent);
+}
+
+.dark-mode .course-achievement-item:hover {
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+}
+
+.course-info {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.course-name {
+  font-size: 1.2rem;
+  font-weight: 600;
+}
+
+.achievement-status {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  padding: 4px 8px;
+  border-radius: 6px;
+}
+
+.achievement-status.has-achievement {
+  color: #166534; /* green-800 */
+  background-color: #dcfce7; /* green-100 */
+}
+
+.dark-mode .achievement-status.has-achievement {
+  color: #a7f3d0; /* green-200 */
+  background-color: #14532d; /* green-900 */
+}
+
+.achievement-status.no-achievement {
+  color: #9ca3af; /* gray-400 */
+  background-color: #f3f4f6; /* gray-100 */
+}
+
+.dark-mode .achievement-status.no-achievement {
+  color: #6b7280; /* gray-500 */
+  background-color: #374151; /* gray-700 */
+}
+
+.btn-edit-achievement {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 15px;
+  border: 1px solid var(--border);
+  background-color: var(--bg);
+  color: var(--text);
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.2s ease;
+}
+
+.btn-edit-achievement:hover {
+  background-color: var(--accent-bg);
+  color: var(--accent);
+  border-color: var(--accent);
+}
+
+.achievement-modal {
+  width: 100%;
+  max-width: 500px;
+}
+
+.achievement-modal .form-group small {
+    display: block;
+    margin-top: 5px;
+    color: var(--text-light);
+}
+
+.achievement-modal .form-group small a {
+    color: var(--accent);
+    text-decoration: none;
+}
+
+.achievement-modal .form-group small a:hover {
+    text-decoration: underline;
+}

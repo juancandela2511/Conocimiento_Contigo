@@ -33,7 +33,10 @@ function InicioSesion() {
         const { data: datos, error } = await supabase.auth.signUp({
           email: correo,
           password: contrasena,
-          options: { data: { Usuario: nombreUsuario } },
+          // CORRECCIÓN: Se usa 'full_name' en lugar de 'Usuario' en los metadatos.
+          // Esto asegura que el nombre completo del usuario se guarde en el estándar de Supabase
+          // y pueda ser recuperado fácilmente en otras partes de la aplicación, como en los diplomas.
+          options: { data: { full_name: nombreUsuario } },
         });
 
         if (error) throw error;

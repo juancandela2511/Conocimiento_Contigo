@@ -16,7 +16,7 @@
   z-index: 3000;
   padding: 20px;
   backdrop-filter: blur(5px);
-  animation: fadeIn 0.3s ease-out;
+  animation: contentViewerFadeIn 0.3s ease-out;
 }
 
 .content-viewer-modal {
@@ -126,7 +126,7 @@
 
 
 /* Animaciones para la aparición del modal */
-@keyframes fadeIn {
+@keyframes contentViewerFadeIn {
   from { opacity: 0; }
   to { opacity: 1; }
 }
@@ -143,8 +143,8 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 3001; /* Por encima del video pero dentro del modal principal */
-  animation: fadeIn 0.2s ease-out;
+  z-index: 3001;
+  animation: contentViewerFadeIn 0.2s ease-out;
 }
 
 .quiz-in-video-modal {
@@ -195,7 +195,7 @@
   align-items: center;
   z-index: 3002; /* Por encima del overlay del quiz */
   background-color: rgba(0, 0, 0, 0.7);
-  animation: fadeIn 0.3s ease-out;
+  animation: contentViewerFadeIn 0.3s ease-out;
 }
 
 .success-animation-content {

@@ -1,69 +1,50 @@
-/*
-  Archivo: UserProgressPage.jsx
-  Función: Muestra una tabla con el progreso del usuario actual en todos los cursos.
-  Tipo: Componente de Frontend.
-*/
-import { useEffect, useState } from 'react';
-import { supabase } from '../services/supabaseClient';
-import { useRouteLoading } from '../components/RouteLoadingContext'; 
-import UserProgressCard from '../components/UserProgressCard'; // Importamos el nuevo componente de tarjeta
-import '../AdminProgresoPage.css'; // Reutilizamos los estilos de la página de admin
+import React from 'react';
+import './UserProgressCard.css'; // Ajusta la ruta de tus estilos si es necesario
 
-const UserProgressPage = () => {
-  const [progressData, setProgressData] = useState([]);
-  const { setIsRouteLoading } = useRouteLoading();
+const UserProgressCard = ({ progress }) => {
+  if (!progress) return null;
 
-  useEffect(() => {
-    const fetchProgress = async () => {
-      setIsRouteLoading(true);
-      try {
-        const { data: { user } } = await supabase.auth.getUser();
-        if (!user) throw new Error("Usuario no autenticado.");
-
-        // Llamamos a la función RPC para obtener el progreso del usuario actual.
-        const { data, error } = await supabase.rpc('get_user_course_progress', { p_user_id: user.id });
-        if (error) throw error;
-
-        // Adaptamos los datos para que sean compatibles con el nuevo componente de tarjeta.
-        // Ya no necesitamos el nombre de usuario.
-        const formattedData = data.map(item => ({
-            id: item.course_id,
-            courseName: item.course_name,
-            progress: item.progress,
-            status: item.progress === 100 ? 'Completado' : 'En Progreso'
-        }));
-        setProgressData(formattedData);
-
-      } catch (err) {
-        console.error("Error al cargar el progreso del usuario:", err);
-        setProgressData([]);
-      } finally {
-        setIsRouteLoading(false);
-      }
-    };
-    fetchProgress();
-  }, [setIsRouteLoading]);
+  // Extraemos las propiedades asegurando un objeto o valor por defecto
+  const title = progress.title || progress.course_title || 'Curso sin título';
+  const category = (progress.category || progress.course_category || '').toLowerCase();
+  const status = (progress.status || '').toLowerCase();
+  
+  // Conversión segura del porcentaje de progreso
+  const rawProgress = Number(progress.progress) || 0;
+  const percentage = Math.min(Math.max(rawProgress, 0), 100);
 
   return (
-    <div className="admin-progreso-container">
-      <h1>Mi Progreso</h1>
-      {progressData.length > 0 ? (
-        // Creamos una cuadrícula para las nuevas tarjetas de progreso.
-        <div className="user-progress-grid">
-          {progressData.map(item => (
-            <UserProgressCard
-              key={item.id}
-              courseName={item.courseName}
-              progress={item.progress}
-              status={item.status}
-            />
-          ))}
+    <div className="user-progress-card">
+      <div className="card-header">
+        <h3 className="course-title">{title}</h3>
+        {category && (
+          <span className={`category-tag category-${category}`}>
+            {category}
+          </span>
+        )}
+      </div>
+
+      <div className="card-body">
+        <div className="progress-info">
+          <span>Progreso:</span>
+          <span className="percentage-text">{percentage}%</span>
         </div>
-      ) : (
-        <p>Aún no has iniciado ningún curso. ¡Empieza a aprender ahora!</p>
-      )}
+
+        <div className="progress-bar-container">
+          <div 
+            className="progress-bar-fill" 
+            style={{ width: `${percentage}%` }}
+          />
+        </div>
+
+        {status && (
+          <div className={`status-badge status-${status}`}>
+            {status}
+          </div>
+        )}
+      </div>
     </div>
   );
 };
 
-export default UserProgressPage;
+export default UserProgressCard;
