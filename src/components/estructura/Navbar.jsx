@@ -10,15 +10,19 @@ import { Home, LogIn, Info, Menu, Search, UserCircle, Trophy, Users, BarChart, S
 
 // Importaciones de archivos locales.
 import './Navbar.css';
-import { supabase } from '../services/supabaseClient';
+import { supabase } from '../../services/supabaseClient';
 import ThemeSwitcher from './ThemeSwitcher'; // Importación sin extensión para consistencia
 
 // Definición del componente Navbar. Recibe props para funcionar.
 export default function BarraNavegacion({ sesionIniciada, alBuscar, alPresionarEnter, rolUsuario }) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+
+ 
   
   // Lógica de Frontend: Si el usuario no ha iniciado sesión, no se muestra nada.
   if (!sesionIniciada) return null;
+  
+
 
   // Lógica de Frontend que interactúa con el Backend.
   const handleLogout = async () => {
@@ -29,6 +33,7 @@ export default function BarraNavegacion({ sesionIniciada, alBuscar, alPresionarE
   };
 
   // Renderizado del componente (lo que se ve en pantalla).
+
   return (
     <>
       {/* Barra de navegación principal, a la izquierda. */}
@@ -54,11 +59,13 @@ export default function BarraNavegacion({ sesionIniciada, alBuscar, alPresionarE
             <span></span>
           </Link>
 
-          {/* Enlace a la página de logros (visible para todos). */}
+          {/* Enlace a la página de logros (oculto si es administrador) */}
+          {rolUsuario !== 'administrador' && (
           <Link to="/logros" className="elemento-nav">
-            <Trophy size={20} />
-            <span></span>
-          </Link>
+              <Trophy size={20} />
+              <span></span>
+            </Link>
+          )}
 
           {/* Enlace condicional a la página de progreso. */}
           {rolUsuario === 'administrador' ? (

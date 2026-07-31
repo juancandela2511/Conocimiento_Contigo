@@ -5,7 +5,7 @@
 */
 import { useState, useEffect } from 'react';
 import { supabase } from '../services/supabaseClient';
-import { useRouteLoading } from '../components/RouteLoadingContext';
+import { useRouteLoading } from '../contexto/RouteLoadingContext';
 import { User, Shield, Trash2, Edit } from 'lucide-react';
 import EditUserRoleModal from '../components/Admin/EditUserRoleModal'; // Importamos el nuevo modal
 import './AdminUsuariosPage.css';

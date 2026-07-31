@@ -1,61 +1,74 @@
-.user-progress-page {
-  padding: 40px;
-  padding-top: 120px;
+.user-progreso-page {
   max-width: 1200px;
-  margin: 0 auto;
+  margin: 120px auto 40px auto;
+  padding: 20px;
+  animation: pageFadeIn 0.5s ease-out;
 }
 
-.user-progress-header {
-  display: flex;
-  align-items: center;
-  gap: 25px;
-  margin-bottom: 30px;
-  padding-bottom: 30px;
-  border-bottom: 1px solid var(--border);
-}
-
-.user-progress-header .header-icon {
-  color: var(--accent);
-  flex-shrink: 0;
-}
-
-.user-progress-header h1 {
-  font-size: 2.5rem;
-  margin: 0 0 5px 0;
-  color: var(--text-h);
-}
-
-.user-progress-header p {
-  font-size: 1.1rem;
-  color: var(--text);
-  margin: 0;
-}
-
-.user-progress-summary {
+.user-progreso-header {
   text-align: center;
-  font-size: 1.2rem;
-  font-weight: 500;
-  padding: 15px;
-  background-color: var(--bg-alt);
-  border-radius: 12px;
   margin-bottom: 40px;
 }
 
-.user-progress-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-  gap: 30px;
+.user-progreso-header h1 {
+  font-size: 2.5rem;
+  color: var(--text-h);
+  margin-bottom: 10px;
 }
 
-.user-progress-card-link {
-  text-decoration: none;
-  color: inherit;
-}
-
-.no-progress-data {
-  grid-column: 1 / -1; /* Ocupa todo el ancho de la grilla */
-  text-align: center;
-  padding: 50px;
+.user-progreso-header p {
   font-size: 1.1rem;
-  color: var(--text-light);
+  color: var(--text);
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.user-progreso-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 25px;
+}
+
+.error-container,
+.no-progreso-container {
+  text-align: center;
+  margin-top: 80px;
+  padding: 40px;
+  background-color: var(--bg-alt);
+  border-radius: 16px;
+  border: 1px solid var(--border);
+}
+
+.no-progreso-icon {
+  color: var(--accent);
+  margin-bottom: 20px;
+}
+
+.no-progreso-container h2 {
+  color: var(--text-h);
+  margin-bottom: 10px;
+}
+
+.no-progreso-container p {
+  color: var(--text);
+}
+
+@keyframes pageFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (max-width: 768px) {
+  .user-progreso-page {
+    margin-top: 80px;
+  }
+  .user-progreso-header h1 {
+    font-size: 2rem;
+  }
 }

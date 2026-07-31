@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '../services/supabaseClient';
-import { useRouteLoading } from '../components/RouteLoadingContext';
+import { useRouteLoading } from '../contexto/RouteLoadingContext';
 import { Award, Edit, Save, X, PlusCircle } from 'lucide-react';
 import './AdminLogrosPage.css';
 

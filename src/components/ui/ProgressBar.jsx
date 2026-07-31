@@ -1,3 +1,4 @@
+
 /*
   Archivo: ProgressBar.jsx
   Función: Componente reutilizable que muestra una barra de progreso visual.

@@ -6,7 +6,6 @@
            la autenticación, los modales y la estructura de las rutas.
   Tipo: Componente de Frontend que orquesta la lógica y las llamadas al Backend.
 */
-
 // =================================================================
 // 1. IMPORTACIONES
 // =================================================================
@@ -16,16 +15,15 @@ import { useState, useEffect, useCallback } from 'react';
 import { BrowserRouter, Routes, Route, Navigate, useNavigate } from 'react-router-dom';
 // Cliente de Supabase para interactuar con el backend.
 import { supabase } from './services/supabaseClient';
-
 //Componentes de la Interfaz
-import HeroPrincipal from './components/HeroPrincipal'; // Mantenido por ser un nombre propio del componente
-import RutaProtegida from './components/ProtectedRoute'; // Componente para proteger rutas
-import PaginaPrincipal from './components/HomePage'; 
-import BarraNavegacion from './components/Navbar';
-import BarraNavegacionEditor from './components/EditorNavbar';
-import InfoContactos from './components/ContactsInfo';
-import Cargando from './components/Loading';
-import AsistenteIA from './ChatIA';
+import HeroPrincipal from './components/ui/HeroPrincipal'; // Mantenido por ser un nombre propio del componente
+import RutaProtegida from './utilidades/ProtectedRoute'; // Componente para proteger rutas
+import PaginaPrincipal from './pages/HomePage'; 
+import BarraNavegacion from './components/estructura/Navbar';
+import BarraNavegacionEditor from './components/estructura/EditorNavbar';
+import InfoContactos from './components/ui/ContactsInfo';
+import Cargando from './components/ui/Loading';
+import AsistenteIA from './components/ChatIA';
 import AnunciosPanel from './components/AnunciosPanel'; // Importamos el panel de anuncios
 
 // --- Componentes de Páginas (Vistas) ---
@@ -50,10 +48,10 @@ import AddOrdenarPasosModal from './components/Admin/AddOrdenarPasosModal';
 
 // --- Contexto para la Carga de Rutas ---
 // Importamos el proveedor y el hook del nuevo contexto.
-import { RouteLoadingProvider, useRouteLoading } from './components/RouteLoadingContext';
+import { RouteLoadingProvider, useRouteLoading } from './contexto/RouteLoadingContext';
 
 // Importación directa de los estilos del pie de página para asegurar su carga.
-import './components/ContactsInfo.css';
+import './components/ui/ContactsInfo.css';
 
 // =================================================================
 // COMPONENTE PRINCIPAL DEL CONTENIDO DE LA APP
@@ -113,7 +111,6 @@ function AppContent() {
         // Guardamos el rol en el estado.
         definirRolUsuario(datosUsuario?.profile || null);
         console.log('Rol del usuario recuperado:', datosUsuario?.profile);
-
         // Usamos la nueva función RPC para obtener el progreso y los cursos.
         const { data: todosLosCursos, error: errorCursos } = await supabase.from('cursos').select('*');
         const { data: datosProgreso, error: errorProgreso } = await supabase.rpc('get_user_course_progress', { p_user_id: sesion.user.id });
@@ -123,7 +120,8 @@ function AppContent() {
           definirListaCursos(todosLosCursos || []); // Muestra los cursos incluso si el progreso falla
         } else {
           // Creamos un mapa para buscar el progreso de cada curso eficientemente.
-          const mapaProgreso = new Map(datosProgreso.map(p => [p.course_id, p.progress]));
+          // Si datosProgreso es null o undefined, usa [] para evitar que el map falle.
+          const mapaProgreso = new Map((datosProgreso || []).map(p => [p.course_id, p.progress]));
           const cursosConProgreso = todosLosCursos.map(curso => ({
             ...curso,
             estaCompleto: (mapaProgreso.get(curso.id) || 0) === 100
@@ -475,20 +473,19 @@ function AppContent() {
                 }
               />
 
-              {/* Ruta de Progreso de Administrador ('/admin/progreso'): Protegida y restringida solo para el rol 'administrador'. */}
+              {/* Ruta de Progreso de Administrador ('/admin/progreso'): Protegida para el rol 'administrador'. */}
               <Route
                 path="/admin/progreso"
                 element={
-                  <RutaProtegida 
-                    sesionIniciada={sesionIniciada} 
-                    rolUsuario={rolUsuario} 
+                  <RutaProtegida
+                    sesionIniciada={sesionIniciada}
+                    rolUsuario={rolUsuario}
                     rolesAutorizados={['administrador']}
                   >
-                    <PaginaProgresoAdmin terminoDeBusqueda={terminoDeBusqueda} />
+                    <PaginaProgresoAdmin />
                   </RutaProtegida>
                 }
               />
-
               {/* Ruta para la página de administración de usuarios (solo para administradores) */}
               <Route
                 path="/admin/usuarios"

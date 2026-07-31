@@ -1,0 +1,317 @@
+/* ==========================================
+   1. VARIABLES CSS (DESIGN TOKENS)
+   ========================================== */
+:root {
+  /* Colores Principales */
+  --pt-color-primary: #4f46e5;
+  --pt-color-primary-hover: #4338ca;
+  --pt-color-primary-light: #eef2ff;
+
+  /* Estados y Badges */
+  --pt-color-success-bg: #ecfdf5;
+  --pt-color-success-text: #047857;
+
+  /* Textos */
+  --pt-text-main: #0f172a;
+  --pt-text-muted: #334155;
+  --pt-text-subtle: #64748b;
+
+  /* Fondos y Bordes */
+  --pt-bg-container: #ffffff;
+  --pt-bg-secondary: #f8fafc;
+  --pt-bg-hover: #f1f5f9;
+  --pt-border-color: #e2e8f0;
+  --pt-border-input: #cbd5e1;
+
+  /* Estructura */
+  --pt-radius-lg: 12px;
+  --pt-radius-md: 8px;
+  --pt-radius-sm: 6px;
+  --pt-transition: all 0.2s ease-in-out;
+}
+
+/* ==========================================
+   2. LAYOUT CONTENEDOR PRINCIPAL
+   ========================================== */
+.contenedor-estadisticas {
+  width: 100%;
+  max-width: 100% !important;
+  margin: 0 !important;
+  padding: 20px;
+  text-align: left !important;
+  box-sizing: border-box;
+}
+
+/* Panel de dos columnas pegado a la izquierda */
+.panel-dashboard {
+  display: grid;
+  grid-template-columns: 320px 1fr; /* 320px fija para la lista, el resto para el detalle */
+  gap: 24px;
+  align-items: start;
+  justify-content: start;
+  width: 100%;
+}
+
+/* MENSAJE VACÍO */
+.mensaje-vacio {
+  text-align: center;
+  padding: 32px;
+  color: var(--pt-text-subtle);
+  background-color: var(--pt-bg-container);
+  border: 1px dashed var(--pt-border-color);
+  border-radius: var(--pt-radius-lg);
+  font-size: 0.9rem;
+}
+
+/* ==========================================
+   3. COLUMNA IZQUIERDA: LISTA Y BUSCADOR
+   ========================================== */
+.columna-lista {
+  background: var(--pt-bg-container);
+  border: 1px solid var(--pt-border-color);
+  border-radius: var(--pt-radius-lg);
+  padding: 16px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* Caja de Búsqueda */
+.caja-busqueda-lista {
+  display: flex;
+  align-items: center;
+  background: var(--pt-bg-secondary);
+  border: 1px solid var(--pt-border-input);
+  border-radius: var(--pt-radius-md);
+  padding: 8px 12px;
+  margin-bottom: 12px;
+  transition: var(--pt-transition);
+}
+
+.caja-busqueda-lista:focus-within {
+  border-color: var(--pt-color-primary);
+  box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.1);
+}
+
+.caja-busqueda-lista .icono-busqueda {
+  color: var(--pt-text-subtle);
+}
+
+.caja-busqueda-lista input {
+  border: none;
+  background: transparent;
+  outline: none;
+  margin-left: 8px;
+  width: 100%;
+  font-size: 0.85rem;
+  color: var(--pt-text-main);
+}
+
+/* Tabla de Aprendices */
+.wrapper-tabla {
+  max-height: 500px;
+  overflow-y: auto;
+}
+
+.tabla-aprendices {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.tabla-aprendices th {
+  text-align: left;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  color: var(--pt-text-subtle);
+  padding: 8px;
+  border-bottom: 1px solid var(--pt-border-color);
+}
+
+.tabla-aprendices td {
+  padding: 10px 8px;
+  border-bottom: 1px solid var(--pt-bg-hover);
+  cursor: pointer;
+  transition: var(--pt-transition);
+}
+
+.tabla-aprendices tr {
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.tabla-aprendices tbody tr:hover {
+  background-color: var(--pt-bg-hover);
+}
+
+.tabla-aprendices tr.fila-activa {
+  background-color: var(--pt-color-primary-light) !important;
+  border-left: 4px solid var(--pt-color-primary);
+}
+
+/* Información dentro de la celda */
+.info-aprendiz-celda {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--pt-text-subtle);
+}
+
+.nombre-celda {
+  display: block;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--pt-text-main);
+}
+
+.doc-celda {
+  font-size: 0.75rem;
+  color: var(--pt-text-subtle);
+}
+
+/* Botones de Selección */
+.btn-ver {
+  border: none;
+  background: var(--pt-border-color);
+  color: var(--pt-text-muted);
+  padding: 4px 10px;
+  border-radius: var(--pt-radius-sm);
+  font-size: 0.75rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: var(--pt-transition);
+}
+
+.btn-ver:hover {
+  background: var(--pt-border-input);
+}
+
+.btn-ver.btn-activo {
+  background: var(--pt-color-primary);
+  color: #ffffff;
+}
+
+/* ==========================================
+   4. COLUMNA DERECHA: PANEL DE DETALLE
+   ========================================== */
+.columna-detalle {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* Tarjeta Perfil / Resumen */
+.tarjeta-resumen-aprendiz {
+  background: var(--pt-bg-container);
+  border: 1px solid var(--pt-border-color);
+  border-radius: var(--pt-radius-lg);
+  padding: 16px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.perfil-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.perfil-header h3 {
+  margin: 0;
+  font-size: 1.1rem;
+  color: var(--pt-text-main);
+}
+
+.perfil-header p {
+  margin: 2px 0 0 0;
+  font-size: 0.85rem;
+  color: var(--pt-text-subtle);
+}
+
+.avatar-placeholder {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background: var(--pt-color-primary);
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 1.1rem;
+}
+
+/* Badges de Resumen */
+.badgets-resumen {
+  display: flex;
+  gap: 8px;
+}
+
+.badge-item.destacado {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--pt-color-success-bg);
+  color: var(--pt-color-success-text);
+  padding: 8px 12px;
+  border-radius: var(--pt-radius-md);
+  font-size: 0.85rem;
+}
+
+/* Grid de Gráficos */
+.grid-graficos {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 16px;
+}
+
+.tarjeta-grafico {
+  background: var(--pt-bg-container);
+  border: 1px solid var(--pt-border-color);
+  border-radius: var(--pt-radius-lg);
+  padding: 16px;
+}
+
+.grafico-titulo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+  color: var(--pt-text-muted);
+}
+
+.grafico-titulo h4 {
+  margin: 0;
+  font-size: 0.95rem;
+  font-weight: 600;
+}
+
+.contenedor-chart {
+  width: 100%;
+}
+
+/* ==========================================
+   5. RESPONSIVE DESIGN (MEDIA QUERIES)
+   ========================================== */
+@media (max-width: 850px) {
+  .panel-dashboard {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 520px) {
+  .tarjeta-resumen-aprendiz {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .badgets-resumen {
+    width: 100%;
+  }
+
+  .badge-item.destacado {
+    width: 100%;
+    justify-content: center;
+  }
+}

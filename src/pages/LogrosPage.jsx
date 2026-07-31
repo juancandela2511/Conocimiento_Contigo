@@ -6,9 +6,9 @@
 import { useEffect, useState } from 'react'; // Hooks de React
 import { Trophy, Award } from 'lucide-react'; // Importamos los íconos de trofeo y premio
 import { supabase } from '../services/supabaseClient';
-import { useRouteLoading } from '../components/RouteLoadingContext'; // Importamos el hook de carga
-import LogroItem from '../components/LogroItem';
-import CompletedCourseCard from '../components/CompletedCourseCard'; // Importamos la nueva tarjeta
+import { useRouteLoading } from '../contexto/RouteLoadingContext'; // Importamos el hook de carga
+import LogroItem from '../components/ui/LogroItem';
+import CompletedCourseCard from '../components/ui/CompletedCourseCard'; // Importamos la nueva tarjeta
 import './LogrosPage.css';
 
 const LogrosPage = () => {
@@ -51,9 +51,9 @@ const LogrosPage = () => {
 
         // Hacemos las dos consultas en paralelo para mayor eficiencia.
         const [logrosObtenidosResponse, progressResponse, coursesResponse] = await Promise.all([
-          // Modificamos la consulta para obtener la fecha de obtención del logro y el curso asociado.
-          // Esta fecha se usará como la fecha de finalización en el diploma.
-          supabase.from('logros_obtenidos').select('created_at, logros(id, titulo, curso_id)').eq('user_id', user.id),
+          // Se modifica la consulta para traer todos los datos del logro ('logros(*)')
+          // en lugar de solo algunos campos. Esto asegura que tengamos la descripción y la URL del ícono.
+          supabase.from('logros_obtenidos').select('created_at, logros(*)').eq('user_id', user.id),
           supabase.rpc('get_user_course_progress', { p_user_id: user.id }),
           supabase.from('cursos').select('id, imagen_url') // Traemos las imágenes de los cursos
         ]);

@@ -9,7 +9,7 @@ import { useState, useRef, useEffect } from 'react';
 import { GraduationCap, Send, X, Bot } from 'lucide-react';
 
 // Importaciones de archivos locales.
-import { supabase } from './services/supabaseClient';
+import { supabase } from '../services/supabaseClient';
 import './ChatIA.css';
 
 // Definición del componente.

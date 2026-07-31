@@ -7,13 +7,13 @@ import { useEffect, useState } from 'react';
 import { Link, useParams, useSearchParams } from 'react-router-dom';
 import { supabase } from '../services/supabaseClient';
 import { BookOpen, Video, HelpCircle, Lock, Trash2, Edit, ChevronRight, ListOrdered, Trophy } from 'lucide-react';
-import CursoHero from '../components/CursoHero';
-import { DiplomaModal } from '../components/CompletedCourseCard'; // Importamos el modal del diploma
+import CursoHero from '../components/ui/CursoHero';
+import { DiplomaModal } from '../components/ui/CompletedCourseCard'; // Importamos el modal del diploma
 
-import ContentViewerModal from '../components/ContentViewerModal';
-import { useRouteLoading } from '../components/RouteLoadingContext';
+import ContentViewerModal from '../components/ui/ContentViewerModal';
+import { useRouteLoading } from '../contexto/RouteLoadingContext';
 import './CursoDetalle.css'; // Importamos los nuevos estilos
-import '../components/CompletedCourseCard.css'; // Importamos los estilos del diploma
+import '../components/ui/CompletedCourseCard.css'; // Importamos los estilos del diploma
 
 
 /**

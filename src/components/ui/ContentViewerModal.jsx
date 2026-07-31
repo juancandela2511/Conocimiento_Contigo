@@ -9,8 +9,8 @@ import { X } from 'lucide-react';
 // entre CommonJS y ES Modules que a veces ocurre con algunos bundlers.
 import ReactPlayerModule from 'react-player';
 
-import QuizRunner from './QuizRunner';
-import OrdenarPasosRunner from './OrdenarPasosRunner'; // Importamos el nuevo componente
+import QuizRunner from '../juegos/QuizRunner';
+import OrdenarPasosRunner from '../juegos/OrdenarPasosRunner'; // Importamos el nuevo componente
 import './ContentViewerModal.css';
 
 // --- Componente específico para el reproductor de video ---
