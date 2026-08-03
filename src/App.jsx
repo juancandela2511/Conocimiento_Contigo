@@ -33,6 +33,7 @@ import PaginaLogros from './pages/LogrosPage';
 import PaginaProgresoAdmin from './pages/AdminProgresoPage';
 import AdminUsuariosPage from './pages/AdminUsuariosPage'; // Nueva página de admin
 import AdminLogrosPage from './pages/AdminLogrosPage'; // Nueva página de admin de logros
+import AdminAptitudesPage from './pages/AdminAptitudesPage'; // Nueva página para aptitudes
 import UserProgressPage from './pages/UserProgressPage'; // Nueva página
 
 // --- Componentes de Modales para Administradores ---
@@ -509,6 +510,20 @@ function AppContent() {
                     rolesAutorizados={['administrador']}
                   >
                     <AdminLogrosPage />
+                  </RutaProtegida>
+                }
+              />
+
+              {/* NUEVA RUTA: Ruta para la página de administración de aptitudes (solo para administradores) */}
+              <Route
+                path="/admin/aptitudes"
+                element={
+                  <RutaProtegida 
+                    sesionIniciada={sesionIniciada} 
+                    rolUsuario={rolUsuario} 
+                    rolesAutorizados={['administrador']}
+                  >
+                    <AdminAptitudesPage />
                   </RutaProtegida>
                 }
               />

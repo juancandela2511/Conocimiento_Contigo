@@ -3,9 +3,9 @@
    ========================================== */
 :root {
   /* Colores Principales */
-  --pt-color-primary: #4f46e5;
-  --pt-color-primary-hover: #4338ca;
-  --pt-color-primary-light: #eef2ff;
+  --pt-color-primary: #2563eb; /* Azul (blue-600) */
+  --pt-color-primary-hover: #1d4ed8; /* Azul oscuro (blue-700) */
+  --pt-color-primary-light: #dbeafe; /* Azul claro (blue-200) */
 
   /* Estados y Badges */
   --pt-color-success-bg: #ecfdf5;
@@ -314,4 +314,64 @@
     width: 100%;
     justify-content: center;
   }
+}
+
+/* --- Botón de acción de administrador (Estilo Mejorado) --- */
+.admin-actions-header {
+  display: flex;
+  justify-content: flex-end;
+  padding: 0 1rem 1rem 1rem;
+  border-bottom: 1px solid var(--pt-border-color);
+  margin-bottom: 1rem;
+}
+
+.dark-mode .admin-actions-header {
+  border-bottom-color: #374151; /* gray-700 */
+}
+
+.btn-admin-action {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  background: var(--pt-color-primary);
+  color: #ffffff;
+  border: none;
+  border-radius: var(--pt-radius-md);
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 0.9rem;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05), 0 4px 8px rgba(37, 99, 235, 0.2);
+}
+
+.btn-admin-action:hover {
+  background: var(--pt-color-primary-hover);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.08), 0 6px 12px rgba(29, 78, 216, 0.25);
+}
+
+.dark-mode .btn-admin-action {
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1), 0 4px 8px rgba(59, 130, 246, 0.3);
+}
+
+.dark-mode .btn-admin-action:hover {
+  box-shadow: 0 4px 8px rgba(0,0,0,0.15), 0 6px 12px rgba(59, 130, 246, 0.35);
+}
+
+/* --- Banner de Error/Advertencia --- */
+.error-banner {
+  background-color: #fffbeb; /* yellow-50 */
+  color: #92400e; /* yellow-800 */
+  border: 1px solid #fde68a; /* yellow-200 */
+  padding: 12px 16px;
+  border-radius: var(--pt-radius-md);
+  margin-bottom: 1rem;
+  font-size: 0.85rem;
+}
+
+.dark-mode .error-banner {
+  background-color: #422006;
+  color: #fef3c7; /* yellow-100 */
+  border-color: #78350f; /* yellow-900 */
 }

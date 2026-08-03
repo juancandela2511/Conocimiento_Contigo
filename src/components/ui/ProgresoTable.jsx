@@ -1,6 +1,6 @@
 /*
-Qué hace: Es el contenedor de la tabla. Recibe la lista completa de datos (data) y crea la estructura <table> con las cabeceras 
- (Usuario, Curso, Progreso, Porcentaje Faltante). Luego hace un bucle (.map) para renderizar cada fila.
+  Qué hace: Es el contenedor de la tabla. Recibe la lista completa de datos (data) y crea la estructura <table> con las cabeceras 
+  (Usuario, Curso, Progreso, Porcentaje Faltante). Luego hace un bucle (.map) para renderizar cada fila.
 
 ProgresoTableRow.jsx:
   Archivo: ProgresoTable.jsx
@@ -8,8 +8,10 @@ ProgresoTableRow.jsx:
            Recibe los datos como props y los muestra.
   Tipo: Componente de Frontend.
 */
-import  { useState, useMemo } from 'react';
-import { Search, User, Award, TrendingUp, BarChart2, ArrowLeft } from 'lucide-react';
+import  { useState, useMemo, useEffect } from 'react';
+import { Link } from 'react-router-dom';
+import { supabase } from '../../services/supabaseClient';
+import { Search, User, Award, TrendingUp, BarChart2, ArrowLeft, Edit } from 'lucide-react';
 import {
   Radar,
   RadarChart,
@@ -38,9 +40,46 @@ import ProgresoDetallePanel from '../../pages/ProgresoDetallePanel';
  * @param {string} busqueda - Texto de filtro por nombre.
  */
 const useAprendicesData = (data, busqueda) => {
+  // NUEVO: Estado para almacenar las aptitudes, sus vínculos, y el estado de carga/error
+  const [aptitudesData, setAptitudesData] = useState({ aptitudes: [], links: [], loading: true, error: null });
+
+  // NUEVO: Efecto para cargar los datos de las aptitudes desde Supabase
+  useEffect(() => {
+    const fetchAptitudeData = async () => {
+      // Hacemos las peticiones en paralelo para más eficiencia
+      try {
+        const [aptitudesRes, linksRes] = await Promise.all([
+          supabase.from('aptitudes').select('id, nombre'),
+          supabase.from('cursos_aptitudes').select('curso_id, aptitud_id')
+        ]);
+
+        const error = aptitudesRes.error || linksRes.error;
+        if (error) throw error;
+
+        setAptitudesData({ 
+          aptitudes: aptitudesRes.data || [], 
+          links: linksRes.data || [], 
+          loading: false, 
+          error: null 
+        });
+      } catch (error) {
+        console.error("Error fetching aptitudes data:", error);
+        let errorMessage = "No se pudieron cargar los datos de las aptitudes.";
+        // Proporcionar pistas más útiles en la consola para el desarrollador
+        if (error.code === '42P01') { // relation "x" does not exist
+            console.error("Pista: Una de las tablas ('aptitudes' o 'curso_aptitud') no parece existir. ¿Ejecutaste el script SQL correctamente?");
+        } else if (error.message.includes("Not Found")) { // PGRST200
+            console.error("Pista: No se encontró el recurso. Revisa que las tablas 'aptitudes' y 'curso_aptitud' existan y que las políticas de RLS permitan la lectura a usuarios autenticados.");
+        }
+        setAptitudesData({ aptitudes: [], links: [], loading: false, error: errorMessage });
+      }
+    };
+    fetchAptitudeData();
+  }, []);
+
   // Agrupa los registros planos por usuario y calcula estadísticas básicas
   const aprendicesAgrupados = useMemo(() => {
-    if (!Array.isArray(data)) return [];
+    if (!Array.isArray(data) || aptitudesData.loading) return [];
 
     const mapa = {};
 
@@ -64,18 +103,44 @@ const useAprendicesData = (data, busqueda) => {
       mapa[id].totalProgreso += item.progress;
     });
 
+    // NUEVO: Creamos mapas para buscar eficientemente las relaciones
+    const cursoToAptitudesMap = new Map();
+    aptitudesData.links.forEach(link => {
+      if (!cursoToAptitudesMap.has(link.curso_id)) {
+        cursoToAptitudesMap.set(link.curso_id, []);
+      }
+      cursoToAptitudesMap.get(link.curso_id).push(link.aptitud_id);
+    });
+
     return Object.values(mapa).map((aprendiz) => {
       const totalCursos = aprendiz.cursos.length || 1;
       const promedio = Math.round(aprendiz.totalProgreso / totalCursos);
 
-      // Estimación simulada de aptitudes según el promedio
-      const aptitudes = [
-        { area: 'Lógica', valor: Math.min(100, promedio + 5) },
-        { area: 'Frontend', valor: promedio },
-        { area: 'Backend', valor: Math.max(20, promedio - 10) },
-        { area: 'Bases de Datos', valor: Math.min(100, promedio + 2) },
-        { area: 'Diseño/UI', valor: Math.max(30, promedio - 15) },
-      ];
+      // ===================================================================
+      // NUEVA LÓGICA: Cálculo dinámico de aptitudes
+      // ===================================================================
+      const aptitudesCalculadas = {}; // { aptitud_id: { total: 0, count: 0 } }
+
+      // Iteramos sobre los cursos del aprendiz
+      aprendiz.cursos.forEach(curso => {
+        const aptitudesDelCurso = cursoToAptitudesMap.get(curso.id) || [];
+        // Para cada curso, encontramos sus aptitudes vinculadas
+        aptitudesDelCurso.forEach(aptitudId => {
+          if (!aptitudesCalculadas[aptitudId]) {
+            aptitudesCalculadas[aptitudId] = { total: 0, count: 0 };
+          }
+          // Sumamos el progreso del curso al total de la aptitud
+          aptitudesCalculadas[aptitudId].total += curso.porcentaje;
+          aptitudesCalculadas[aptitudId].count += 1;
+        });
+      });
+
+      // Formateamos los datos para el gráfico, incluyendo todas las aptitudes (con valor 0 si no aplica)
+      const aptitudes = aptitudesData.aptitudes.map(apt => {
+        const calculada = aptitudesCalculadas[apt.id];
+        const valor = calculada && calculada.count > 0 ? Math.round(calculada.total / calculada.count) : 0;
+        return { area: apt.nombre, valor: valor };
+      });
 
       return {
         ...aprendiz,
@@ -83,7 +148,7 @@ const useAprendicesData = (data, busqueda) => {
         aptitudes,
       };
     });
-  }, [data]);
+  }, [data, aptitudesData.aptitudes, aptitudesData.links, aptitudesData.loading]);
 
   // Filtra la lista según el término ingresado en el buscador
   const aprendicesFiltrados = useMemo(() => {
@@ -92,7 +157,7 @@ const useAprendicesData = (data, busqueda) => {
     );
   }, [aprendicesAgrupados, busqueda]);
 
-  return { aprendicesAgrupados, aprendicesFiltrados };
+  return { aprendicesAgrupados, aprendicesFiltrados, aptitudesLoading: aptitudesData.loading, aptitudesError: aptitudesData.error };
 };
 
 // ==========================================
@@ -258,7 +323,7 @@ const ProgresoTable = ({ data = [] }) => {
   const [cursoDetallado, setCursoDetallado] = useState(null); // { userId, courseId, userName, courseName }
 
   // Hook personalizado para abstraer la lógica de manipulación de datos
-  const { aprendicesAgrupados, aprendicesFiltrados } = useAprendicesData(data, busqueda);
+  const { aprendicesAgrupados, aprendicesFiltrados, aptitudesLoading, aptitudesError } = useAprendicesData(data, busqueda);
 
   // Resolver el aprendiz que debe mostrarse en el panel detallado
   const aprendizActivo = useMemo(() => {
@@ -288,7 +353,11 @@ const ProgresoTable = ({ data = [] }) => {
   };
 
   // Si no hay información inicial
-  if (!data || data.length === 0) {
+  if (aptitudesLoading) {
+    return <div className="mensaje-vacio">Cargando datos de aptitudes...</div>;
+  }
+
+  if (!data || data.length === 0 || aprendicesFiltrados.length === 0) {
     return <div className="mensaje-vacio">No hay datos de progreso disponibles.</div>;
   }
 
@@ -324,6 +393,17 @@ const ProgresoTable = ({ data = [] }) => {
             // VISTA DE GRÁFICOS GENERALES
             <>
               <PerfilResumen aprendiz={aprendizActivo} />
+              <div className="admin-actions-header">
+                <Link to="/admin/aptitudes" className="btn-admin-action">
+                  <Edit size={16} />
+                  <span>Gestionar Aptitudes y Vínculos</span>
+                </Link>
+              </div>
+              {aptitudesError && (
+                <div className="error-banner">
+                  <strong>Advertencia:</strong> {aptitudesError} El gráfico de aptitudes puede no funcionar correctamente.
+                </div>
+              )}
               
               <div className="grid-graficos">
                 <GraficoRadar aptitudes={aprendizActivo.aptitudes} />
